@@ -2,7 +2,7 @@
   <footer class="site-footer">
     <h2 class="visually-hidden">Footer</h2>
     <div class="wrapper">
-      <div class="grid">
+      <div class="grid test">
         {% for block in section.blocks %}
           {%- capture box_classes -%}box box-{{ forloop.index }} {% if forloop.first == true %}box-first{% endif %} {% if forloop.last == true %}box-last{% endif %} layout-{{ section.blocks.size }}{%- endcapture -%}
           {% comment %}
