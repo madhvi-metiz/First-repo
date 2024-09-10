@@ -1,0 +1,415 @@
+<style>
+.page {
+padding-top:2em;}
+#batteryForm {
+    padding: 2em 1em;
+    background-color: white;
+    border: 1px solid gray;
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:2em;
+}
+.form-title {
+    font-weight: bold;
+    font-size: 1.25em;
+}
+#batteryForm .radio-buttons input, #batteryForm .radio-buttons label {
+    display:inline;
+    width:fit-content;
+}
+.radio-buttons {
+margin-bottom:1em;
+display: flex;
+    gap: 0.5em;
+    vertical-align: middle;
+    justify-content: start;
+    align-items: center;
+    font-size: 135%;}
+#batteryForm #submit {
+background-color:#024bad;
+max-width:300px;
+display:block;
+margin-right:auto;
+}
+#batteryForm input, #batteryForm select {
+background-color:#ededed;
+padding-left:9px;
+padding-top:5px;
+padding-bottom:5px;
+font-size:14px !important;
+max-width:100%;
+width:100%;
+}
+#batteryForm #street, #batteryForm #email, #batteryForm #phone, #batteryForm #submit {
+width:calc(100% - 1em);
+}
+label {
+    display: block;
+    font-size: 65%;
+    font-weight: bold;}
+.input-flex {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    max-width: 100%;
+    gap: 1em;
+    margin-bottom:1em;
+    flex-wrap:wrap;
+}
+.input-item-flex {
+    width:45%;}
+    #street, #email, #phone, #vapes {
+    margin-bottom:1em;
+    }
+   #batteryForm #vapes {
+    width:fit-content;}
+    .congrats {
+    display:none;}
+    .thank-you {
+     text-align:center;
+     max-width:700px;
+     margin-left:auto;
+     margin-right:auto;
+    }
+    .congrats {
+    text-align:center;
+font-weight:bold;
+max-width:650px;
+margin-left:auto;
+margin-right:auto;}
+    .label-here {
+        display: block;
+    margin-top: 2em;
+    text-transform: uppercase;
+    text-decoration: unset;
+    color: white;
+    }
+    .label-here a {
+        color: white;
+        text-decoration: none;
+        background-color: #024bad;
+        padding: 10px 20px;
+        font-weight:900;
+        font-size: 18px;
+        }
+        .rma {
+        display:none;}
+</style>
+<section class="page">
+    <div class="wrapper">
+            <h1 style="text-align:center;">{{ page.title }}</h1>
+            <p class="thank-you">Thanks for participating in our Disposable Vape Reward Program, and welcome. Each and every time you return at least 20 used vapes, you will receive a $10 Gift Card toward your next purchase. Thank you for helping Mother Earth and disposing of your vapes responsibly.</p>
+        <p class="congrats">CONGRATULATIONS! You have successfully submitted your request. Now all you have to do is click the button below, print your label and send your empty vapes back to us.
+        <span class="label-here"></span></p>
+        <p class="rma"></p>
+    <form id="batteryForm"> 
+        <p class="form-title">Disposable Rewards Return Form</p>
+        <p>Simply fill out the form below, submit it and we will send you an email and provide a return label.</p>
+        <div class="input-flex">
+            <div class="input-item-flex">
+        <label for="first">FIRST NAME</label>
+    <input type="text" id="first" name="first" placeholder="Enter first name">
+            </div>
+            <div class="input-item-flex">
+    <label for="last">LAST NAME</label>
+    <input type="text" id="last" name="last" placeholder="Enter last name">
+            </div>
+        </div>
+        <label for="street">STREET ADDRESS</label>
+        <input type="text" id="street" name="street" placeholder="Enter your street address">
+        <div class="input-flex">
+            <div class="input-item-flex">
+        <label for="city">CITY</label>
+    <input type="text" id="city" name="city" placeholder="Enter your city">
+            </div>
+            <div class="input-item-flex">
+                <label for="state">STATE</label>
+                <select id="state" name="state" class="input input-select required-entry validate-select" aria-required="true">
+                    <option value="">Select</option>
+                    <option value="AL">
+                    Alabama </option>
+                    <option value="AK">
+                    Alaska </option>
+                    <option value="AS">
+                    American Samoa </option>
+                    <option value="AZ">
+                    Arizona </option>
+                    <option value="AR">
+                    Arkansas </option>
+                    <option value="CA">
+                    California </option>
+                    <option value="CO">
+                    Colorado </option>
+                    <option value="CT">
+                    Connecticut </option>
+                    <option value="DE">
+                    Delaware </option>
+                    <option value="DC">
+                    District of Columbia </option>
+                    <option value="FL">
+                    Florida </option>
+                    <option value="GA">
+                    Georgia </option>
+                    <option value="GU">
+                    Guam </option>
+                    <option value="HI">
+                    Hawaii </option>
+                    <option value="ID">
+                    Idaho </option>
+                    <option value="IL">
+                    Illinois </option>
+                    <option value="IN">
+                    Indiana </option>
+                    <option value="IA">
+                    Iowa </option>
+                    <option value="KS">
+                    Kansas </option>
+                    <option value="KY">
+                    Kentucky </option>
+                    <option value="LA">
+                    Louisiana </option>
+                    <option value="ME">
+                    Maine </option>
+                    <option value="MD">
+                    Maryland </option>
+                    <option value="MA">
+                    Massachusetts  </option>
+                    <option value="MI">
+                    Michigan </option>
+                    <option value="MN">
+                    Minnesota </option>
+                    <option value="MS">
+                    Mississippi </option>
+                    <option value="MO">
+                    Missouri </option>
+                    <option value="MT">
+                    Montana </option>
+                    <option value="NE">
+                    Nebraska </option>
+                    <option value="NV">
+                    Nevada </option>
+                    <option value="NH">
+                    New Hampshire </option>
+                    <option value="NJ">
+                    New Jersey </option>
+                    <option value="NM">
+                    New Mexico </option>
+                    <option value="NY">
+                    New York </option>
+                    <option value="NC">
+                    North Carolina </option>
+                    <option value="ND">
+                    North Dakota </option>
+                    <option value="OH">
+                    Ohio </option>
+                     <option value="OK">
+                    Oklahoma </option>
+                    <option value="OR">
+                    Oregon </option>
+                    <option value="PW">
+                    Palau </option>
+                    <option value="PA">
+                    Pennsylvania </option>
+                    <option value="PR">
+                    Puerto Rico </option>
+                    <option value="RI">
+                    Rhode Island </option>
+                    <option value="SC">
+                    South Carolina </option>
+                    <option value="SD">
+                    South Dakota </option>
+                    <option value="TN">
+                    Tennessee </option>
+                    <option value="TX">
+                    Texas </option>
+                    <option value="UT">
+                    Utah </option>
+                    <option value="VT">
+                    Vermont </option>
+                    <option value="VI">
+                    Virgin Islands </option>
+                    <option value="VA">
+                    Virginia </option>
+                    <option value="WA">
+                    Washington </option>
+                    <option value="WV">
+                    West Virginia  </option>
+                    <option value="WI">
+                    Wisconsin </option>
+                    <option value="WY">
+                    Wyoming </option>
+                    </select>
+            </div>
+            <div class="input-item-flex">
+                <label for="zipcode">ZIPCODE</label>
+            <input type="text" id="zipcode" name="zipcode" placeholder="Enter your zip">
+                    </div>
+        </div>
+        <label for="email">EMAIL</label>
+        <input type="text" id="email" name="email" placeholder="Enter your email">
+        <label for="phone">PHONE</label>
+        <input type="text" id="phone" name="phone" placeholder="Enter your phone number">
+        <label for="vapes">NUMBER OF VAPES RETURNING</label>
+        <input type="number" id="vapes" name="vapes" value="20" placeholder="20">
+        <div class="radio-buttons">
+        <input type="radio" id="in-store" name="fav_language" value="in-store">
+<label for="in-store">Drop off in-store</label>
+<input type="radio" id="Ship" name="fav_language" value="Ship">
+<label for="Ship">Ship it back</label>
+        </div>
+        <input class="default-cart-button__button" id="submit" type="submit" value="SUBMIT">
+    </form>
+    </div>
+</section>
+<!-- JavaScript code -->
+<script>
+    // Retrieve
+var submitted = sessionStorage.getItem('submitted');
+if (submitted === 'yes') {
+   $('#batteryForm').hide();
+   $('.thank-you').html('You recently submitted a request to return batteries and the return label was sent to your email. If you need to submit another request or have any questions, please contact us at <a href="mailto:support@vapewh.com">support@vapewh.com</a>.');
+}
+  // Event listener for form submission
+  document.getElementById("batteryForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    var isValid = true;
+    var ship = $('#Ship').is(':checked');
+    var instore = $('#in-store').is(':checked');
+    $('#batteryForm input, #batteryForm select').each(function() {
+        if ($(this).val() === '') {
+            isValid = false;
+            return false;
+        }
+    });
+
+    if (!isValid) {
+        event.preventDefault();
+        alert('Please fill out all fields before submitting.');
+    }
+    else if (parseInt($('#vapes').val()) < 20) {
+       alert('You must return at least 20 empty disposables');
+    }
+    else if (parseInt($('#vapes').val()) > 60) {
+        alert('You cannot return more than 60 empty disposables at a time');
+    }
+    else if (ship === false && instore === false) {
+      alert('Please select whether you plan to drop them off in store or ship them back to us');
+    }
+    
+    else {
+    // Create a new FormData object and populate it with form data
+    var formData = new FormData(document.getElementById("batteryForm"));
+    console.log(formData);
+    var btn = $('#submit');
+    btn.prop('disabled', true);
+  
+    setTimeout(function() {
+      btn.prop('disabled', false);
+    }, 5000);
+    if (ship === true) {
+    var settings = {
+        url: "https://deksaws.com/WHV_battery_return.php",
+        method: "POST",
+        timeout: 0,
+        processData: false,
+        mimeType: "multipart/form-data",
+        contentType: false,
+        data: formData,
+      };
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+        JSONresponse = JSON.parse(response);
+        console.log(JSONresponse);
+        if (JSONresponse.error === 'Success') {
+        
+            // Append the link to the document body
+            $('.label-here').append('<a href="'+JSONresponse.link+'">Download and print your return label</a>');
+            $('.congrats').show();
+            $('.rma').html('<p style="text-align:center;"><i>For reference, your RMA number is '+JSONresponse.rmaNumber+'</i></p>');
+            $('.rma').show();
+            $('.thank-you').hide();
+            $('#batteryForm').hide();
+            // Store
+            sessionStorage.setItem('submitted', 'yes');
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            // now that we have the link to the file, we need to send this out in an email to the customer via Zapier
+            var pdfData = new FormData();
+            var firstName = $('#first').val();
+            var lastName = $('#last').val();
+            var vapes = $('#vapes').val();
+            var email = $('#email').val();
+            pdfData.append("first_name", firstName); 
+            pdfData.append("last_name", lastName);
+            pdfData.append("rma",JSONresponse.rmaNumber);
+            pdfData.append("vapes", vapes);
+            pdfData.append("email", email);
+            pdfData.append("pdf_link",JSONresponse.link);
+
+            var settings = {
+                url: "https://hooks.zapier.com/hooks/catch/15591152/3hyuwye/",
+                method: "POST",
+                timeout: 0,
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                data: pdfData,
+              };
+            $.ajax(settings).done(function (response) {
+              console.log(response);
+
+            });
+        }
+        else {
+        alert('Unfortunately your request could not be processed. Please contact support@vapewh.com for assistance.');
+        }
+        }); 
+    }
+    else {
+                // Append the link to the document body
+                $('.congrats').text('CONGRATULATIONS! You have successfully submitted your request. Now all you have to do is drop them off at the retail location in North Providence, RI.')
+                $('.congrats').show();
+                $('.thank-you').hide();
+                $('#batteryForm').hide();
+                // Store
+                sessionStorage.setItem('submitted', 'yes');
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+                // now that we have the link to the file, we need to send this out in an email to the customer via Zapier
+                var pdfData = new FormData();
+                var firstName = $('#first').val();
+                var lastName = $('#last').val();
+                var vapes = $('#vapes').val();
+                var email = $('#email').val();
+                // Get first letters of the first and last names
+var firstLetterFirstName = firstName.charAt(0);
+var firstLetterLastName = lastName.charAt(0);
+
+// Generate a random number between 1 and 50000
+var randomNumber = Math.floor(Math.random() * 50000) + 1;
+
+// Add the first letters to the front of the random number
+var rma = firstLetterFirstName + firstLetterLastName + randomNumber;
+$('.rma').html('<p style="text-align:center;"><i>For reference, your RMA number is '+rma+'</i></p>');
+$('.rma').show();
+                pdfData.append("first_name", firstName); 
+                pdfData.append("last_name", lastName);
+                pdfData.append("rma",rma);
+                pdfData.append("vapes", vapes);
+                pdfData.append("email", email);
+                var settings = {
+                    url: "https://hooks.zapier.com/hooks/catch/15591152/3h8t31z/",
+                    method: "POST",
+                    timeout: 0,
+                    processData: false,
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    data: pdfData,
+                  };
+                $.ajax(settings).done(function (response) {
+                  console.log(response);
+    
+                });
+    }
+} 
+  });
+</script>

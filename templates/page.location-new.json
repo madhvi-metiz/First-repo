@@ -1,0 +1,169 @@
+{
+  "sections": {
+    "main": {
+      "type": "article-template",
+      "disabled": true,
+      "settings": {
+        "show_title": true,
+        "show_image_first": "after",
+        "show_author": true,
+        "show_date": true,
+        "center_title": true
+      }
+    },
+    "location_image_banner_t97wMQ": {
+      "type": "location-image-banner",
+      "settings": {
+        "hero_size": "x-large",
+        "full_width": true,
+        "mobile_autoplay": false,
+        "image": "shopify:\/\/shop_images\/Frame_373_1.png",
+        "image_mobile": "shopify:\/\/shop_images\/Header_1.png",
+        "show_overlay": false,
+        "heading": "",
+        "text": "<p>White Horse Vapor Locations<\/p>",
+        "alignment": "left",
+        "button_label": "SHOP NOW",
+        "button_link": "shopify:\/\/collections",
+        "color_overlay_text": "#ffffff",
+        "color_overlay": "#000000",
+        "color_overlay_alpha_range": 0
+      }
+    },
+    "featured_text_AUqziB": {
+      "type": "featured-text",
+      "blocks": {
+        "button_MMPDpY": {
+          "type": "button",
+          "settings": {
+            "btn_text": "SHOP NOW",
+            "btn_url": "shopify:\/\/collections"
+          }
+        }
+      },
+      "block_order": [
+        "button_MMPDpY"
+      ],
+      "disabled": true,
+      "custom_css": [
+        ".richtext p {margin-bottom: 0px; color: #024bad; font-weight: 700; text-transform: uppercase; font-size: 16px; line-height: 14px;}",
+        ".h2 {font-size: 36px; line-height: 36px; font-weight: 900; text-transform: uppercase; color: #000000;}",
+        ".featured-text {background: #ffffff;}",
+        "a.button {font-size: 15px; line-height: 20px;}",
+        "@media screen and (max-width: 768px) {.h2 {font-size: 28px; line-height: 32.81px; } .richtext p {font-size: 16px; line-height: 18px; }}"
+      ],
+      "settings": {
+        "logo": "shopify:\/\/shop_images\/Frame_363.png",
+        "title": "Shipping Nationally From",
+        "text": "<p>Multiple Warehouses For Faster Delivery<\/p>",
+        "alignment": "center"
+      }
+    },
+    "location_banner_macQdA": {
+      "type": "location-banner",
+      "settings": {
+        "alignment": "center",
+        "bg_color": "#ffffff",
+        "image": "shopify:\/\/shop_images\/Frame_371.png",
+        "mobile_image": "shopify:\/\/shop_images\/Frame_371_15381084-7f80-4722-87ab-5a9eafcb5835.png"
+      }
+    },
+    "location_banner_KGYBaJ": {
+      "type": "location-banner",
+      "settings": {
+        "alignment": "center",
+        "bg_color": "#f8fafc",
+        "image": "shopify:\/\/shop_images\/Frame_366.png",
+        "mobile_image": "shopify:\/\/shop_images\/imageloaction.png"
+      }
+    },
+    "featured_text_6wmCnG": {
+      "type": "featured-text",
+      "disabled": true,
+      "custom_css": [
+        ".richtext p {margin-bottom: 0px; color: #024bad; font-weight: 700; text-transform: uppercase; font-size: 16px; line-height: 18px;}",
+        ".h2 {font-size: 36px; line-height: 36px; font-weight: 900; text-transform: uppercase; color: #000000;}",
+        ".featured-text {background: #ffffff;}",
+        "@media screen and (max-width: 768px) {.h2 {font-size: 28px; line-height: 32.81px; }}"
+      ],
+      "settings": {
+        "logo": "shopify:\/\/shop_images\/delivery_1_fee6de72-d7e0-4048-b05f-6efc5f27fd6b.png",
+        "title": "Optimized Fulfillment Process",
+        "text": "<p>Fast & Efficient Fulfillment<\/p>",
+        "alignment": "center"
+      }
+    },
+    "location_gallery_text_WGqkeJ": {
+      "type": "location-gallery-text",
+      "blocks": {
+        "image_88jQ74": {
+          "type": "image",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/Frame_216.png",
+            "mainText": "Clean Warehouse",
+            "subText": "Sanitary and well-organized workspace"
+          }
+        },
+        "image_dyeCLU": {
+          "type": "image",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/Frame_216_1.png",
+            "mainText": "Efficient Shipping",
+            "subText": "Speed and reliability in product delivery"
+          }
+        },
+        "image_YQ6MVD": {
+          "type": "image",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/Frame_216_2.png",
+            "mainText": "Dedicated Team",
+            "subText": "Hardworking & focused fulfillment team"
+          }
+        },
+        "image_BhRTbJ": {
+          "type": "image",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/Frame_216_3.png",
+            "mainText": "Optimized Workflow",
+            "subText": "Streamlined fulfillment process"
+          }
+        }
+      },
+      "block_order": [
+        "image_88jQ74",
+        "image_dyeCLU",
+        "image_YQ6MVD",
+        "image_BhRTbJ"
+      ],
+      "disabled": true,
+      "custom_css": [
+        ".gallery.gallery-with-text {background: #ffffff;}",
+        ".mainText h2 {font-size: 20px; line-height: 20px; color: #000000;}",
+        ".subText p {color: #000000;}",
+        "@media (max-width: 768px) {.grid__item.no-bottom-margin {margin-bottom: 15px; } .subText p {line-height: 16.41px; }}"
+      ],
+      "settings": {
+        "title": "",
+        "full_width": false,
+        "section_padding": false,
+        "gutter": false,
+        "images_per_row_range": 4,
+        "text_placement": "over",
+        "color_overlay": "#4f4f4f",
+        "color_overlay_hover": "#000000",
+        "color_overlay_text": "#ffffff",
+        "color_overlay_alpha_range": 0,
+        "zoom": true
+      }
+    }
+  },
+  "order": [
+    "main",
+    "location_image_banner_t97wMQ",
+    "featured_text_AUqziB",
+    "location_banner_macQdA",
+    "location_banner_KGYBaJ",
+    "featured_text_6wmCnG",
+    "location_gallery_text_WGqkeJ"
+  ]
+}

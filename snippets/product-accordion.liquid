@@ -1,0 +1,108 @@
+<style>
+  .accordion {
+    margin-top: 20px;
+    padding: 40px 50px;
+    background: white;
+  }
+
+  summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    font-weight: bold;
+
+    h2 {
+      margin:0px;
+    }
+  }
+
+  summary::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 10px solid black;
+    border-inline: 7px solid transparent;
+    transition: 0.2s;
+  }
+
+  .summary-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .summary-header > h3 {
+    padding: 0px 15px;
+    margin-bottom: 0px;
+  }
+
+  .carousel-content {
+    padding:  20px;
+  }
+
+  details[open] > summary {
+    {% comment %} border-bottom: 2px solid #fff9f1; {% endcomment %}
+  }
+
+  details[open] > summary::after {
+    transform: rotate(-180deg);
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details {
+    border-top: 1px solid gray;
+
+  }
+
+  details + details {
+    border-bottom: 1px solid gray;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    .accordion {
+      padding: 10px 10px;
+    }
+  }
+</style>
+
+{% if product.metafields.custom.enable_accoridan %}
+  {% include 'product-video-carousel' %}
+
+  <div class="accordion wrapper">
+    <h2>Product Details</h2>
+    {% if product.metafields.custom.specifications %}
+      <details>
+        <summary>
+          <div class="summary-header">
+            <span class="icon" aria-hidden="true">{% include 'icon-gear' %}</span>
+            <h3>Specifications</h3>
+          </div>
+        </summary>
+
+        <div class="rte carousel-content">
+          {{ product.metafields.custom.specifications | metafield_tag }}
+        </div>
+      </details>
+    {% endif %}
+
+    {% if product.metafields.custom.flavor_descriptions %}
+      <details>
+        <summary>
+          <div class="summary-header">
+            <span class="icon" aria-hidden="true">{% include 'icon-drop' %}</span>
+            <h3>Flavor Descriptions</h3>
+          </div>
+        </summary>
+
+        <div class="rte carousel-content">
+          {{ product.metafields.custom.flavor_descriptions | metafield_tag }}
+        </div>
+      </details>
+    {% endif %}
+  </div>
+{% endif %}

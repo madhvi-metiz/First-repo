@@ -1,0 +1,103 @@
+<!-- /templates/customers/register.liquid -->
+<section class="page page-top">
+  <div class="wrapper">
+    <header class="content-util">
+    {% include 'breadcrumb' %}
+    {% include 'social-icons' %}
+    </header>
+    <header class="page-header">
+      <h1>{{ 'customer.register.title' | t }}</h1>
+    </header>
+  </div>
+</section>
+
+<section class="page">
+  <div class="wrapper">
+
+    <div class="content-container narrow form">
+      {% form 'create_customer' %}
+
+        <div class="selection-wrapper">
+          {{ form.errors | default_errors }}
+        </div>
+
+        <div class="selection-wrapper">
+          <div class="input-row">
+            <label for="FirstName" class="hidden-label">{{ 'customer.register.first_name' | t }}</label>
+            <input type="text" name="customer[first_name]" id="FirstName" class="input-full" {% if form.first_name %}value="{{ form.first_name }}"{% endif %} autocapitalize="words" autofocus>
+          </div>
+
+          <div class="input-row">
+            <label for="LastName" class="hidden-label">{{ 'customer.register.last_name' | t }}</label>
+            <input type="text" name="customer[last_name]" id="LastName" class="input-full" {% if form.last_name %}value="{{ form.last_name }}"{% endif %} autocapitalize="words">
+          </div>
+          
+          <div class="input-row">
+            <label for="Birthday" class="hidden-label">Birthday MM/DD/YYYY</label>
+           <div class="input-group date">
+            <input type="text"   placeholder="MM/DD/YYYY"  name="customer[note][Birthday]" id="Birthday" class="input-full" autocapitalize="words" required />
+            <span class="input-group-addon">
+              <img class="date-icon" src="{{ 'date-icon.svg' | asset_url }}" />
+            </span>
+            </div>
+          </div>
+
+          {% comment %} <div class="input-row">
+            <label for="Birthday" class="hidden-label">Birthday MM/DD/YYYY</label>
+            <div class="input-group date" id="BirthdayDatePicker">
+              <input type="text" name="customer[note][Birthday]" id="Birthday" class="form-control" autocapitalize="words" required>
+              <span class="input-group-addon">
+                <i class="glyphicon glyphicon-th"></i>
+              </span>
+            </div>
+          </div> {% endcomment %}
+
+          <div class="input-row">
+            <label for="Email" class="hidden-label">{{ 'customer.register.email' | t }}</label>
+            <input type="email" name="customer[email]" id="Email" class="input-full{% if form.errors contains 'email' %} error{% endif %}" {% if form.email %} value="{{ form.email }}"{% endif %} autocorrect="off" autocapitalize="off">
+          </div>
+
+          <div class="input-row">
+            <label for="CreatePassword" class="hidden-label">{{ 'customer.register.password' | t }}</label>
+            <input type="password" name="customer[password]" id="CreatePassword" class="input-full{% if form.errors contains 'password' %} error{% endif %}">
+          </div>
+
+  
+          <p class="submit">
+            <input type="submit" value="{{ 'customer.register.submit' | t }}" class="button solid">
+            <a href="{{ shop.url }}" class="cancel">{{ 'customer.register.cancel' | t }}</a>
+          </p>
+
+
+        </div>
+
+      {% endform %}
+    </div>
+  </div>
+</section>
+ 
+<script>
+  // Calculate the date 21 years ago from today
+  var today = new Date();
+  var maxDate = new Date(today.getFullYear() - 21, today.getMonth(), today.getDate());
+
+    $( "#Birthday" ).datepicker({
+    changeYear:true,
+    changeMonth:true,
+    dateFormat:'mm/dd/yy',
+    maxDate:new Date(),
+    yearRange: "1925:"+(new Date).getFullYear(), 
+    });
+  
+    // Custom validation on form submission
+    $('#create_customer').on('submit', function(event) {
+     
+      var selectedDate = $('#Birthday').val();
+      var selectedDateObj = new Date(selectedDate);
+    
+      if (new Date(selectedDateObj) > maxDate) { 
+          alert('Sorry, you must be 21 years of age or older to create an account.');
+          event.preventDefault();
+      }
+  });
+</script>

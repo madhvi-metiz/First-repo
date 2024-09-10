@@ -1,0 +1,296 @@
+<style>
+  @media screen and (max-width: 768px) {
+    #shopify-section-list-collections-template .collection {
+      padding-top: 1.5em;
+    }
+  }
+</style>
+<section
+  class="collection simple-collection"
+  data-section-id="{{ section.id }}"
+  data-layout="{{ section.settings.layout }}"
+  data-section-type="list-collections-template"
+>
+  <div class="wrapper">
+    <header class="content-util">
+      {% include 'breadcrumb' %}
+      {% include 'social-icons' %}
+    </header>
+
+    <header class="collection-header">
+      <div class="container">
+        {% if section.settings.title != blank %}
+          <h1>{{ section.settings.title | escape }}</h1>
+        {% endif %}
+      </div>
+      {% if section.settings['description-text'] != blank %}
+        <div class="description">
+          <p>{{ section.settings['description-text'] }}</p>
+        </div>
+      {% endif %}
+    </header>
+
+    {% if section.settings.layout == 'preview' %}
+      {% if section.settings.list_mode == 'default' %}
+        {% comment %}
+          Default alphabetical list of all collections
+        {% endcomment %}
+        {% for collection in collections %}
+          {% unless collection.handle == 'frontpage' %}
+            <div class="collection-container">
+              <header>
+                <h4>{{ collection.title }}</h4>
+                <a href="{{ collection.url }}" class="button outline">
+                  {{- 'collections.general.all_of_collection' | t: collection: collection.title -}}
+                </a>
+              </header>
+
+              <div class="product-container">
+                {% for product in collection.products limit: 4 %}
+                  {% include 'product-grid-item' %}
+                {% else %}
+                  {% for i in (1..4) %}
+                    {% include 'placeholder-product-grid-item' %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endunless %}
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks %}
+          {%- assign collection = block.settings.collection -%}
+          <div class="collection-container">
+            <header>
+              <h4>{{ collection.title }}</h4>
+              <a href="{{ collection.url }}" class="button outline">
+                {{- 'collections.general.all_of_collection' | t: collection: collection.title -}}
+              </a>
+            </header>
+
+            <div class="product-container">
+              {% for product in collection.products limit: 4 %}
+                {% include 'product-grid-item' %}
+              {% else %}
+                {% for i in (1..4) %}
+                  {% include 'placeholder-product-grid-item' %}
+                {% endfor %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+
+    {% if section.settings.layout == 'grid' %}
+      <div class="featured-grid" style="padding-top:0px; padding-left:0px; padding-right:0px; border-bottom:0px;">
+        <div class="wrapper">
+          <div class="row row-3">
+            {% if section.settings.list_mode == 'default' %}
+              {% comment %}
+                Default alphabetical list of all collections
+              {% endcomment %}
+              {% for collection in collections %}
+                {% if collection.empty? %}
+                  {% comment %}add default state for collection block in theme editor{% endcomment %}
+                  {% assign collection_image_url = '' %}
+                {% else %}
+                  {% if collection.image %}
+                    {% assign image = collection.image %}
+                  {% elsif collection.products.first %}
+                    {% assign image = collection.products.first.featured_image %}
+                  {% endif %}
+                {% endif %}
+                {% unless collection.handle == 'frontpage' %}
+                  <div class="box" style="margin-bottom:40px;">
+                    {% assign collection_url = collection.url %}
+                    {{ collection_url }}
+                    {% comment %}Since some collections only contain 1 product, we must replace their link with a single product link {% endcomment %}
+                    {% if collection.all_products_count == 1 %}
+                      true
+                      {% for p in collection.products %}
+                        {% assign collection_url = p.url %}
+                        {{ p.url }}
+                      {% endfor %}
+                    {% endif %}
+                    <a href="{{ collection_url}}">
+                      <figure>
+                        <div class="image-table">
+                          <div class="image-cell">
+                            {% if collection.all_products_count == 0 %}
+                              {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                              {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                            {% else %}
+                              <div
+                                class="card__image-wrapper"
+                                style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%"
+                              >
+                                {% assign loading = 'lazy' %}
+                                {%- if forloop.index0 < 6 -%}
+                                  {% assign loading = 'eager' %}
+                                {% endif %}
+
+                                {% if image %}
+                                  {{
+                                    image
+                                    | image_url: width: 1200
+                                    | image_tag:
+                                      widths: '400, 600, 800, 1200',
+                                      sizes: '(min-width: 780px) 400px, 200px',
+                                      loading: loading,
+                                      class: 'card__image'
+                                  }}
+                                {% else %}
+                                  {{ 'image' | placeholder_svg_tag: 'card__image' }}
+                                {% endif %}
+                              </div>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </figure>
+                    </a>
+                    <figcaption class="below" style="margin-top:0px;">
+                      <h3>
+                        <a href="{{ collection.url }}">{{ collection.title }}</a>
+                      </h3>
+                    </figcaption>
+                  </div>
+                {% endunless %}
+              {% endfor %}
+            {% else %}
+              {% for block in section.blocks %}
+                {%- assign collection = block.settings.collection -%}
+                {% assign image = collection.featured_image %}
+
+                {% comment %} 20240611 - Dino doesn't want to show collections without images so they are hidden automatically {% endcomment %}
+                {% unless image %}
+                  {% continue %}
+                {% endunless %}
+
+                <div class="box" style="margin-bottom:40px;">
+                  {% if collection.empty? %}
+                    {% comment %}
+                      Placholder
+                    {% endcomment %}
+                    <a href="#">
+                      <figure>
+                        <div class="image-table">
+                          <div class="image-cell">
+                            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                          </div>
+                        </div>
+                      </figure>
+                    </a>
+                    <figcaption class="below" style="margin-top:0px;">
+                      <h3>
+                        <a href="#">{{ 'homepage.onboarding.collection_title' | t }}</a>
+                      </h3>
+                    </figcaption>
+                  {% else %}
+                    {% assign collection_url = collection.url %}
+                    {% comment %}Since some collections only contain 1 product, we must replace their link with a single product link {% endcomment %}
+                    {% if collection.all_products_count == 1 %}
+                      {% for p in collection.products %}
+                        {% assign collection_url = p.url %}
+                      {% endfor %}
+                    {% endif %}
+                    <a href="{{ collection_url}}">
+                      <figure>
+                        <div class="image-table">
+                          <div class="image-cell">
+                            <div
+                              class="card__image-wrapper"
+                              style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%"
+                            >
+                              {% assign loading = 'lazy' %}
+                              {%- if forloop.index0 < 6 -%}
+                                {% assign loading = 'eager' %}
+                              {% endif %}
+
+                              {% if image %}
+                                {{
+                                  image
+                                  | image_url: width: 1200
+                                  | image_tag:
+                                    widths: '400, 600, 800, 1200',
+                                    sizes: '(min-width: 780px) 400px, 200px',
+                                    loading: loading,
+                                    class: 'card__image'
+                                }}
+                              {% else %}
+                                {{ 'image' | placeholder_svg_tag: 'card__image' }}
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </figure>
+                    </a>
+                    <figcaption class="below" style="margin-top:0px;">
+                      <h3>
+                        <a href="{{ collection.url }}">{{ collection.title }}</a>
+                      </h3>
+                    </figcaption>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "List collection page",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "All collections"
+    },
+    {
+      "type": "textarea",
+      "id": "description-text",
+      "label": "Collection Description"
+    },
+    {
+      "type": "radio",
+      "id": "layout",
+      "label": "Layout mode",
+      "options": [
+        { "value": "preview", "label": "Preview" },
+        { "value": "grid", "label": "Grid" }
+      ],
+      "default": "preview"
+    },
+    {
+      "type": "radio",
+      "id": "list_mode",
+      "label": "List mode",
+      "options": [
+        { "value": "default", "label": "All collections alphabetical" },
+        { "value": "manual", "label": "Manual" }
+      ],
+      "default": "default",
+      "info": "Add collection blocks to manually control the collections and order"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "label": "Collection",
+          "id": "collection",
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

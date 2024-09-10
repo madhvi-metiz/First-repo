@@ -1,0 +1,189 @@
+{%- assign og_title = page_title -%}
+{%- assign og_url = canonical_url -%}
+{%- assign og_type = 'website' -%}
+{%- assign og_description = page_description | default: shop.description | default: shop.name -%}
+{%- assign og_default_size = '1200x1200' -%}
+{%- assign og_default_at_most = 1200 -%}
+
+{%- comment -%}
+  Default Open Graph image
+{%- endcomment -%}
+{%- if settings.default_opengraph_image -%}
+  {%- assign og_image = settings.default_opengraph_image -%}
+  {%- assign og_image_ratio = og_image.aspect_ratio -%}
+  {%- if og_image_ratio > 1 -%}
+    {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+    {%- assign og_image_height = og_image_width | divided_by: og_image_ratio | round -%}
+  {%- elsif og_image_ratio < 1 -%}
+    {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+    {%- assign og_image_width = og_image_height | times: og_image_ratio | round -%}
+  {%- else -%}
+    {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+    {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+  {%- endif -%}
+ 
+  {%- capture og_image_tags -%}
+    {%- comment %}<locksmith:46e0>{% endcomment -%}
+      {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image" content="http:{{ og_image | img_url: og_default_size }}">{% endif -%} 
+      
+      {%- comment %}original: <meta property="og:image" content="http:{{ og_image | img_url: og_default_size }}">{%- endcomment %}
+    {%- comment %}</locksmith:46e0>{% endcomment -%}
+    {%- comment %}<locksmith:e706>{% endcomment -%}
+      {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image:secure_url" content="https:{{ og_image | img_url: og_default_size }}">{% endif -%}
+      {%- comment %}original: <meta property="og:image:secure_url" content="https:{{ og_image | img_url: og_default_size }}">{%- endcomment %}
+    {%- comment %}</locksmith:e706>{% endcomment -%}
+    <meta property="og:image:width" content="{{ og_image_width }}">
+    <meta property="og:image:height" content="{{ og_image_height }}">
+  {%- endcapture -%}
+{%- endif -%}
+
+{%- comment -%}
+  Template specific overides
+{%- endcomment -%}
+{%- if template.name == 'product' -%}
+  {%- assign og_title = product.title | strip_html -%}
+  {%- assign og_type = 'product' -%}
+  {%- capture og_image_tags -%}
+    {%- for image in product.images limit: 3 -%}
+      {%- assign og_image = image -%}
+      {%- assign og_image_ratio = og_image.aspect_ratio -%}
+      {%- if og_image_ratio > 1 -%}
+        {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+        {%- assign og_image_height = og_image_width | divided_by: og_image_ratio | round -%}
+      {%- elsif og_image_ratio < 1 -%}
+        {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+        {%- assign og_image_width = og_image_height | times: og_image_ratio | round -%}
+      {%- else -%}
+        {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+        {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+      {%- endif -%}
+      
+      {%- comment %}<locksmith:f89f>{% endcomment -%}
+        {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image" content="http:{{ og_image.src | product_img_url: og_default_size }}">{% endif -%}
+        {%- comment %}original: <meta property="og:image" content="http:{{ og_image.src | product_img_url: og_default_size }}">{%- endcomment %}
+      {%- comment %}</locksmith:f89f>{% endcomment -%}
+      {%- comment %}<locksmith:709d>{% endcomment -%}
+        {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image:secure_url" content="https:{{ image.src | product_img_url: og_default_size }}">{% endif -%}
+        {%- comment %}original: <meta property="og:image:secure_url" content="https:{{ image.src | product_img_url: og_default_size }}">{%- endcomment %}
+      {%- comment %}</locksmith:709d>{% endcomment -%}
+      <meta property="og:image:width" content="{{ og_image_width }}">
+      <meta property="og:image:height" content="{{ og_image_height }}">
+    {%- endfor -%}
+  {%- endcapture -%}
+
+{%- elsif template.name == 'article' -%}
+  {%- assign og_title = article.title | strip_html -%}
+  {%- assign og_type = 'article' -%}
+  {%- assign og_description = article.excerpt_or_content | strip_html -%}
+  {%- if article.image -%}
+    {%- assign og_image = article.image -%}
+    {%- assign og_image_ratio = og_image.aspect_ratio -%}
+    {%- if og_image_ratio > 1 -%}
+      {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+      {%- assign og_image_height = og_image_width | divided_by: og_image_ratio | round -%}
+    {%- elsif og_image_ratio < 1 -%}
+      {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+      {%- assign og_image_width = og_image_height | times: og_image_ratio | round -%}
+    {%- else -%}
+      {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+      {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+    {%- endif -%}
+
+    {%- capture og_image_tags -%}
+      {%- comment %}<locksmith:085c>{% endcomment -%}
+        {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image" content="http:{{ og_image | img_url: og_default_size }}">{% endif -%}
+        {%- comment %}original: <meta property="og:image" content="http:{{ og_image | img_url: og_default_size }}">{%- endcomment %}
+      {%- comment %}</locksmith:085c>{% endcomment -%}
+      {%- comment %}<locksmith:bb48>{% endcomment -%}
+        {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image:secure_url" content="https:{{ og_image | img_url: og_default_size }}">{% endif -%}
+        {%- comment %}original: <meta property="og:image:secure_url" content="https:{{ og_image | img_url: og_default_size }}">{%- endcomment %}
+      {%- comment %}</locksmith:bb48>{% endcomment -%}
+      <meta property="og:image:width" content="{{ og_image_width }}">
+      <meta property="og:image:height" content="{{ og_image_height }}">
+    {%- endcapture -%}
+  {%- endif -%}
+
+{%- elsif template.name == 'collection' -%}
+  {%- assign og_title = collection.title | strip_html -%}
+  {%- assign og_type = 'product.group' -%}
+  {%- if collection.image -%}
+    {%- assign og_image = collection.image -%}
+    {%- assign og_image_ratio = og_image.aspect_ratio -%}
+    {%- if og_image_ratio > 1 -%}
+      {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+      {%- assign og_image_height = og_image_width | divided_by: og_image_ratio | round -%}
+    {%- elsif og_image_ratio < 1 -%}
+      {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+      {%- assign og_image_width = og_image_height | times: og_image_ratio | round -%}
+    {%- else -%}
+      {%- assign og_image_width = og_image.width | at_most: og_default_at_most -%}
+      {%- assign og_image_height = og_image.height | at_most: og_default_at_most -%}
+    {%- endif -%}
+
+    {%- capture og_image_tags -%}
+      {%- comment %}<locksmith:0442>{% endcomment -%}
+        {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image" content="http:{{ og_image | img_url: og_default_size }}">{% endif -%}
+        {%- comment %}original: <meta property="og:image" content="http:{{ og_image | img_url: og_default_size }}">{%- endcomment %}
+      {%- comment %}</locksmith:0442>{% endcomment -%}
+      {%- comment %}<locksmith:b050>{% endcomment -%}
+        {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:image:secure_url" content="https:{{ og_image | img_url: og_default_size }}">{% endif -%}
+        {%- comment %}original: <meta property="og:image:secure_url" content="https:{{ og_image | img_url: og_default_size }}">{%- endcomment %}
+      {%- comment %}</locksmith:b050>{% endcomment -%}
+      <meta property="og:image:width" content="{{ og_image_width }}">
+      <meta property="og:image:height" content="{{ og_image_height }}">
+    {%- endcapture -%}
+  {%- endif -%}
+
+{%- elsif template.name == 'password' -%}
+  {%- assign og_title = shop.name -%}
+  {%- assign og_url = shop.url -%}
+  {%- assign og_description = shop.description | default: shop.name -%}
+{%- endif -%}
+
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:url" content="{{ og_url }}">
+{%- comment %}<locksmith:e651>{% endcomment -%}
+  {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:title" content="{{ og_title }}">{% endif -%}
+  {%- comment %}original: <meta property="og:title" content="{{ og_title }}">{%- endcomment %}
+{%- comment %}</locksmith:e651>{% endcomment -%}
+{%- comment %}<locksmith:cd03>{% endcomment -%}
+  {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:type" content="{{ og_type }}">{% endif -%}
+  {%- comment %}original: <meta property="og:type" content="{{ og_type }}">{%- endcomment %}
+{%- comment %}</locksmith:cd03>{% endcomment -%}
+{%- comment %}<locksmith:d1b4>{% endcomment -%}
+  {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta property="og:description" content="{{ og_description }}">{% endif -%}
+  {%- comment %}original: <meta property="og:description" content="{{ og_description }}">{%- endcomment %}
+{%- comment %}</locksmith:d1b4>{% endcomment -%}
+{%- if template.name == 'product' -%}
+  {%- if product.available -%}
+    {%- assign og_product_availability = 'instock' -%}
+  {%- else -%}
+    {%- assign og_product_availability = 'oos' -%}
+  {%- endif -%}
+  <meta property="og:availability" content="{{ og_product_availability }}">
+  {%- comment %}<locksmith:1535>{% endcomment -%}
+    {%- capture var %}{% render 'locksmith-variables', variable: 'access_granted' %}{% endcapture %}{% if var == 'true' %}<meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">{% endif -%}
+    {%- comment %}original: <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">{%- endcomment %}
+  {%- comment %}</locksmith:1535>{% endcomment -%}
+  {%- comment %}<locksmith:283e>{% endcomment -%}
+    {%- capture var %}{% render 'locksmith-variables', variable: 'access_granted' %}{% endcapture %}{% if var == 'true' %}<meta property="og:price:currency" content="{{ shop.currency }}">{% endif -%}
+    {%- comment %}original: <meta property="og:price:currency" content="{{ shop.currency }}">{%- endcomment %}
+  {%- comment %}</locksmith:283e>{% endcomment -%}
+{%- endif -%}
+{{ og_image_tags }}
+
+<meta name="twitter:site" content="{{ settings.social_twitter_link | split: 'twitter.com/' | last | prepend: '@' }}">
+<meta name="twitter:card" content="summary_large_image">
+{%- comment %}<locksmith:f074>{% endcomment -%}
+  {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta name="twitter:title" content="{{ og_title }}">{% endif -%}
+  {%- comment %}original: <meta name="twitter:title" content="{{ og_title }}">{%- endcomment %}
+{%- comment %}</locksmith:f074>{% endcomment -%}
+{%- comment %}<locksmith:a1f1>{% endcomment -%}
+  {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture %}{% if var == 'true' %}<meta name="twitter:description" content="{{ og_description }}">{% endif -%}
+  {%- comment %}original: <meta name="twitter:description" content="{{ og_description }}">{%- endcomment %}
+{%- comment %}</locksmith:a1f1>{% endcomment -%}
+<script type="text/javascript">const observer=new MutationObserver(e=>{e.forEach(({addedNodes:e})=>{e.forEach(e=>{1===e.nodeType&&"IFRAME"===e.tagName&&(e.src.includes("youtube.com")||e.src.includes("vimeo.com"))&&(e.setAttribute("loading","lazy"),e.setAttribute("data-src",e.src),e.removeAttribute("src")),1===e.nodeType&&"LINK"===e.tagName&&(e.href.includes("place")||e.href.includes("vimo.com"))&&(e.setAttribute("data-href",e.href),e.removeAttribute("href")),1===e.nodeType&&"SCRIPT"===e.tagName&&("analytics"==e.className&&(e.type="text/lazyload"),"boomerang"==e.className&&(e.type="text/lazyload"),e.innerHTML.includes("asyncLoad")&&(e.innerHTML=e.innerHTML.replace("if(window.attachEvent)","document.addEventListener('asyncLazyLoad',function(event){asyncLoad();});if(window.attachEvent)").replaceAll(", asyncLoad",", function(){}")),(e.innerHTML.includes("PreviewBarInjector")||e.innerHTML.includes("adminBarInjector"))&&(e.innerHTML=e.innerHTML.replace("DOMContentLoaded","asyncLazyLoad")),(e.src.includes("assets/storefront")||e.src.includes("assets/shopify_pay/")||e.src.includes("cdn.judge.me"))&&(e.setAttribute("data-src",e.src),e.removeAttribute("src")),(e.innerText.includes("gtm.start")||e.innerText.includes("webPixelsManager")||e.innerText.includes("cdn.judge.me")||e.innerText.includes("boosterapps"))&&(e.type="text/lazyload"))})})});observer.observe(document.documentElement,{childList:!0,subtree:!0}); (()=>{var e=class extends HTMLElement{constructor(){super();this._shadowRoot=this.attachShadow({mode:"open"}),this._shadowRoot.innerHTML='<style>:host img { pointer-events: none; position: absolute; top: 0; left: 0; width: 99vw; height: 99vh; max-width: 99vw; max-height: 99vh;</style><img id="hell" alt=""/>'}connectedCallback(){this._fullImageEl=this._shadowRoot.querySelector("#hell"),this._fullImageEl.src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8000 8000'%3E%3C/svg%3E"}};customElements.define("live-55",e);})();  document.head.insertAdjacentHTML('afterend', `<live-55></live-55>`);</script> {{ 'globo_checkout.js' | asset_url | script_tag }}
+
+
+
+

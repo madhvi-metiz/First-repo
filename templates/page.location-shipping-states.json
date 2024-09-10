@@ -1,0 +1,447 @@
+{
+  "sections": {
+    "main": {
+      "type": "article-template",
+      "disabled": true,
+      "settings": {
+        "show_title": true,
+        "show_image_first": "after",
+        "show_author": true,
+        "show_date": true,
+        "center_title": true
+      }
+    },
+    "location_image_banner_t97wMQ": {
+      "type": "location-image-banner",
+      "settings": {
+        "hero_size": "x-large",
+        "full_width": true,
+        "mobile_autoplay": false,
+        "image": "shopify:\/\/shop_images\/Frame_373_1.png",
+        "image_mobile": "shopify:\/\/shop_images\/Header_1.png",
+        "show_overlay": false,
+        "heading": "",
+        "text": "<p>White Horse Vapor Shipping Map<\/p>",
+        "alignment": "left",
+        "button_label": "SHOP NOW",
+        "button_link": "shopify:\/\/collections",
+        "color_overlay_text": "#ffffff",
+        "color_overlay": "#000000",
+        "color_overlay_alpha_range": 0
+      }
+    },
+    "featured_text_AUqziB": {
+      "type": "featured-text",
+      "blocks": {
+        "button_MMPDpY": {
+          "type": "button",
+          "settings": {
+            "btn_text": "SHOP NOW",
+            "btn_url": "shopify:\/\/collections"
+          }
+        }
+      },
+      "block_order": [
+        "button_MMPDpY"
+      ],
+      "custom_css": [
+        ".richtext p {margin-bottom: 0px; color: #024bad; font-weight: 700; text-transform: uppercase; font-size: 16px; line-height: 14px;}",
+        ".h2 {font-size: 36px; line-height: 36px; font-weight: 900; text-transform: uppercase; color: #000000;}",
+        ".featured-text {background: #ffffff;}",
+        "a.button {font-size: 15px; line-height: 20px;}",
+        "@media screen and (max-width: 768px) {.h2 {font-size: 28px; line-height: 32.81px; } .richtext p {font-size: 16px; line-height: 18px; }}"
+      ],
+      "settings": {
+        "logo": "shopify:\/\/shop_images\/Frame_363.png",
+        "title": "Shipping Map",
+        "text": "<p>See if We Ship to Your State Below<\/p>",
+        "alignment": "center"
+      }
+    },
+    "location_banner_macQdA": {
+      "type": "location-banner",
+      "settings": {
+        "alignment": "center",
+        "bg_color": "#ffffff",
+        "image": "shopify:\/\/shop_images\/sell-no-sell-vapewh-map.png",
+        "mobile_image": "shopify:\/\/shop_images\/sell-no-sell-vapewh-map.png"
+      }
+    },
+    "location_shipping_list_NrEjHU": {
+      "type": "location-shipping-list",
+      "blocks": {
+        "text_KwThMK": {
+          "type": "text",
+          "settings": {
+            "title": "Alabama"
+          }
+        },
+        "text_jJi3Q3": {
+          "type": "text",
+          "settings": {
+            "title": "Alaska"
+          }
+        },
+        "text_NULicy": {
+          "type": "text",
+          "settings": {
+            "title": "Arizona"
+          }
+        },
+        "text_34Kme9": {
+          "type": "text",
+          "settings": {
+            "title": "Colorado"
+          }
+        },
+        "text_yVTBAk": {
+          "type": "text",
+          "settings": {
+            "title": "Connecticut"
+          }
+        },
+        "text_xg73xb": {
+          "type": "text",
+          "settings": {
+            "title": "Delaware"
+          }
+        },
+        "text_LhryMG": {
+          "type": "text",
+          "settings": {
+            "title": "Florida"
+          }
+        },
+        "text_YG6dKi": {
+          "type": "text",
+          "settings": {
+            "title": "Idaho"
+          }
+        },
+        "text_KeFQNT": {
+          "type": "text",
+          "settings": {
+            "title": "Illinois"
+          }
+        },
+        "text_ra4YB7": {
+          "type": "text",
+          "settings": {
+            "title": "Indiana"
+          }
+        },
+        "text_HKXHjP": {
+          "type": "text",
+          "settings": {
+            "title": "Iowa"
+          }
+        },
+        "text_MybPKW": {
+          "type": "text",
+          "settings": {
+            "title": "Kansas"
+          }
+        },
+        "text_AinG8W": {
+          "type": "text",
+          "settings": {
+            "title": "Kentucky"
+          }
+        },
+        "text_DtpVbh": {
+          "type": "text",
+          "settings": {
+            "title": "Michigan"
+          }
+        },
+        "text_UDrwC6": {
+          "type": "text",
+          "settings": {
+            "title": "Mississippi"
+          }
+        },
+        "text_bQczd3": {
+          "type": "text",
+          "settings": {
+            "title": "Missouri"
+          }
+        },
+        "text_6dtT8r": {
+          "type": "text",
+          "settings": {
+            "title": "Montana"
+          }
+        },
+        "text_UFJgVi": {
+          "type": "text",
+          "settings": {
+            "title": "Nebraska"
+          }
+        },
+        "text_UiWPTm": {
+          "type": "text",
+          "settings": {
+            "title": "Nevada"
+          }
+        },
+        "text_6xdDND": {
+          "type": "text",
+          "settings": {
+            "title": "New Mexico"
+          }
+        },
+        "text_GXaqAm": {
+          "type": "text",
+          "settings": {
+            "title": "North Carolina"
+          }
+        },
+        "text_qtmYic": {
+          "type": "text",
+          "settings": {
+            "title": "North Dakota"
+          }
+        },
+        "text_cgQQb9": {
+          "type": "text",
+          "settings": {
+            "title": "Ohio"
+          }
+        },
+        "text_7HwPEm": {
+          "type": "text",
+          "settings": {
+            "title": "Oklahoma"
+          }
+        },
+        "text_6dQNYQ": {
+          "type": "text",
+          "settings": {
+            "title": "Pennsylvania"
+          }
+        },
+        "text_hQUNH4": {
+          "type": "text",
+          "settings": {
+            "title": "South Carolina"
+          }
+        },
+        "text_3TNtqU": {
+          "type": "text",
+          "settings": {
+            "title": "Tennessee"
+          }
+        },
+        "text_fXh7Mf": {
+          "type": "text",
+          "settings": {
+            "title": "Texas"
+          }
+        },
+        "text_tppyRA": {
+          "type": "text",
+          "settings": {
+            "title": "Virginia"
+          }
+        },
+        "text_Ly9XW4": {
+          "type": "text",
+          "settings": {
+            "title": "Washington"
+          }
+        },
+        "text_yxwHVB": {
+          "type": "text",
+          "settings": {
+            "title": "West Virginia"
+          }
+        },
+        "text_rVRVq8": {
+          "type": "text",
+          "settings": {
+            "title": "Wisconsin"
+          }
+        },
+        "text_8FRyFf": {
+          "type": "text",
+          "settings": {
+            "title": "Wyoming"
+          }
+        }
+      },
+      "block_order": [
+        "text_KwThMK",
+        "text_jJi3Q3",
+        "text_NULicy",
+        "text_34Kme9",
+        "text_yVTBAk",
+        "text_xg73xb",
+        "text_LhryMG",
+        "text_YG6dKi",
+        "text_KeFQNT",
+        "text_ra4YB7",
+        "text_HKXHjP",
+        "text_MybPKW",
+        "text_AinG8W",
+        "text_DtpVbh",
+        "text_UDrwC6",
+        "text_bQczd3",
+        "text_6dtT8r",
+        "text_UFJgVi",
+        "text_UiWPTm",
+        "text_6xdDND",
+        "text_GXaqAm",
+        "text_qtmYic",
+        "text_cgQQb9",
+        "text_7HwPEm",
+        "text_6dQNYQ",
+        "text_hQUNH4",
+        "text_3TNtqU",
+        "text_fXh7Mf",
+        "text_tppyRA",
+        "text_Ly9XW4",
+        "text_yxwHVB",
+        "text_rVRVq8",
+        "text_8FRyFf"
+      ],
+      "settings": {
+        "title": "Shipping To",
+        "full_width": false,
+        "section_padding": true,
+        "gutter": true,
+        "images_per_row_range": 3,
+        "text_placement": "below",
+        "color_overlay": "#4f4f4f",
+        "color_overlay_hover": "#000000",
+        "color_overlay_text": "#ffffff",
+        "legend_color": "#284b7e",
+        "color_overlay_alpha_range": 0,
+        "zoom": true,
+        "show_chevron": false
+      }
+    },
+    "location_shipping_list_6ExPdz": {
+      "type": "location-shipping-list",
+      "blocks": {
+        "text_PCGyTA": {
+          "type": "text",
+          "settings": {
+            "title": "California"
+          }
+        },
+        "text_gf9wJj": {
+          "type": "text",
+          "settings": {
+            "title": "Minnesota"
+          }
+        },
+        "text_QU7AmV": {
+          "type": "text",
+          "settings": {
+            "title": "Hawaii"
+          }
+        },
+        "text_FcYzey": {
+          "type": "text",
+          "settings": {
+            "title": "Rhode Island"
+          }
+        }
+      },
+      "block_order": [
+        "text_PCGyTA",
+        "text_gf9wJj",
+        "text_QU7AmV",
+        "text_FcYzey"
+      ],
+      "settings": {
+        "title": "Temporarily Not Shipping To",
+        "full_width": false,
+        "section_padding": true,
+        "gutter": true,
+        "images_per_row_range": 3,
+        "text_placement": "below",
+        "color_overlay": "#4f4f4f",
+        "color_overlay_hover": "#000000",
+        "color_overlay_text": "#ffffff",
+        "legend_color": "#4eacff",
+        "color_overlay_alpha_range": 0,
+        "zoom": true,
+        "show_chevron": false
+      }
+    },
+    "location_shipping_list_L7GmLe": {
+      "type": "location-shipping-list",
+      "blocks": {
+        "text_CQra8K": {
+          "type": "text",
+          "settings": {
+            "title": "Arkansas"
+          }
+        },
+        "text_b6FNqV": {
+          "type": "text",
+          "settings": {
+            "title": "Washington D.C."
+          }
+        },
+        "text_eeNxUJ": {
+          "type": "text",
+          "settings": {
+            "title": "Utah"
+          }
+        },
+        "text_TqHJgR": {
+          "type": "text",
+          "settings": {
+            "title": "Vermont"
+          }
+        },
+        "text_hmkepU": {
+          "type": "text",
+          "settings": {
+            "title": "New Hampshire"
+          }
+        },
+        "text_EGiBit": {
+          "type": "text",
+          "settings": {
+            "title": "Louisiana"
+          }
+        }
+      },
+      "block_order": [
+        "text_CQra8K",
+        "text_b6FNqV",
+        "text_eeNxUJ",
+        "text_TqHJgR",
+        "text_hmkepU",
+        "text_EGiBit"
+      ],
+      "settings": {
+        "title": "Not Shipping To",
+        "full_width": false,
+        "section_padding": true,
+        "gutter": true,
+        "images_per_row_range": 3,
+        "text_placement": "below",
+        "color_overlay": "#4f4f4f",
+        "color_overlay_hover": "#000000",
+        "color_overlay_text": "#ffffff",
+        "legend_color": "#a2d3ff",
+        "color_overlay_alpha_range": 0,
+        "zoom": true,
+        "show_chevron": false
+      }
+    }
+  },
+  "order": [
+    "main",
+    "location_image_banner_t97wMQ",
+    "featured_text_AUqziB",
+    "location_banner_macQdA",
+    "location_shipping_list_NrEjHU",
+    "location_shipping_list_6ExPdz",
+    "location_shipping_list_L7GmLe"
+  ]
+}

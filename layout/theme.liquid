@@ -1,0 +1,568 @@
+<!doctype html>
+<!--[if IE 8]> <html class="no-js lt-ie9" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if IE 9 ]> <html class="ie9 no-js"> <![endif]-->
+<!-- [if (gt IE 9)|!(IE)]><! -->
+<html class="no-js" lang="{{ shop.locale }}">
+  <!-- <![endif] -->
+  <head>
+    <!-- Start of Shoplift scripts -->
+    {% render 'shoplift' %}
+    <!-- End of Shoplift scripts -->
+
+    {%- if request.path == '/collections/vendors' -%}
+      <meta name="robots" content="noindex">
+    {%- endif -%}
+    {%- if request.path contains '/blogs/news/tagged' -%}
+      <meta name="robots" content="noindex">
+    {%- endif -%}
+    <!-- Google Tag Manager -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PD1JS4EK90"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-PD1JS4EK90');
+    </script>
+
+    <!-- End Google Tag Manager -->
+    {% if template == 'product' and product.handle == 'elf-bar-5000-puff-disposable-vape-bc5000' %}
+      <style>
+        #elf-bar-icon {
+          display: none;
+        }
+        @media screen and (min-width: 769px) {
+          #elf-bar-icon {
+            position: absolute;
+            z-index: 1;
+            width: 125px;
+            left: 30px;
+            top: 6%;
+          }
+        }
+        @media screen and (max-width: 768px) {
+          #elf-bar-icon {
+            position: absolute;
+            z-index: 1;
+            width: 110px;
+            left: 5px;
+            top: 1%;
+          }
+        }
+      </style>
+    {% endif %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="{{ settings.primary_accent_color }}">
+
+    {% if settings.favicon != blank %}
+      <link rel="icon" href="{{ settings.favicon | image_url: width: 48 }}" type="image/png">
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 48 }}" type="image/png">
+      <link rel="apple-touch-icon" href="{{settings.favicon | image_url: width: 180}}" type="image/png">
+      <link rel="apple-touch-startup-image" href="{{settings.favicon | image_url: width: 180}}" type="image/png">
+    {% endif %}
+
+    <title>
+      {{ page_title }}
+      {% if current_tags -%}
+        {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+      {%- endif %}
+      {% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}
+      {% unless page_title contains shop.name %} &ndash; White Horse Vapor{% endunless %}
+    </title>
+
+    {% if page_description %}
+      {%- comment %}<locksmith:0710>{%- endcomment %}
+      {%- capture var %}{% render 'locksmith-variables', variable: 'transparent', hiding_scope: 'resource' %}{% endcapture -%}
+      {%- if var == 'true' %}<meta name="description" content="{{ page_description | escape }}">{% endif -%}
+      {%- comment %}original: <meta name="description" content="{{ page_description | escape }}">{%- comment %}</locksmith:0710>{% endcomment -%}{%- endcomment %}
+    {% endif %}
+
+    {% include 'social-meta-tags' %}
+
+    {% capture cfh %}
+      {{ content_for_header }}
+    {% endcapture %}
+
+    {% assign clnurl = canonical_url | split: '?' | first | remove: shop.secure_url | join | string %}
+
+    {% assign atomurl = '<link rel="alternate" type="application/atom+xml" title="Feed" href="'
+      | append: clnurl
+      | append: '.atom" />'
+    %}
+
+    {% if cfh contains 'application/atom+xml' %}
+      <!-- {{ atomurl | string }} -->
+    {% endif %}
+
+    {{ cfh | remove: atomurl }}
+
+    {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
+
+    {{ 'flickity.css' | asset_url | stylesheet_tag }}
+    {{ 'flickity.min.js' | asset_url | script_tag }}
+    {% if template contains 'customers' %}
+      {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+    {% endif %}
+    {{ 'jquery.min.js' | asset_url | script_tag }}
+    {% if template contains 'customers' %}
+      {{ 'jquery-ui.js' | asset_url | script_tag }}
+
+      {{ 'jquery-ui.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    {% comment %}
+      {% if template contains 'collection' or template contains 'search' %}
+        {{ 'ajaxinate.min.js' | asset_url | script_tag -}}
+      {%- endif %}
+    {% endcomment %}
+
+    <script src="{{ 'gift-card-pro-phone.js' | asset_url }}" defer="defer"></script>
+
+    <script>
+      window.onload = function(){
+          $('.discount-tag-div').click(function() {
+            window.location.href = $('.shipping-box-text').attr('href');
+          });
+
+          $('.block-collection-slick').each(function( index ) {
+            $(this).flickity({
+              // options
+              cellAlign: 'left',
+              contain: true,
+              pageDots: false,
+              wrapAround: true
+            });
+          });
+
+          var width = parseInt($('body').width());
+
+          $('.logo-bar.regular.mobile-only').css('display','block');
+          $('.logo-bar.regular.mobile-only').css('height','300px');
+          $('.logo-bar.regular.mobile-only').flickity({
+            // options
+            cellAlign: 'left',
+            contain: true,
+            pageDots: false,
+            wrapAround: true,
+            adaptiveHeight: false
+          });
+
+          $('.logo-bar.regular.mobile-only .flickity-viewport').removeAttr('style');
+          $('.logo-bar.regular.mobile-only .logo-bar__item').css('width','100%');
+          $('.logo-bar.regular.mobile-only .logo-bar__item img').attr('style','display: block;width: 60%;margin-left: auto;margin-right: auto;');
+
+                };
+            window.StyleHatch = window.StyleHatch || {};
+            {% include 'js-language-strings' %}
+            StyleHatch.currencyFormat = {{ shop.money_format | json }};
+            StyleHatch.ajaxCartEnable = {{ settings.ajax_cart_enable }};
+            // Post defer
+            window.addEventListener('DOMContentLoaded', function() {
+              (function( $ ) {
+
+              {% if newHash %}
+                $(function() {
+                  StyleHatch.updateHash('{{ newHash }}');
+                });
+              {% endif %}
+              {% if resetPassword %}
+                $(function() {
+                  StyleHatch.resetPasswordSuccess();
+                });
+              {% endif %}
+              })(jq223);
+            });
+            document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+          $(document).ready(function (){
+           var location = window.location.href;
+           console.log('my location is ' + location);
+           if (location.indexOf('ea-sports') > -1 || location.indexOf('vendors') > -1) {
+              window.location.href = '/';
+          }
+          });
+    </script>
+    <style>
+        #ac-wrapper {
+          margin-top: 10px;
+          margin-right: 10px;
+        }
+        .standard-promo-bar-text {
+          text-align: center;
+          display: block;
+          padding: 0.5em 0;
+          color: white;
+          background-color: #024bad;
+          font-size: 1.15em;
+          font-weight:bold;
+      }
+        {% if product.handle contains 'pax' %}
+         #shopify-section-promos {
+        display:none;}
+
+        {% endif %}
+    </style>
+
+    <!-- [if (gt IE 9)|!(IE)]><! -->
+    <script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script>
+    <!-- <![endif] -->
+    <!--[if lte IE 9]> <script src="{{ 'vendor.js' | asset_url }}"></script> <![endif]-->
+    {% if settings.show_multiple_currencies %}
+      {% include 'currencies' %}
+    {% endif %}
+    <script src="//geoip-js.com/js/apis/geoip2/v2.1/geoip2.js" defer="defer"></script>
+    <!-- [if (gt IE 9)|!(IE)]><! -->
+    <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'jquery.toast.min.js' | asset_url }}" defer="defer"></script>
+    {{ 'jquery.toast.min.css' | asset_url | stylesheet_tag }}
+    <!-- <![endif] -->
+    <!--[if lte IE 9]> <script src="{{ 'theme.js' | asset_url }}"></script> <![endif]-->
+
+    <!-- Google Webmaster Tools Site Verification -->
+    <meta name="google-site-verification" content="P25CDvJPoSqHCnhmxy6obFJjUlcTC3u-Jci4SXfHkhM">
+
+    {% if template.name contains 'product' %}
+      {% assign current_variant = product.selected_or_first_available_variant %}
+    {% endif %}
+
+    {{ shop.metafields.loox.global_html_head }}
+
+    {% if template == 'index' %}
+      <script>
+        $(document).ready(function () {
+          var blueHeight = $('.blue-item-one').outerHeight();
+          $('.blue-item.elfbar-bg').height(blueHeight);
+          $('.blue-item.bg').height(blueHeight);
+          $(window).on('resize', function () {
+            var blueHeight = $('.blue-item-one').outerHeight();
+            $('.blue-item.elfbar-bg').height(blueHeight);
+            $('.blue-item.bg').height(blueHeight);
+          });
+        });
+      </script>
+    {% endif %}
+
+    {% if template == '404' %}
+      {% comment %} <meta http-equiv="refresh" content="0;URL={{ shop.url }}"> {% endcomment %}
+    {% endif %}
+
+    {% render 'gift-card-pro' %}
+
+    <style>
+      #ac-ag-inner {
+        background-color: #024bad !important;
+        max-width: 450px !important;
+      }
+
+      #ac-ag-body-text {
+        color: white !important;
+        font-size: 2em !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        max-width: 275px !important;
+        margin: 36px auto !important;
+      }
+
+      #ac-ag-type-yesno {
+        display: flex !important;
+        flex-direction: row-reverse !important;
+        justify-content: center !important;
+        gap: 24px !important;
+      }
+
+      #ac-ag-yes-button,
+      #ac-ag-no-button {
+        background: white !important;
+        border-radius: 500px !important;
+        color: #024bad !important;
+        outline: none;
+      }
+
+      #agechecker-age-gate #ac-ag-yes-button,
+      #agechecker-age-gate #ac-ag-no-button {
+        color: #024bad !important;
+        min-width: 90px !important;
+        padding: 0.5em 1em !important;
+
+        span {
+          text-transform: uppercase !important;
+          font-weight: 700 !important;
+        }
+      }
+    </style>
+    <script>
+      window.AgeCheckerAgeGateConfig = {
+        type: 'yesno',
+        bodyText: 'Are you 21 years of age or older?',
+        background: 'rgba(0,0,0,0.9)',
+        logoUrl:
+          'data:image/png;base64,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',
+        logoHeight: '70px',
+        onShow: function () {
+          const header = document.querySelector('#ac-ag-header');
+          const footer = document.querySelector('#ac-ag-footer');
+          const learn = document.querySelector('#ac-ag-learn');
+          const titleText = document.querySelector('#ac-ag-title-text');
+          const yesNo = document.querySelector('#ac-ag-type-yesno');
+
+          header.style.display = 'none';
+          footer.style.display = 'none';
+          learn.style.display = 'none';
+          titleText.style.display = 'none';
+        },
+      };
+    </script>
+    <script src="https://cdn.agechecker.net/static/age-gate/v1/age-gate.js"></script>
+    {{ 'custom.css' | asset_url | stylesheet_tag }}
+    {{ 'custom.js' | asset_url | script_tag }}
+
+    {% render 'boost-sd-fallback' %}
+  </head>
+
+  <body
+    id="{{ page_title | handle }}"
+    class="{% if customer %}customer-logged-in {% endif %}template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}"
+    data-template-directory="{{ template.directory }}"
+    data-template="{{ template.name }}"
+  >
+    <div class="ReactModalPortal">
+      <div class="ReactModal__Overlay Modal">
+        <div
+          class="ReactModal__Content ReactModal__Content--after-open Modal__content Modal__content--closable"
+          tabindex="-1"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div class="Modal__body">
+            <div class="Modal__close-wrapper">
+              <div class="Modal__closer-circle" data-testid="modal-close-icon">
+                <svg class="Modal__close-svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="#000000" fill-rule="evenodd" d="M12 11.293l5.146-5.147a.5.5 0 0 1 .708.708L12.707 12l5.147 5.146a.5.5 0 0 1-.708.708L12 12.707l-5.146 5.147a.5.5 0 0 1-.708-.708L11.293 12 6.146 6.854a.5.5 0 1 1 .708-.708L12 11.293z"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="zipcode-modal">
+              <img
+                class="icon pop-map"
+                src="//cdn.shopify.com/s/files/1/0743/6343/t/149/assets/zipcode.svg?v=129131852618280563541665508379"
+              >
+              <div class="heading--medium">
+                <span data-i18n-key="js.delivery.your_location" class="intl-text"
+                  >Your location: <span id="popup-city"></span><span id="popup-state"></span>
+                  <span id="popup-zip"></span
+                ></span>
+              </div>
+              <div class="inline-notification success" style="display: block;">
+                <div>
+                  <span class="inline-notification__body text--body--small">
+                    <span class="intl-text pickup">Congratulations! Delivery is available in your area!</span>
+                    <span class="intl-text pickup2"></span>
+                  </span>
+                </div>
+              </div>
+              <p>
+                <span class="intl-text federal"
+                  >Due to federal and/or state laws and regulations, pricing and delivery options may vary.</span
+                >
+              </p>
+              <p>
+                <span class="intl-text update">If you need to update your location, enter your zip code below:</span>
+              </p>
+              <div class="text-input-button-container">
+                <div class="text-input" id="zip-text-input">
+                  <div class="text-input__field-wrapper">
+                    <label class="text-input__label" for="text-input-zipcode"
+                      ><span data-i18n-key="js.delivery.5_digits_zipcode" class="intl-text"
+                        >5 Digit Zip code</span
+                      ></label
+                    ><input
+                      inputmode="numeric"
+                      maxlength="5"
+                      pattern="[0-9]*"
+                      required=""
+                      class="text-input__input text--body"
+                      id="text-input-zipcode"
+                      name="zipcode"
+                    >
+                  </div>
+                </div>
+                <button id="updateZip" class="button">
+                  <span class="button__text"
+                    ><span data-i18n-key="js.delivery.update" class="intl-text">Update</span>
+                    <svg class="button__icon" width="14" height="10" fill="none">
+                      <path d="M8.235 0L13 5.021 8.235 10M13 5H0" class="icon-stroke"></path>
+                    </svg>
+                  </span>
+                </button>
+              </div>
+              <p class="green-box" style="display: none;">
+                <b>Your location has been updated! Click below to close this window</b>
+              </p>
+              <hr class="hr hr--modal">
+              <button id="close-btn-pop" class="button button--full-width">
+                <span class="button__text"
+                  ><span data-i18n-key="js.common.modals.close" class="intl-text">Close</span>
+                  <svg class="button__icon" width="14" height="10" fill="none">
+                    <path d="M8.235 0L13 5.021 8.235 10M13 5H0" class="icon-stroke"></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="page">
+      {% section 'promo-bar' %}
+      {% section 'promos' %}
+      {% section 'header-util' %}
+      {% section 'slider-cart' %}
+      {% section 'header' %}
+      <main class="main-content main-content--breadcrumb-{{ settings.show_breadcrumbs }}" role="main">
+        {{ content_for_layout }}
+        <div class="discount-box">
+          <div class="discount-shell">
+            <div class="discount-content">
+              <div class="discount-tag-div">
+                <img src="{{ 'icons8-sale-price-tag-80.png' | asset_url }}" class="discount-tag">
+              </div>
+              <div class="discount-text-box">
+                {% if settings.shipping_box_url != blank %}
+                  <a class="shipping-box-text" href="{{ settings.shipping_box_url }}">
+                {% endif %}
+                <p style="font-weight:bold;">{{ settings.shipping_text }}</p>
+                {% if settings.shipping_box_url != blank %}
+                  </a>
+                {% endif %}
+                <p class="x-abs">X</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="search-bar-mobile">
+          <div class="search">
+            {% include 'search-bar-mobile' %}
+          </div>
+        </div>
+        <div
+          id="mobile-bot-menu"
+          class="mobile-only"
+        >
+          <div class="menu-flex-m-i">
+            <a id="account" href="/account/login">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#424242" fill-rule="evenodd" d="M12 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.756 7.5a1.5 1.5 0 0 1-1.5 1.5H6.744A1.5 1.5 0 0 1 5.3 18.092C6.252 14.725 8.52 13 12 13s5.748 1.725 6.7 5.092a1.5 1.5 0 0 1 .056.408zM12 14c-3.03 0-4.907 1.427-5.737 4.364a.5.5 0 0 0 .48.636h10.513a.5.5 0 0 0 .481-.636C16.907 15.427 15.031 14 12 14z"/>
+                <script xmlns=""/>
+              </svg>
+              <label>account</label>
+            </a>
+          </div>
+          <div class="menu-flex-m-i">
+            <a id="shop" href="/collections/all-disposable-e-cigs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.5 6V5.5C14.5 4.11929 13.3807 3 12 3C10.6193 3 9.50001 4.11929 9.50001 5.5V6H14.5ZM15.5 6V5.5C15.5 3.567 13.933 2 12 2C10.067 2 8.50001 3.567 8.50001 5.5V6H5.46925C4.92912 6 4.48661 6.42891 4.46974 6.96877L4.03224 20.9688C4.0146 21.533 4.46722 22 5.03175 22H18.9683C19.5328 22 19.9854 21.533 19.9678 20.9688L19.5303 6.96877C19.5134 6.42891 19.0709 6 18.5308 6H15.5ZM14.5 7H9.50001V8.19097C9.65345 8.3283 9.75001 8.52787 9.75001 8.75C9.75001 9.16421 9.41422 9.5 9.00001 9.5C8.5858 9.5 8.25001 9.16421 8.25001 8.75C8.25001 8.52787 8.34657 8.3283 8.50001 8.19097V7H5.46925L5.03175 21H18.9683L18.5308 7H15.5V8.19097C15.6534 8.3283 15.75 8.52787 15.75 8.75C15.75 9.16421 15.4142 9.5 15 9.5C14.5858 9.5 14.25 9.16421 14.25 8.75C14.25 8.52787 14.3466 8.3283 14.5 8.19097V7Z" fill="#1A1A1C"/>
+                <script xmlns=""/>
+              </svg>
+              <label>shop</label>
+            </a>
+          </div>
+          <div class="menu-flex-m-i">
+            <p id="search-mobile">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 50 50" width="50px" height="50px">
+                <path d="M 21.5 8 C 14.057 8 8 14.057 8 21.5 C 8 28.943 14.057 35 21.5 35 C 24.789065 35 27.805703 33.816017 30.150391 31.853516 C 30.435292 32.138417 39.711913 41.416007 39.943359 41.648438 C 40.413359 42.118437 41.176484 42.118437 41.646484 41.648438 C 42.116484 41.178438 42.116484 40.415312 41.646484 39.945312 C 41.415038 39.712882 32.138417 30.435292 31.853516 30.150391 C 33.816017 27.805703 35 24.789065 35 21.5 C 35 14.057 28.943 8 21.5 8 z M 21.5 9 C 28.392 9 34 14.608 34 21.5 C 34 28.392 28.392 34 21.5 34 C 14.608 34 9 28.392 9 21.5 C 9 14.608 14.608 9 21.5 9 z"/>
+              </svg>
+              <label>search</label>
+            </p>
+          </div>
+          <div class="menu-flex-m-i">
+            <p id="mobile-nav-click">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#000000" fill-rule="evenodd" d="M4.5 6.5a.5.5 0 0 1 0-1h15a.5.5 0 1 1 0 1h-15zm0 6a.5.5 0 1 1 0-1h15a.5.5 0 1 1 0 1h-15zm0 6a.5.5 0 1 1 0-1h15a.5.5 0 1 1 0 1h-15z"/>
+                <script xmlns=""/>
+              </svg>
+              <label>menu</label>
+            </p>
+          </div>
+        </div>
+      </main>
+      {% section 'footer' %}
+    </div>
+
+    <!-- District v3.0.2 -->
+    {% if customer %}
+      <div class="customer-order-info"></div>
+    {% endif %}
+
+    {{ shop.metafields.loox.global_html_body }}
+
+    {% include 'smile-initializer' %}
+
+    <!--
+      BEGIN app: shopify://apps/klaviyo-email-marketing-sms/klaviyo-onsite-embed/2632fe16-c075-4321-a88b-50b567f42507
+    -->
+    <script async="" data-src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=WeinbG"></script>
+    <script>
+      !(function () {
+        if (!window.klaviyo) {
+          window._klOnsite = window._klOnsite || [];
+          try {
+            window.klaviyo = new Proxy(
+              {},
+              {
+                get: function (n, i) {
+                  return 'push' === i
+                    ? function () {
+                        var n;
+                        (n = window._klOnsite).push.apply(n, arguments);
+                      }
+                    : function () {
+                        for (var n = arguments.length, o = new Array(n), w = 0; w < n; w++) o[w] = arguments[w];
+                        var t = 'function' == typeof o[o.length - 1] ? o.pop() : void 0,
+                          e = new Promise(function (n) {
+                            window._klOnsite.push(
+                              [i].concat(o, [
+                                function (i) {
+                                  t && t(i), n(i);
+                                },
+                              ])
+                            );
+                          });
+                        return e;
+                      };
+                },
+              }
+            );
+          } catch (n) {
+            (window.klaviyo = window.klaviyo || []),
+              (window.klaviyo.push = function () {
+                var n;
+                (n = window._klOnsite).push.apply(n, arguments);
+              });
+          }
+        }
+      })();
+    </script>
+    <!-- END app app -->
+
+    {% include 'subscribe-it-helper' %}
+    {% render 'appikon-discounts' %}
+    {% if product.handle == 'elf-bar-5000-puff-disposable-vape-bc5000' %}
+      <script>
+        const selectElement = document.getElementById('SingleOptionSelector-product-template-0');
+        selectElement.addEventListener('change', function () {
+          // alert("hi");
+          if (this.value.includes('Fire')) {
+            document.querySelector('#elf-bar-icon').style.display = 'none';
+          } else {
+            document.querySelector('#elf-bar-icon').style.display = 'block';
+          }
+        });
+      </script>
+    {% endif %}
+  </body>
+</html>

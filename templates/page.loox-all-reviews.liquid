@@ -1,0 +1,38 @@
+{% if shop.metafields.loox["global_stats"] %}
+{% assign looxstats = shop.metafields.loox["global_stats"] | split: "," %}
+<div itemscope itemtype="https://schema.org/Product">
+<meta itemprop="name" content="{{ shop.name | escape }}"/>
+<div itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+<meta itemprop="ratingValue" content="{{ looxstats[0] }}"/>
+<meta itemprop="ratingCount" content="{{ looxstats[1] }}"/>
+</div>
+</div>
+{% endif %}
+<!-- /templates/page.liquid -->
+<section class="page page-top">
+  <div class="wrapper">
+    <header class="content-util">
+    {% include 'breadcrumb' %}
+    {% include 'social-icons' %}
+    </header>
+    <header class="page-header">
+      <h1>{{ page.title }}</h1>
+    </header>
+  </div>
+</section>
+
+<section class="page">
+  <div class="wrapper">
+    <div class="content-container narrow rte">
+      {{ page.content }}
+    </div>
+  </div>
+</section>
+<script type="text/javascript">
+  window.hdlh = {
+    widget_key: "6dupkgr2yfzo9r8hwtf0"
+  };
+  (function(h,d){var s=d.createElement("script");s.type='text/javascript';s.async=true;s.defer=true;s.src=h+"?t="+new Date().getTime();d.head.appendChild(s);})("https://lighthouse.helpdocs.io/load",document);
+</script>
+
+<div id="looxReviews" data-loox-aggregate="" class="loox-reviews-default"></div>

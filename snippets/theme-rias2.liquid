@@ -1,0 +1,22 @@
+{%- comment -%}
+  Create the URL pattern for lazyloading RIAS
+{%- endcomment -%}
+{%- assign image2_url_pattern = image2 | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+{%- comment -%}
+  Split the image2_widths string into an array
+{%- endcomment -%}
+{%- assign image2_widths_array = image2_widths | split: ',' -%}
+{%- capture valid_image2_widths -%}
+  {%- for width in image2_widths_array -%}
+    {%- comment -%}
+      Make sure the image width is greater than each image_widths
+    {%- endcomment -%}
+    {%- assign width_num = width | plus: 0 | round -%}
+    {%- if image2.width >= width_num -%}{{ width_num }},{%- endif -%}
+  {%- endfor -%}
+  {{ image2.width }}
+{%- endcapture -%}
+{%- comment -%}
+  Remove white space, line breaks, last comma
+{%- endcomment -%}
+{%- assign image2_widths = valid_image2_widths | strip_newlines | remove: ' ' -%}

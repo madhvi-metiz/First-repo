@@ -1,0 +1,393 @@
+{% comment %} <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> {% endcomment %}
+<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+{% assign DISABLED_SKUS = "CW-USBC10" | split:"," %}
+
+
+<style type="text/css">
+  .cart-item-alt {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  .custom_select {
+    margin-top: 5px;
+    background-color: white;
+    padding: 3px 10px;
+    border-radius: 5px;
+    width: 100%;
+  }
+  
+</style>
+
+{% assign recommended_cart_product = null %}
+{% if settings.recommended_cart_product %}
+  {%- assign recommended_cart_product = all_products[settings.recommended_cart_product] -%}
+{% endif %}
+
+{%assign hide_upsell = 'no' %}
+{%for item in cart.items %} 
+  {%if item.product.handle == recommended_cart_product.handle %}
+    {%assign hide_upsell = 'yes' %}
+  {%endif%}
+{% endfor %}
+
+{% comment %} If recommended_cart_product is null we don't want to show the recommendation {% endcomment %}
+{% unless recommended_cart_product %}
+  {%assign hide_upsell = 'yes' %}
+{% endunless %}
+
+{% unless settings.show_cart_product %}
+  {%assign hide_upsell = 'yes' %}
+{% endunless %}
+  
+
+<div class="grey-parent"></div>
+<section data-section-id="{{ section.id }}" class="slider-main" id="sliderCart">
+  <div class="inner-cart">
+    <div style="display:none" id ="cart-weight" cart-weight="{{cart.total_weight}}"></div>
+    <div class="subapp-total-recalc">
+    {% assign inventory_counter = 1 %}
+    {% comment %} Collecting number of items that are running low on inventory to calculate numbers to show {% endcomment %}
+    {% assign low_inventory_counter = 0 %}
+    {%for item in cart.items %}   
+      {% comment %} 10/2 - Dino requested this be disabled {% endcomment %}
+     {% if false %}
+             {% assign variant_continue = 'yes' %}
+    {% assign variant_title_analyze = item.variant.title | append:item.product.title | downcase %}
+    {% assign isLiquid = 'no'%}
+    {% for c in item.product.collections %}
+      {%if c.handle == 'liquid' %}
+      {%assign isLiquid = 'yes'%}
+      {%endif%}
+      {%endfor%}
+        {% if isLiquid == 'yes' or variant_title_analyze contains 'kit' or variant_title_analyze contains 'coil' or variant_title_analyze contains 'tank' or variant_title_analyze contains 'cartridge' or variant_title_analyze contains 'voopoo' %}
+       {% assign variant_continue = 'no' %}
+      {% endif %}
+       
+       {% if variant_continue == 'yes' %}
+     {% assign low_inventory_counter = low_inventory_counter | plus:1 %}
+         {% endif %}
+       {% endif %}
+{% endfor %}
+</div>
+    <!--- identifying total cart price before discounts -->
+{%assign cart_compare_price = 0 %}
+{%for item in cart.items %}
+ {%if item.variant.compare_at_price > 0 %}
+{%assign money_add = item.variant.compare_at_price | times: item.quantity %}
+    {%else%}
+ {%assign money_add = item.variant.price | times: item.quantity %}
+    {%endif%}
+{%assign cart_compare_price  = cart_compare_price | plus: money_add %}
+{%endfor%}
+
+<div class="h2-cart">Your Cart • <span class="h2-item-count">{{cart.item_count}}</span><div class="slider-close"><span>X</span></div></div>
+  
+
+<div class="cart-items-slider">
+    {% if settings.show_cart_banner %}
+      <div class="cart-banner standard-promo-bar-text">
+        <span class="cart-banner-text">{{ settings.cart_banner_text }}</span>
+      </div>
+    {% endif %}
+    
+
+      <div class="cart-upsell"{%if hide_upsell == 'yes'%} style="display:none"{%endif%}>
+        <div>You may also like...</div>
+        <div class="cart-up-inner-flex carts">
+        <div class="upsell-img carts"><img loading="lazy" width="60" height="60" src="{{ recommended_cart_product.featured_image | image_url: width: 60, height: 60 }}" alt="{{ recommended_cart_product.title }}"></div>
+        <div class="product-up-info carts">
+          <p class="product-upsell-text-link"><a class="product-upsell-link" href="/products/{{recommended_cart_product.handle}}">{{recommended_cart_product.title}}
+          
+          {% if recommended_cart_product.handle == "cuttwood-dipsosable-vape" %}
+            <span style="font-size:50%;display:block;"> + FREE USB-C Cable</span>
+          {% endif %}
+        
+          <span style="color:#0c8eff;display:block">{{ recommended_cart_product.price | money }}</span></a></p>
+
+          <select 
+            id="recommended-product-select" 
+
+            {%  if recommended_cart_product.has_only_default_variant %}
+              style="display:none"
+            {% endif %}
+          >
+            {%for variant in recommended_cart_product.variants %}
+              {% if variant.available %}
+                {% assign variant_featured_image = recommended_cart_product.featured_image %}
+                
+                {% if variant.featured_image %}
+                  {% assign variant_featured_image = variant.featured_image %}
+                {% endif %}
+
+                <option 
+                  value="{{variant.title}}" 
+                  data-product-title="{{ recommended_cart_product.title }}"
+                  data-sku="{{variant.sku}}" 
+                  data-variant-id="{{variant.id}}" 
+                  data-variant-price="{{variant.price | money}}" 
+                  data-img-src="{{variant_featured_image | image_url: width: 60, height: 60}}"
+                >
+                  {{variant.title}}
+                </option>
+              {% endif %}
+            {%endfor %}
+          </select>
+          <p class="cart-upsell-buy">ADD TO CART</p>
+        </div>
+      </div>
+  </div>
+
+
+  {% comment %} <div id="d8-restricted">
+    <div class="d8-container">
+      <div class="d8-header">
+        SORRY...
+      </div>
+        <div class="d8-text">Sorry, the address you entered is in a state where Delta 8-THC is not yet legal. We’re not allowed to ship that to you. But don’t worry, the rest of your order is good to go and will ship as usual.</div>
+          <div class="d8-items">
+            {%for item in cart.items %}
+              {% if item.product.tags contains 'DELTA8' %}
+                <div class="d8-item" data-variant-id="{{ item.variant.id }}">{{item.title}}</div>
+              {% endif %}
+            {%endfor %}
+          </div>
+        <div class="d8-button">Update Cart</div>
+    </div> 
+  </div> {% endcomment %}
+
+  {%for item in cart.items %}
+    {% assign isDisabled = false %}
+
+    {% if DISABLED_SKUS contains item.sku %}
+      {% assign isDisabled = true %}
+    {% endif %}
+
+      <div class="cart-item-slider regular" style="overlow-y:none; padding:0.5em 0" data-tags="{{ item.product.tags }}">
+        <a class="image-url-cart" href="{{item.product.url}}">
+          {%- assign image = item.image -%}
+        <img class="cart-item-image" src="{{ image | img_url:'150x'}}">
+        </a>
+        <div class="cart-item-titles" item-data-sku="{{ item.variant.sku }}" line-item-data-key="{{ item.key }}">
+          <p class="cart-item-product-title"><b>{{item.product.title}}</b></p>
+                                {% unless item.product.has_only_default_variant %}
+                          <span class="variant cart-slide-variant">{{ item.variant.title }}</span>
+                        {% endunless %}
+                            <div class="td cart-item-price" data-handle="{{item.product.handle}}">
+                            {% if page.handle != 'rangers' %}
+                             {%if item.variant.compare_at_price > item.variant.price %}
+                             <span class="money compare-at" actual-price="{{ item.variant.compare_at_price }}">{{item.variant.compare_at_price| money }}</span>
+                             {%endif%}
+                      <span class="money actual" actual-price="{{ item.final_price }}">{{ item.final_price | money }}</span>   
+                                                             {% else %}
+                         <span class="money">FREE</span>
+                               {% endif %}
+    {% if item.discounts %}<div>{{ item.discounts[0].title }}</div>{% endif %}
+                    </div>
+                        <div {%if isDisabled %} style="visibility:hidden;" {%endif%}class="quantity-select cart-items" data-variant-id="{{item.variant.id}}" data-item-id="{{ item.key }}">
+                          <div class="button-wrapper">
+                            <button class="adjust-slider minus" {% if isDisabled %}disabled{% endif %}>-</button>
+                          </div>
+                          <div class="input-wrapper">
+                            <input type="text" class="slider-quantity" {% if isDisabled %}disabled{% endif %} min="1" pattern="[0-9]*"  value="{{ item.quantity }}" >
+                          </div>
+                                            
+                          <div class="button-wrapper">
+                            {% unless item.product.handle == 'subculture-coffee-cult-classic-blend' %}
+                            <button class="adjust-slider plus" {% if isDisabled %}disabled{% endif %}>+</button>
+                            {% endunless %}
+                          </div>
+                                      
+                        </div>
+                        <a href="#" class="remove-item"><svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.28125 3.28125L3.86719 12.6562C3.89502 13.1979 4.28906 13.5938 4.80469 13.5938H10.1953C10.713 13.5938 11.0997 13.1979 11.1328 12.6562L11.7188 3.28125" stroke="#8F8F8F" stroke-width="0.9375" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.34375 3.28125H12.6562H2.34375Z" fill="#8F8F8F"></path><path d="M2.34375 3.28125H12.6562" stroke="#8F8F8F" stroke-width="0.9375" stroke-miterlimit="10" stroke-linecap="round"></path><path d="M9.60938 5.15625L9.375 11.7188M5.625 3.28125V2.10938C5.62473 2.01697 5.64273 1.92541 5.67797 1.83998C5.71321 1.75455 5.76499 1.67693 5.83034 1.61159C5.89568 1.54624 5.9733 1.49446 6.05873 1.45922C6.14416 1.42398 6.23571 1.40598 6.32812 1.40625H8.67188C8.76429 1.40598 8.85584 1.42398 8.94127 1.45922C9.0267 1.49446 9.10432 1.54624 9.16966 1.61159C9.23501 1.67693 9.28679 1.75455 9.32203 1.83998C9.35727 1.92541 9.37527 2.01697 9.375 2.10938V3.28125H5.625ZM7.5 5.15625V11.7188V5.15625ZM5.39062 5.15625L5.625 11.7188L5.39062 5.15625Z" stroke="#8F8F8F" stroke-width="0.9375" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        </div>
+      </div>
+      <div class="sub-app-container">
+          {% assign variant_continue = 'yes' %}
+    {% assign variant_title_analyze = item.variant.title | append:item.product.title | downcase %}
+    {% assign isLiquid = 'no'%}
+    {% for c in item.product.collections %}
+      {%if c.handle == 'liquid' %}
+      {%assign isLiquid = 'yes'%}
+      {%endif%}
+      {%endfor%}
+        {% if isLiquid == 'yes' or variant_title_analyze contains 'kit' or variant_title_analyze contains 'coil' or variant_title_analyze contains 'tank' or variant_title_analyze contains 'cartridge' or variant_title_analyze contains 'voopoo'  %}
+       {% assign variant_continue = 'no' %}
+      {% endif %}
+  {% assign limit = 125 %}
+    {% comment %} 10/2 - Dino requested this be disabled {% endcomment %}
+    {% if false%}
+      
+      {% comment %}If inventory is below 30, we need to setup a replacement option for the user{% endcomment %}
+      {% assign keywords = "aloe,strawberry,apple,apricot,arctic,asian,banana,bananas,berrymelon,bird,black,blackberry,blackcurrant,blood,blueberry,blueberryice,boba,boss,bubble,bubblegum,butterscotch,cake,candy,caribbean,carnival,cherry,chilled,citrus,clutch,coconut,cola,cool,cotton,cran,cranberry,cuba,dragon,dragonfruit,energy,fanta,fcuking,fiji,fresas,fresh,frozen,fruit,fuji,fusion,glacial,godzilla,granny,grape,grapple,green,guava,gummy,hawaiian,honeydew,ice,iced,icy,island,jolly,juicy,jungle,kiwi,kris,lem'n,lemon,lime,litty,lost,luscious,lush,lychee,malaysian,malibu,mandarin,mangerine,mango,mary's,mega,melon,miami,mighty,milk,mint,minty,mix,mixed,mojito,monster,morango,mr,mystery,nazzo,og,orange,pacific,kiwi,passion,passionfruit,pb,peach,peaches,peachy,peanut,pear,philippine,pina,pink,pomo,project,punch,purple,rainbow,raspberry,razz,red,reese,respek,rigley,rocky,rootbeer,rose,sakura,vanilla,grape,mango,lemon,cider,grapefruit,melonsice,peach,watermelon,pear,mint,berrypunch,cake,cool,custard,freeze,ice,pineapple,pudding,cream,blast,blue,bomb,crunch,fusioniced,trio,icy,brains,cherry,dragon,menthol,jam,orange,bubblegum,cottoncandy,drink,energy,fizz,gummy,gummybear,lemonadeice,lush,raspberry,raspberryguava,raspberrylemon,raspberrypeach,razice,razz,razzcottoncandy,razzice,razzlebery,ambrosia,energize,h2o,jelly,lemonade,papayastrawberry,shake,reserve,reserveice,gum,gumice,pop,love,breeze,colada,candy,cokeice,red,toffee,crumble,salted,ball,clouds,cloudz,apple,lime,soda,cigar,boost,fab,melons,concrema,vanilla,applepeach,applestrawberry,banana,icemango,icepeach,icestrawberry,icestrawberrybanana,lushice,punch,slushie,appleice,melonice,melonice,fujimelonfreeze,fruit,blueraspberry,smith,blackberry,chills,honeydew,aloe,berryice,grapeappleice,grapeice,voodoo,coconut,bear,fruitpunch,pineappleorange,melonberries,fresh,hawaiipunch,green,peachice,juice,berryice,kiwiberryfreeze,blueberry,dragonberry,dragonberryice,dragonfruitberry,guava,limeice,melon,passionfruitguava,passionfruitguava,passionfruitnectarine,pom,watermelonraspberry,pinklemonade,drop,drops,icecream,pinkberries,tart,maryjuicypeach,marystrawberryice,marystrawberrypinacolada,guavaice,dragonfruit,lassi,lycheeice,peachapricot,peachguava,peachguavaice,peachescream,strawberrylychee,twist,infamousapplepie,coladaice,berrycrunch,cinnamon,fruity,chocolate,tobacco,twists,o's,berries,grapelemon,mix,sweetgrapefruit,rediced,redswatermeloniced,bubbles,limeade,cooler,fruitguava,orangeguava,orangeguavaice,bananajam,grapejam,blueberrycandy,mangoguava,mangowatermelon,minticedtea,snowpear,cream,mangopineapple,mangopineappleice,butterchocolate,apricotpapaya,fcukingfab,coconutice,strawnanna,burst,lady,bluestraw,bowl,ape,haze,rain,drip,sugar,peachlemonade,bullice,mojito,peanutbutter,almondbearclaw,fruitybubblegum,blueraspberrybubblegum,float,lychee,brandy,coneice,applecandy,bites,storm,cranberry,iced,nannersice,&creamice,b-day,bananaice,bananashake,birthdaycake,cheesecake,dragonfruitmango,kiwiguava,kiwiice,kiwimojito,kiwipomegranate,kiwipomegranateice,lemonlime,milk,milkshake,orangemango,orangemint,pinacolada,smooth,sundae,watermelonbubblegum,watermelonbubblegum,watermelonice,watermelonice/strawberrywatermelonfreeze,watermelonpeach,drizzle,drizzleice,luv,kissed,bang,trail,trailice,applelushiced,passion,fruitgummy,rainbowbigbang,rainbowblast,milkice,creamtobacco,lemontart,bluerazz,brzzice,bubblegum,cantaloupehoneydew,chew,jollycandyice,nanaice,raspberryice,skittles,chocolatematchaice,gummi,gummyice,mystery,peachraspberry,spearmint,tangerine,pomo,pomegranate,caramel,fanta,marshmallow,cookie" | split:"," %}
+      {% assign new_variant_search = '' %}
+      {% assign l_variant_title = item.variant.title | downcase %}
+      {% assign original_variant_title = item.variant.title | downcase | replace: " ",""%}
+      {% assign l_variant_title = l_variant_title | replace: " ","" %}
+      {% for key in keywords %}
+          {% if l_variant_title == key %}
+            {% assign new_variant_search = key %}
+            {% break %}
+            {% elsif l_variant_title contains key %}
+            {% assign new_variant_search = key %}
+            {% endif %}
+        {% endfor %}
+      {% assign new_variant = '' %}
+      {% for variant in item.product.variants %}
+        {% assign variant_l = variant.title | downcase | replace: " ",""%}
+           {% if variant_l == new_variant_search and variant.inventory_quantity > 125 %}
+             {% assign new_variant = variant %}
+             {% break %}
+             {% elsif variant_l contains new_variant_search and variant.inventory_quantity > 125 %}
+               {% assign new_variant = variant %}
+             {% endif %}
+        {% endfor %}
+      {% if new_variant == '' %}
+   
+    {% paginate collections["all-products"].products by 1000 %}
+      {% for p in collections["all-products"].products %}
+       {% for v in p.variants %}
+         {% assign v_title = v.title | downcase | replace: " ", ""%}
+                {% if v.sku contains 'MASTER' and v_title == l_variant_title and v.inventory_quantity > 125 %}
+              
+            {% assign new_variant = v %}
+           {% break %}
+                  {% endif %}
+         {% endfor %}
+        {% if new_variant == '' %}
+                 {% for v in p.variants %}
+                            {% assign v_title = v.title | downcase | replace: " ", ""%}
+         {% if v.sku contains 'MASTER' and v_title == new_variant_search and v.inventory_quantity > 125 %}
+            {% assign new_variant = v %}
+           {% break %}
+           {% endif %}
+                   {% endfor %}
+          {% endif %}
+        {% if new_variant == '' %}
+                           {% for v in p.variants %}
+                            {% assign v_title = v.title | downcase | replace: " ", ""%}
+          {% if v.sku contains 'MASTER' and v_title contains new_variant_search and v.inventory_quantity > 125 %}
+           {% assign new_variant = v %}
+             {% break %}
+           {% endif %}
+            
+          {% endfor %}
+          {% endif %}
+        {% endfor %}
+      {% endpaginate %}
+        {% endif %}
+      {% unless new_variant == '' %}
+    <div class="low-inventory" style="padding:0 20px; color: #0c8eff;">
+        <div class="success-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto;" width="100px" height="100px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+<rect x="17.5" y="30" width="15" height="40" fill="#1d3f72">
+  <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="18;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"/>
+  <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="64;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"/>
+</rect>
+<rect x="42.5" y="30" width="15" height="40" fill="#5699d2">
+  <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"/>
+  <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"/>
+</rect>
+<rect x="67.5" y="30" width="15" height="40" fill="#d8ebf9">
+  <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"/>
+  <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"/>
+</rect></svg>
+        <p>Success! We have updated your order and are now taking you to checkout.</p></div>
+      <h3 class="replacement-title">Review {{ inventory_counter }} / {{ low_inventory_counter }} Change{% if low_inventory_counter > 1 %}s{% endif %} to Your Order</h3>
+      {% assign inventory_counter = inventory_counter | plus: 1 %}
+            <p class="replacement-text"><img src="{{ 'icons8-swap-50.png' | asset_url }}"><span>Replacement</span></p>
+            <div class="cart-item-slider substitute" style="overlow-y:none; padding:0.5em 0" data-variant-id="{{ item.variant.id }}" data-sku="{{ item.variant.sku }}">
+              <div class="low-inv-quant" style="color:red;">
+              -{{ item.quantity }}
+              </div>
+        <a>
+          {%- assign image = item.image -%}
+        <img class="cart-item-image" src="{{ image | img_url:'150x'}}">
+        </a>
+        <div class="cart-item-titles">
+          <p class="cart-item-product-title" style="color:black;"><span style="font-weight:bold;color:red;">Low Stock</span><br><b>{{item.product.title}}</b></p>
+                                {% unless item.product.has_only_default_variant %}
+                          <span class="variant cart-slide-variant" style="color:black;">{{ item.variant.title }}</span>
+                        {% endunless %}
+                           <div class="td cart-item-price" data-handle="{{item.product.handle}}">
+                            {% if page.handle != 'rangers' %}
+                             {%if item.variant.compare_at_price > item.variant.price %}
+                             <span class="money compare-at">{{item.variant.compare_at_price| money }}</span>
+                             {%endif%}
+                      <span class="money" style="color:black;text-decoration:line-through">{{ item.variant.price | money }}</span>   
+                                                             {% else %}
+                         <span class="money">FREE</span>
+                               {% endif %}
+                    </div>
+        </div>
+      </div>
+      <div class="replace-break"><div><p class="replacement-text black"><img src="{{ 'icons8-swap-50 (1).png' | asset_url }}"></p></div><div><p class="replacement-text black text"><span>Replace with...</span></p></div></div>
+      <div class="cart-item-slider replacement" style="overlow-y:none; padding:0.5em 0" data-variant-id="{{ new_variant.id }}">
+  <div class="low-inv-quant" style="color:green;">
+  +{{ item.quantity }}
+  </div>
+<a>
+{%- assign image = new_variant.image -%}
+<img class="cart-item-image" src="{{ image | img_url:'150x'}}">
+</a>
+<div class="cart-item-titles substitute">
+<p class="cart-item-product-title" style="color:black;"><b>{{new_variant.product.title}}</b></p>
+                    {% unless item.product.has_only_default_variant %}
+              <span class="variant cart-slide-variant" style="color:black;">{{ new_variant.title }}</span>
+            {% endunless %}
+               <div class="td cart-item-price" data-handle="{{item.product.handle}}">
+                {% if page.handle != 'rangers' %}
+                 {%if new_variant.compare_at_price > new_variant.price %}
+                 <span class="money compare-at">{{new_variant.compare_at_price| money }}</span>
+                 {%endif%}
+          <span class="money" style="color:black;">{{ new_variant.price | money }}</span>
+                                                 {% else %}
+             <span class="money">FREE</span>
+                   {% endif %}
+        </div>
+</div>
+</div>
+          <small style="color:black;text-align:center;display:block;">If you're okay with this replacement, simply click approve. To see other options, click Other Options</small>
+<div class="pick-options">
+      <div class="other-options"><p>Other Options...</p></div>
+      <div class="approve-option"><p><b>Approve</b></p></div>
+</div>
+<div class="more-options">
+   <p class="Pick-for-me">Pick for me</p>
+   <p class="Contact-me">Contact me</p>
+   <p class="wait-until">Wait until back in stock</p>
+   <p class="remove-me">Remove item (if unavailable)</p>
+</div>
+                    <p class="go-back-cart"><< Go back</p>
+          </div>
+        {% endunless %}
+      {% endif %}
+    </div>
+    {%endfor%}
+      </div>
+    <div class="footer-slider-cart">
+      <div class="inner-footer-slider-cart">
+        <span class="label">
+          <span id='revy-cart-subtotal-label'>{{ 'cart.general.subtotal' | t }}</span>
+        </span>
+
+        {% if page.handle != 'rangers' %}
+          {% if cart_compare_price > cart.total_price %}
+            <span class="money compare-at">{{cart_compare_price | money}}</span>
+          {%endif%}
+
+          <span class="money actual">{{ cart.total_price | money }}</span>
+        {% else %}
+          <span class="money actual">FREE</span>
+        {% endif %}
+
+        <div class="checkbox-container">
+          <span class="checkbox-input-label" >I confirm that I am 21 years of age or older and agree with our <a href="/policies/terms-of-service">Terms and Conditions</a>.</span>
+        </div>
+
+        <input id="slider-checkout" name="checkout" type="submit" class="default-cart-button__button checkout-slider" value="Checkout">
+
+        <input type="hidden" id="order-notes" value="">
+      </div>
+    </div>
+  </div>
+</section>

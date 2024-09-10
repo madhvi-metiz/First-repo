@@ -1,0 +1,91 @@
+/*============================================================================
+        This file contains the above the fold css that will have to 
+                  show above the fold on the product page
+
+==============================================================================*/
+
+header.content-util nav.breadcrumb {
+    float: left;
+    font-size: 0.6875em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-family: "DIN Next", sans-serif;
+}
+header.content-util {
+    margin-bottom: 0px;
+    *zoom: 1;
+}
+header.content-util nav.breadcrumb > * {
+    margin-right: 4px;
+    line-height: 20px;
+}
+header.content-util nav.breadcrumb span {
+    color: #9a9a9b;
+    cursor: default;
+}
+header.content-util nav.breadcrumb > *:last-child {
+    margin-right: 0;
+}
+header.content-util:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+header.content-util nav.breadcrumb a {
+    text-decoration: none;
+    color: #3b3a3d;
+}
+.single-product {
+    padding: 0 20px 40px;
+    background: #fafafa;
+}
+.single-product .wrapper {
+    *zoom: 1;
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header.product-header {
+    display: table;
+    width: 100%;
+    margin-bottom: 30px;
+    padding-top: 10px;
+}
+header.product-header .product-jump-container {
+    display: table-cell;
+    text-align: right;
+    vertical-align: bottom;
+}
+.single-product .grid {
+    *zoom: 1;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+    margin-left: -30px;
+    direction: ltr;
+}
+.single-product .grid .product-images {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 16px;
+    min-height: 1px;
+    vertical-align: top;
+    width: 58.33333%;
+}
+.product-images.thumbnails-placement-below {
+    position: relative;
+}
+.single-product .grid > * {
+    display: inline-block;
+}
+.single-product .grid > * {
+    padding-left: 30px;
+}
+@media screen and (min-width:769px) {
+header.product-header {
+  border-bottom: 1px solid #e3e3e3;
+
+}
+}

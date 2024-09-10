@@ -1,0 +1,623 @@
+{% assign limited_quantity_product_ids = settings.hide_bulk_buy_button | map: 'id' %}
+{% assign product_id = product.id %}
+{% assign DEFAULT_CHOOSE_OPTION = 'CHOOSE' %}
+
+<style>
+  .variant-selector-text-white {
+    color: white !important;
+  }
+</style>
+
+{% form 'product', product %}
+  {% assign min_price = product.variants | map: 'price' | sort | first %}
+  {% assign max_price = product.variants | map: 'price' | sort | last %}
+
+  <div class="product-title">
+    <h1 itemprop="name">
+      {% unless section_onboarding %}
+        {{ product.title }}
+      {% else %}
+        {{ 'homepage.onboarding.product_title' | t }}
+      {% endunless %}
+    </h1>
+    {% if section.settings.show_vendors %}
+      <span class="vendor">
+        {% unless section_onboarding %}
+          {{ product.vendor | link_to_vendor }}
+        {% else %}
+          {{ 'homepage.onboarding.product_vendor' | t }}
+        {% endunless %}
+      </span>
+    {% endif %}
+    <a href="#looxReviews" style="color:black;" aria-label="Reviews">
+      <div
+        style="margin-bottom:1em;"
+        class="loox-rating"
+        data-id="{{ product.id }}"
+        data-rating="{{ product.metafields.loox.avg_rating }}"
+        data-raters="{{ product.metafields.loox.num_reviews }}"
+        data-pattern="[count] reviews"
+      ></div>
+    </a>
+  </div>
+
+  <div class="selection-wrapper price product-single__price-{{ section.id }}">
+    {% unless max_price == min_price %}
+      {% if product.metafields.custom.use_starting_at_price or settings.show_starting_at_all_products %}
+        <div class="starting-at-price">
+          Starting at
+          <span
+            class="money"
+            id="ProductPrice-{{ section.id }}-starting-at"
+            data-ProductPrice
+            itemprop="price"
+            content="{{ min_price | money_without_currency | remove: ',' }}"
+          >
+            {{ min_price | money }}
+          </span>
+        </div>
+      {% endif %}
+    {% endunless %}
+
+    <p
+      id="ComparePrice-{{ section.id }}"
+      data-ComparePrice
+      style="{% if current_variant.compare_at_price > current_variant.price %}display:inline; {% else %}display:none; {% endif %}"
+    >
+      <span class="money">{{ current_variant.compare_at_price | money }}</span>
+    </p>
+
+    {% unless section_onboarding %}
+      {% if current_variant == blank %}
+        {% if max_price == min_price %}
+          <span
+            class="money"
+            id="ProductPrice-{{ section.id }}"
+            data-ProductPrice
+            itemprop="price"
+            content="{{ current_variant.price | money_without_currency | remove: ',' }}"
+          >
+            {{- max_price | money -}}
+          </span>
+        {% else %}
+          <span
+            class="money"
+            id="ProductPrice-{{ section.id }}"
+            data-ProductPrice
+            itemprop="price"
+            content="{{ current_variant.price | money_without_currency | remove: ',' }}"
+          >
+            {{- min_price | money }} - {{ max_price | money -}}
+          </span>
+        {% endif %}
+      {% else %}
+        <span
+          class="money"
+          id="ProductPrice-{{ section.id }}"
+          data-ProductPrice
+          itemprop="price"
+          content="{{ current_variant.price | money_without_currency | remove: ',' }}"
+        >
+          {{- current_variant.price | money -}}
+        </span>
+      {% endif %}
+    {% else %}
+      <span
+        class="money"
+        id="ProductPrice-{{ section.id }}"
+        data-ProductPrice
+        itemprop="price"
+        content="{{ 1999 | money_without_currency | remove: ',' }}"
+      >
+        {{- 1999 | money -}}
+      </span>
+    {% endunless %}
+  </div>
+
+  {% if template == 'product' %}
+    {% assign inventory = product.metafields.tomit_inventory %}
+    {% if inventory.inventory_json.size > 0 %}
+      <script>
+        document.addEventListener('tomitLoaded', function (e) {
+          tomitProductInventoryInfo.productJson = `{{inventory.inventory_json | json}}`;
+        });
+      </script>
+    {% endif %}
+
+    <div>
+      <div id="delivery_available_wrapper">
+        {% assign inventory = product.metafields.tomit_inventory %}
+        <div id="inventoryLocationInformation">
+          <img alt="In Store Icon" class="online-icon instore" src="{{'InStoreIcon.png' | asset_url }}">
+          <span class="inventoryLocationLoading"></span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex-delivery">
+        <img
+          width="35"
+          height="21"
+          alt="Delivery Icon"
+          class="online-icon delivery"
+          src="{{'DeliveryTruckIcon.png' | asset_url }}"
+        >
+        <span class="availability-span"><span id="del-area">Free Shipping Available $59+</span></span>
+      </div>
+    </div>
+  {% else %}
+    <div>
+      <div class="flex-delivery">
+        <img
+          width="35"
+          height="21"
+          alt="No Delivery Icon"
+          class="online-icon delivery"
+          src="{{'DeliveryTruckCancel.png' | asset_url }}"
+        >
+        <span class="availability-span" style="color:grey"><b>Not Available Online</b></span>
+      </div>
+    </div>
+  {% endif %}
+
+  {% unless product.has_only_default_variant %}
+    {%- comment -%}
+      Dropdown colleciton of variant options
+    {%- endcomment -%}
+
+    {%- if section.settings.variant_style == 'dropdowns' -%}
+      <div class="selection-wrapper variant js">
+        <div class="variant-grid">
+          {% for option in product.options_with_values %}
+            {%- assign option_name = option.name | downcase -%}
+            {%- assign size_options = 'size, sizes' -%}
+            <div class="selector-wrapper">
+              <label
+                class="variant-selector-label {% if current_variant == blank %}variant-selector-text-white{% endif %}"
+                for="SingleOptionSelector--{{ section.id }}-{{ forloop.index0 }}"
+              >
+                {{ option.name }}
+                {%- if section.settings.size_guide_page != blank and size_options contains option_name -%}
+                  <span class="label-extra"
+                    ><a
+                      href="{{ pages[section.settings.size_guide_page].url }}"
+                      class="product-size-guide-{{ section.id }}"
+                    >
+                      {{- pages[section.settings.size_guide_page].title -}}
+                    </a></span
+                  >
+                {%- endif -%}
+              </label>
+
+              <select
+                class="single-option-selector single-option-selector-{{ section.id }}"
+                id="SingleOptionSelector-{{ section.id }}-{{ forloop.index0 }}"
+                data-name="{{ option.name }}"
+                data-index="option{{ forloop.index }}"
+              >
+                <option
+                  value="pick-your"
+                  {% if current_variant == blank %}
+                    selected="selected"
+                  {% endif %}
+                  disabled
+                >
+                  {{ DEFAULT_CHOOSE_OPTION }}
+                </option>
+
+                {% for value in option.values %}
+                  <option
+                    value="{{ value | escape }}"
+                    {% if option.selected_value == value and current_variant != blank %}
+                      selected="selected"
+                    {% endif %}
+                  >
+                    {{ value }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endfor %}
+          {% if section.settings.product_quantity_enable %}
+            {% include 'quantity-selector' %}
+          {% endif %}
+        </div>
+        <div class="flavor-holder" style="display:none;" data-nosnippet>
+          {% if current_variant.metafields.custom.flavor_description != blank -%}
+            {{- current_variant.metafields.custom.flavor_description -}}
+          {%- endif %}
+        </div>
+      </div>
+      {%- comment -%}
+        Button/swatch colleciton of variant options
+      {%- endcomment -%}
+    {%- elsif section.settings.variant_style == 'buttons' or section.settings.variant_style == 'swatches' -%}
+      <div class="selection-wrapper variant radio js">
+        {% for option in product.options_with_values %}
+          {% include 'swatch' %}
+        {% endfor %}
+        {% if section.settings.product_quantity_enable %}
+          {% include 'quantity-selector' %}
+        {% endif %}
+      </div>
+    {%- endif -%}
+  {% else %}
+    {% if section.settings.product_quantity_enable %}
+      <div class="selection-wrapper variant js">
+        {% include 'quantity-selector' %}
+      </div>
+    {% else %}
+      {%- assign cart_buttons_margin = 'cart_buttons__margin' -%}
+    {% endif %}
+  {% endunless %}
+
+  {% comment %}
+    Primary variant select controlled JS
+  {% endcomment %}
+  <div class="selection-wrapper variant no-js">
+    <div class="selector-wrapper full-width">
+      <label
+        class="variant-selector-label"
+        for="ProductSelect-{{ section.id }}"
+        >Options
+      </label>
+
+      <select
+        name="id"
+        id="ProductSelect-{{ section.id }}"
+        data-section="{{ section.id }}"
+        class="product-form__variants no-js"
+      >
+        {% for variant in product.variants %}
+          {% if variant.available %}
+            <option
+              data-variant-title="{{ variant.title }}"
+              value="{{ variant.id }}"
+              data-sku="{{ variant.sku }}"
+              {% if variant == current_variant %}
+                selected="selected"
+              {% endif %}
+            >
+              {{ variant.title }} - {{ variant.price | money_with_currency }}
+            </option>
+          {% else %}
+            <option
+              data-variant-title="{{ variant.title }}"
+              value="{{ variant.id }}"
+              data-sku="{{ variant.sku }}"
+              disabled="disabled"
+            >
+              {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+            </option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="error cart-error cart-error-{{ section.id }}" style="display:none;"></div>
+
+  <div id="inventory-info-app" style="display:none;" class="iia-container"></div>
+
+  {% assign current_inventory = current_variant.inventory_quantity %}
+  {% assign available = current_variant.available %}
+
+  {% assign in_stock = false %}
+  {% if available and current_inventory > OOS_QUANTITY or current_variant.inventory_policy == 'continue' %}
+    {% assign in_stock = true %}
+  {% endif %}
+
+  {% assign bulk_in_stock = false %}
+  {% if available and current_inventory > OOS_BULK_QUANTITY or current_variant.inventory_policy == 'continue' %}
+    {% assign bulk_in_stock = true %}
+  {% endif %}
+
+  {% unless product.id == '6976033095745' %}
+    <div
+      id="CartButtons-{{ section.id }}"
+      class="mt-15 cart-buttons {% if cart_buttons_margin %}{{ cart_buttons_margin }}{% endif %} {% if section.settings.show_payment_button and in_stock %}cart-buttons__enabled{% elsif section_onboarding %}cart-buttons__enabled{% endif %}"
+    >
+      <div class="button-wrapper default-cart-button">
+        <button
+          type="submit"
+          name="add"
+          id="AddToCart-{{ section.id }}"
+          data-AddToCart
+          class="default-cart-button__button {% unless in_stock or section_onboarding %}disabled{% endunless %}"
+          {% unless in_stock %}
+            disabled
+          {% endunless %}
+        >
+          <span id="AddToCartText-{{ section.id }}" data-AddToCartText>
+            {% if current_variant == blank %}
+              {{ 'products.product.unavailable' | t }}
+            {% elsif in_stock %}
+              {{ 'products.product.add_to_cart' | t }}
+            {% elsif product.tags contains 'COMING_SOON' %}
+              {{ 'products.product.coming_soon' | t }}
+            {% else %}
+              {{ 'products.product.sold_out' | t }}
+            {% endif %}
+          </span>
+        </button>
+
+        {% unless limited_quantity_product_ids contains product_id %}
+          <button
+            type="submit"
+            name="add-bulk"
+            id="AddToCartBulk-{{ section.id }}"
+            data-AddToCartBluk
+            class="default-cart-button__button bulk"
+            {% unless bulk_in_stock %}
+              style="display:none;"
+            {% endunless %}
+          >
+            <span id="AddToCartTextBulk-{{ section.id }}" data-AddToCartTextBulk>
+              <img
+                alt="Bulk Discount Fire Icon"
+                width="23"
+                height="23"
+                class="firey"
+                src="{{ 'FireDiscount2.png' | asset_url}}"
+              >
+              Order 10 & Save 5%
+            </span>
+          </button>
+        {% endunless %}
+      </div>
+  {% endunless %}
+
+  <div id="PaymentButtonContainer-{{ section.id }}" class="payment-button__container">
+    {% if section.settings.show_payment_button %}
+      {{ form | payment_button }}
+    {% endif %}
+  </div>
+{% endform %}
+
+<script>
+  document.addEventListener('inventoryInfo.appData', function (e) {
+    const { variantLocations } = e.detail;
+  });
+</script>
+<script>
+  function pushToBaseProduct() {
+    if (!window?.history?.replaceState) {
+      return;
+    }
+
+    var newurl =
+      window.location.protocol +
+      '//' +
+      window.location.host +
+      window.location.pathname +
+      window.history.replaceState({ path: newurl }, '', newurl);
+  }
+
+  function compareVariantOrder(a, b) {
+    if (a.text.toLowerCase().startsWith('choose') || a.text.toLowerCase().startsWith('pick')) return -1;
+    if (b.text.toLowerCase().startsWith('choose') || b.text.toLowerCase().startsWith('pick')) return 1;
+    if (a.text > b.text) return 1;
+    if (a.text < b.text) return -1;
+    return 0;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const productIdsToHideOOS = [];
+
+    const productJson = document.querySelectorAll('[id^=ProductJson-');
+
+    // 10/36 when the DOM is loaded, we want to re-order the variations into A-Z order
+    //https://stackoverflow.com/questions/45888/what-is-the-most-efficient-way-to-sort-an-html-selects-options-by-value-while
+    var selected = $('#SingleOptionSelector-product-template-0').val();
+
+    if (productJson.length > 0) {
+      for (let i = 0; i < productJson.length; i++) {
+        const current = productJson[i];
+        const sectionId = current.id.replace('ProductJson-', '');
+        const section = document.querySelector('[data-section-id="' + sectionId + '"]');
+        const product = JSON.parse(current.text);
+
+        const isComingSoon = product.tags.includes('COMING_SOON');
+
+        let soldOutText = isComingSoon ? 'COMING SOON' : 'SOLD OUT';
+
+        if (product.options.length === 1) {
+          const unavailableVariants = [];
+
+          for (let j = 0; j < product.variants.length; j++) {
+            const variant = product.variants[j];
+
+            if (!variant.available) {
+              unavailableVariants.push(variant);
+            }
+          }
+
+          if (unavailableVariants.length > 0) {
+            const mutationCallback = function () {
+              const variantOptions = section.querySelectorAll('.single-option-selector option');
+
+              if (variantOptions.length > 0) {
+                for (let k = 0; k < unavailableVariants.length; k++) {
+                  const unavailableVariant = unavailableVariants[k];
+
+                  for (let l = 0; l < variantOptions.length; l++) {
+                    const option = variantOptions[l];
+
+                    if (unavailableVariant.title === option.value) {
+                      // define option text and mark it sold out
+                      var optionText = option.innerText.trim();
+                      if (optionText.indexOf(soldOutText) > -1) {
+                        var newOptionText = optionText;
+                      } else {
+                        if (productIdsToHideOOS.includes(product.id) && selected === optionText) {
+                          // If the selected option is sold out, This will trigger a change to the first non-sold out child
+                          // Not reliablity redirecting to a non-sold out variant so disabiling the trigger
+                          //$('.single-option-selector option:first-child').prop('selected',true).trigger("change");
+                        }
+
+                        if (productIdsToHideOOS.includes(product.id) && selected !== optionText) {
+                          // If the option is sold out we remove it from the dropdown
+                          $('.single-option-selector').children(`option[value="${optionText}"]`).remove();
+                        }
+
+                        var newOptionText = optionText + ` (${soldOutText})`;
+                      }
+                      option.innerText = newOptionText;
+                      // loop through our sticky dropdown and mark it as sold out as well
+                      $('.sticky-select option').each(function () {
+                        var thisText = $(this).attr('value');
+                        if (optionText === thisText) {
+                          if (thisText.indexOf(soldOutText) > -1) {
+                          } else {
+                            var newText = thisText + ` (${soldOutText})`;
+                            $(this).text(newText);
+                          }
+                        }
+                      });
+                    }
+                  }
+                }
+                
+                if (typeof observer === 'object' && typeof observer.disconnect === 'function') {
+                  observer.disconnect();
+                }
+              }
+            };
+
+            const observer = new MutationObserver(mutationCallback);
+            const addToCartForm = document.querySelector('form[action*="/cart/add"]');
+
+            mutationCallback();
+
+            if (window.MutationObserver && addToCartForm.length) {
+              const config = { childList: true, subtree: true };
+
+              if (typeof observer === 'object' && typeof observer.disconnect === 'function') {
+                observer.disconnect();
+              }
+
+              observer.observe(addToCartForm, config);
+            }
+          }
+        }
+        
+        const isManualSort = product.tags.includes("#MANUAL_SORT");
+        if(isManualSort === false){
+          const selector = $('#SingleOptionSelector-product-template-0');
+          const selected = selector.val();
+          const options = selector.find('option');
+          
+          const in_stock_options = options.filter((idx, el) => {
+            return !$(el).text().includes(soldOutText);
+          });
+          in_stock_options.sort(compareVariantOrder);
+          
+          const out_of_stock_options = options.filter((idx, el) => {
+            return $(el).text().includes(soldOutText);
+          });
+          out_of_stock_options.sort(compareVariantOrder);
+          
+          {% comment %} Reset order of all options {% endcomment %}
+          selector.empty().append(in_stock_options).append(out_of_stock_options);
+          {% comment %} Set initially cached value (Firefox) {% endcomment %}
+          selector.val(selected);
+        }
+      }
+    }
+  });
+
+  document.addEventListener('inventoryInfo.appData', function (e) {
+    setTimeout(function () {
+      var myState = $('#user-state-mobile').text();
+
+      const { variantLocations } = e.detail;
+
+      $.each(variantLocations, function (index, product) {
+        var variantId = product.variant.toString();
+        $.each(product.inventoryLocations, function (i, inventory) {
+          var quantity = parseInt(inventory.quantity);
+          var locName = inventory.location.name;
+
+          if (locName === 'WH Virtual') {
+            // we look at stock level and see if it is above 0
+            if (quantity <= 0) {
+              // now we must loop through the options and make sure they say sold out
+              //      console.log('my variant is ' + variantId + ' and my quantity is ' + quantity);
+              // now we see if we're not in RI, MA or Ny , we need to mark it OOS
+              if (myState != 'RI' || myState != 'MA' || myState != 'NY' || myState != 'CT') {
+                // we need to make these variants OOS
+                $('select[name="id"] option').each(function () {
+                  if (typeof $(this).attr('value') != 'undefined') {
+                    var val = $(this).attr('value').toString();
+                  }
+                  //  console.log('my looped value is ' + val + ' and my starting out variant id is ' + variantId);
+                  if (variantId === val) {
+                    //   console.log('matched');
+                    var matchOption = $(this).attr('data-variant-title');
+                    //  console.log('here is my title ' + matchOption);
+                    $('label[for="SingleOptionSelector-0"]')
+                      .parent()
+                      .find('select option')
+                      .each(function () {
+                        var optionText = $(this).text().trim();
+                        if ($(this).text().indexOf('SOLD OUT') > -1) {
+                          // nothing to be done, already marked as sold out
+                          // console.log('already marked sold out ' + matchOption);
+                          $(this).appendTo($(this).parent());
+                          // console.log('trying to move this to bottom of sold out' + optionText);
+                        }
+
+                        if (matchOption === $(this).val()) {
+                          if ($(this).text().indexOf('SOLD OUT') > -1) {
+                            // nothing to be done, already marked as sold out
+                            // console.log('already marked sold out ' + matchOption);
+                            $(this).appendTo($(this).parent());
+                            //  console.log('trying to move this to bottom of sold out' + optionText);
+                          } else {
+                            optionText = optionText + ' (SOLD OUT)';
+                            $(this).text(optionText);
+                            // take this option to the bottom of the collection
+                            // console.log('trying to move this to bottom of sold out' + optionText);
+                            $(this).appendTo($(this).parent());
+                            // if selected, we need to mark as sold out
+                            // The variant doesn't exist, disable submit button and change the text.
+                            // This may be an error or notice that a specific variant is not available.
+                            if ($(this).is(':selected')) {
+                              $('.flex-delivery span').text('Not Available Online');
+                              $('.flex-delivery span').css('color', 'grey');
+                              $('.flex-delivery span').css('opacity', '.8');
+                              $('.online-icon.delivery').attr(
+                                'src',
+                                'https://cdn.shopify.com/s/files/1/0743/6343/files/DeliveryTruckCancel.png?v=1653215829'
+                              );
+                              $('#tomit_inventory_list').css('display', 'inline-block');
+                              $('#AddToCart-product-template').addClass('disabled').prop('disabled', true);
+                              $('.default-cart-button__button.bulk').css('visibility', 'hidden');
+                            }
+                          }
+                        }
+                      });
+                  }
+                });
+              } else {
+                $('label[for="SingleOptionSelector-0"]')
+                  .parent()
+                  .find('select option')
+                  .each(function () {
+                    var optionText = $(this).text().trim();
+                    if ($(this).text().indexOf('SOLD OUT') > -1) {
+                      // nothing to be done, already marked as sold out
+                      // console.log('already marked sold out ' + matchOption);
+                      $(this).appendTo($(this).parent());
+                      //console.log('trying to move this to bottom of sold out' + optionText);
+                    }
+                  });
+              }
+            }
+          }
+        });
+      });
+    }, 500);
+  });
+</script>

@@ -1,0 +1,129 @@
+{% assign show_nav_link_image_dropdowns = 'Shop By Brand,Shop Vape Flavors' | split: ',' %}
+
+<ul class="site-nav" role="menubar">
+  {% comment %}
+    link - First level menu
+  {% endcomment %}
+  {% for link in section.settings.main_linklist.links %}
+    <li
+      class="
+        {% if link.active %}active {% endif %}{% if link.links != blank %}has-dropdown {% endif %}
+        {% comment %} {% if link.title == 'Disposable Vapes' %}
+         dropdown-hover
+         {% endif %} {% endcomment %}
+      "
+      role="presentation"
+    >
+      <a
+        href="{{ link.url }}"
+        {% if link.links != blank %}
+          aria-haspopup="true" aria-expanded="false"
+        {% endif %}
+        role="menuitem"
+      >
+        {{- link.title | escape -}}
+      </a>
+      {% if link.links != blank %}
+        <div class="dropdown-div">
+          <div class="dropdown-container">
+            {% comment %} we need to determine how many links are in the list to see if we need to make them side by side {% endcomment %}
+            {% assign sub_link_counter = 0 %}
+            {% for sub_link in link.links %}
+              {% assign sub_link_counter = sub_link_counter | plus: 1 %}
+            {% endfor %}
+
+            {% assign show_images = false %}
+            {% if show_nav_link_image_dropdowns contains link.title %}
+              {% assign show_images = true %}
+            {% endif %}
+            <ul
+              class="dropdown {%if sub_link_counter >= 6 and link.title == 'Shop By Brand'%} flex{%endif%}"
+              aria-hidden="true"
+              role="menu"
+            >
+              {% comment %}
+                sub_link - Second level menu
+              {% endcomment %}
+              {% for sub_link in link.links %}
+                <li
+                  class="{% if sub_link.active %}active {% endif %}{% if sub_link.links != blank %} has-sub-dropdown {% endif %}"
+                  role="presentation"
+                >
+                  {% assign mobile_image = '' %}
+                  {% if show_images %}
+                    {%- if sub_link.type == 'collection_link' -%}
+                      {% assign link_collection = sub_link.object %}
+                      {% assign mobile_image = link_collection.featured_image %}
+                    {% elsif sub_link.type == 'product_link' %}
+                      {% assign product_collection = sub_link.object %}
+                      {% assign mobile_image = product_collection.featured_image %}
+                    {% elsif sub_link.title == 'Shop All' %}
+                      {% assign mobile_image = images['SHOP_ALL.jpg'] %}
+                    {% endif %}
+                  {% endif %}
+                  <a
+                    {% if mobile_image != '' %}
+                      class="mobile-blowup"
+                    {% endif %}
+                    href="{{ sub_link.url }}"
+                    role="menuitem"
+                    {% if sub_link.links != blank %}
+                      aria-haspopup="true" aria-expanded="false"
+                    {% endif %}
+                    tabindex="-1"
+                  >
+                    {%- if mobile_image != '' %}
+                      {{
+                        mobile_image
+                        | image_url: width: 220
+                        | image_tag:
+                          widths: '55, 110, 220',
+                          sizes: '55px',
+                          loading: 'lazy',
+                          class: 'mega-img-mobile mobile-only'
+                      }}
+                    {% endif %}
+
+                    {{ sub_link.title | escape }}
+                  </a>
+                  {% if sub_link.links != blank %}
+                    <ul class="sub-dropdown" aria-hidden="true" role="menu">
+                      {% comment %}
+                        sub_sub_link - Third level menu
+                      {% endcomment %}
+                      {% for sub_sub_link in sub_link.links %}
+                        <li
+                          class="sub-dropdown-item {% if sub_sub_link.active %}active {% endif %}"
+                          role="presentation"
+                        >
+                          <a href="{{ sub_sub_link.url }}" role="menuitem" tabindex="-1">
+                            {{- sub_sub_link.title | escape -}}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% for block in section.blocks %}
+            {% if link.title == block.settings.mega_menu and block.settings.mobile_mega == false %}
+              <div class="block-header desktop-only" linky="{{ block.settings.mega_link }}">
+                {%- if block.settings.mega_image %}
+                  {{
+                    block.settings.mega_image
+                    | image_url: width: 750
+                    | image_tag: widths: '250, 500, 750', sizes: '250px', loading: 'lazy', class: 'mega-img-desktop'
+                  }}
+                {% endif %}
+
+                <div class="mega-menu-title">{{ block.settings.label_image | escape }}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,294 @@
+<!-- /templates/customers/account.liquid -->
+{% comment %}
+  For all available customer liquid tags:
+    - http://docs.shopify.com/themes/liquid-variables/customer
+{% endcomment %}
+<section class="page page-top">
+  <div class="wrapper">
+    <header class="content-util">
+      {% include 'breadcrumb' %}
+    </header>
+    <header class="page-header">
+      <h1>{{ 'customer.account.title' | t }}</h1>
+    </header>
+  </div>
+</section>
+
+<section class="page">
+  <div class="wrapper">
+    <div class="content-container">
+      <div class="grid">
+        <div class="orders-container">
+          <div class="orders">
+            <h4>{{ 'customer.orders.title' | t }}</h4>
+
+            {% comment %}
+              If we have past orders, loop through each one
+            {% endcomment %}
+            {% paginate customer.orders by 20 %}
+              {% if customer.orders.size != 0 %}
+                <div class="table-wrap">
+                  <table class="full">
+                    <thead>
+                      <tr>
+                        <th>{{ 'customer.orders.order_number' | t }}</th>
+                        <th>{{ 'customer.orders.date' | t }}</th>
+                        <th>{{ 'customer.orders.payment_status' | t }}</th>
+                        <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+                        <th>{{ 'customer.orders.total' | t }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for order in customer.orders %}
+                        <tr>
+                          <td>
+                            <div class="reorder-container">
+                              <a href="{{ order.customer_url }}">{{ order.name }}</a><a class="reorder-btn">Reorder</a>
+                              {% for line_item in order.line_items %}
+                                {% unless line_item.product.title == blank %}
+                                  <div class="block-items desktop-only">
+                                    {%- assign image = line_item.image -%}
+                                    <a href="{{ line_item.product.url }}">
+                                      <img class="line-item-img" src="{{ image | img_url:'35x'}}">
+                                    </a>
+
+                                    <p class="line_item_q">{{ line_item.quantity }}x</p>
+                                    <a href="{{ line_item.product.url }}">
+                                      <p class="line-item-prod-title">
+                                        {{ line_item.product.title -}}
+                                        {%- unless line_item.variant.title == 'Default Title'
+                                          or line_item.variant.title == blank
+                                        %}
+                                          - {{ line_item.variant.title -}}
+                                        {%- endunless %}
+                                      </p>
+                                    </a>
+                                  </div>
+                                {% endunless %}
+                              {% endfor %}
+
+                              <div class="hidden-order">
+                                {% for l in order.line_items %}
+                                  {% assign data_variant = l.variant.id %}
+                                  {% assign data_url = l.variant.url %}
+                                  {% assign data_available = l.variant.available %}
+                                  {% assign data_sku = l.variant.sku %}
+
+                                  {% unless l.variant.sku contains 'MASTER' %}
+                                    {% assign master_sku = 'MASTER-' | append: data_sku %}
+                                    {% paginate collections['all-products'].products by 1000 %}
+                                      {% for p in collections.all.products %}
+                                        {% for v in p.variants %}
+                                          {% if v.sku == master_sku %}
+                                            {% assign data_variant = v.id %}
+                                            {% assign data_url = v.url %}
+                                            {% assign data_available = v.available %}
+                                            {% break %}
+                                          {% endif %}
+                                        {% endfor %}
+                                        {% if data_variant != '' %}
+                                          {% break %}
+                                        {% endif %}
+                                      {% endfor %}
+                                    {% endpaginate %}
+                                  {% endunless %}
+
+                                  <div
+                                    style="display:none;"
+                                    class="hidden-order-variant"
+                                    data-quantity="{{ l.quantity }}"
+                                    id="{{ l.id }}"
+                                    data-variant="{{ data_variant }}"
+                                    data-available="{{ data_available }}"
+                                  ></div>
+                                {% endfor %}
+                              </div>
+                            </div>
+                          </td>
+                          <td>{{ order.created_at | date: format: 'month_day_year' }}</td>
+                          <td>{{ order.financial_status_label }}</td>
+                          <td>{{ order.fulfillment_status_label }}</td>
+                          <td>{{ order.total_price | money }}</td>
+                        </tr>
+
+                        {% for line_item in order.line_items %}
+                          {% unless line_item.product.title == blank %}
+                            <tr class="mobile-only" style="border-top: 2px white solid;">
+                              <td colspan="5" style="padding:5px;">
+                                <div class="block-items mobile-only">
+                                  {%- assign image = line_item.image -%}
+                                  <a href="{{ line_item.product.url }}">
+                                    <img class="line-item-img" src="{{ image | img_url:'35x'}}">
+                                  </a>
+
+                                  <p class="line_item_q">{{ line_item.quantity }}x</p>
+                                  <a href="{{ line_item.product.url }}">
+                                    <p class="line-item-prod-title">
+                                      {{ line_item.product.title -}}
+                                      {%- unless line_item.variant.title == 'Default Title'
+                                        or line_item.variant.title == blank
+                                      %}
+                                        - {{ line_item.variant.title -}}
+                                      {%- endunless %}
+                                    </p>
+                                  </a>
+                                </div>
+                              </td>
+                            </tr>
+                          {% endunless %}
+                        {% endfor %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% else %}
+                <p>{{ 'customer.orders.none' | t }}</p>
+              {% endif %}
+
+              {% if paginate.pages > 1 %}
+                <footer class="collection-footer">
+                  {% include 'pagination' %}
+                </footer>
+              {% endif %}
+            {% endpaginate %}
+          </div>
+        </div>
+
+        <div class="account">
+          <h4>{{ 'customer.account.details' | t }}</h4>
+
+          <p>
+            <strong class="capitalize">{{ customer.name }}</strong><br>
+            {% if customer.default_address != null %}
+              <span class="smaller">
+                {{ customer.default_address.address1 -}}
+                <br>
+
+                {% if customer.default_address.address2 != '' %}
+                  {{ customer.default_address.address2 -}}
+                  <br>
+                {% endif %}
+
+                {% if customer.default_address.city != '' %}
+                  {{ customer.default_address.city -}}
+                  <br>
+                {% endif %}
+
+                {% if customer.default_address.province_code != '' %}
+                  {{ customer.default_address.province_code | upcase -}}
+                  <br>
+                {% endif %}
+
+                {% if customer.default_address.zip != '' %}
+                  {{ customer.default_address.zip | upcase -}}
+                  <br>
+                {% endif %}
+
+                {% if customer.default_address.country != '' %}
+                  {{ customer.default_address.country -}}
+                  <br>
+                {% endif %}
+
+                {% if customer.default_address.phone != '' %}
+                  {{ customer.default_address.phone }}
+                {% endif %}
+              </span>
+            {% endif %}
+          </p>
+
+          <p>
+            <a href="/account/addresses" class="button outline">
+              {{- 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script type="text/javascript">
+  window.hdlh = {
+    widget_key: '6dupkgr2yfzo9r8hwtf0',
+  };
+  (function (h, d) {
+    var s = d.createElement('script');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.defer = true;
+    s.src = h + '?t=' + new Date().getTime();
+    d.head.appendChild(s);
+  })('https://lighthouse.helpdocs.io/load', document);
+</script>
+
+<script>
+  $(document).ready(function () {
+    // if SKU cannot be found or is in error, hide reorder and order details
+    $('.hidden-order').each(function () {
+      $(this)
+        .find('.hidden-order-variant')
+        .each(function () {
+          var variant = $(this).attr('data-variant');
+          var available = $(this).attr('data-available');
+
+          // if data variant is blank, hide everything because it won't work properly
+          if (variant === '' || available === 'false') {
+            $(this).parent().parent().find('.reorder-btn').hide();
+            return false; // breaks
+          }
+        });
+    });
+
+    $('.reorder-btn').click(function () {
+      var items = [];
+      // we must loop through that order and add the items, then add it all to cart and show cart
+      $(this)
+        .parent()
+        .find('.hidden-order')
+        .find('.hidden-order-variant')
+        .each(function () {
+          var quantity = $(this).attr('data-quantity');
+          var variant = $(this).attr('data-variant');
+          const reorderCartItems = new Map([
+            ['id', variant],
+            ['quantity', quantity],
+          ]);
+
+          const cartItems = Object.fromEntries(reorderCartItems);
+          items.push(cartItems);
+        });
+
+      const formData = JSON.stringify({ items });
+
+      fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: formData,
+      })
+        .then((data) => {
+          processCartRules(data, () => refreshCart({}));
+
+          $.post('/cart/update.js', { note: 'Reorder function used' }, null, 'json').done(function (d) {
+            // nothing, mission success
+          });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    });
+
+    function findScreen() {
+      var screenPos = $(document).scrollTop();
+      //    $('#sliderCart').removeAttr('style');
+      $('#sliderCart').css('top', screenPos + 'px');
+    }
+  });
+</script>
+
+<!-- custom style mb -->
+<style>
+  .capitalize {
+    text-transform: capitalize;
+  }
+</style>

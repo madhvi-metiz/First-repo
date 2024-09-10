@@ -1,0 +1,128 @@
+{% comment %}
+  Check if the product is on sale and set a variable to be used below.
+{% endcomment %}
+{% assign on_sale = false %}
+{% if product.compare_at_price > product.price %}
+  {% assign on_sale = true %}
+{% endif %}
+
+{% comment %}
+  Check if the product is sold out and set a variable to be used below.
+{% endcomment %}
+{% assign sold_out = true %}
+{% if product.available %}
+  {% assign sold_out = false %}
+{% endif %}
+
+<div class="box product">
+  {% comment %}
+    Link to your product with the 'within: collection' filter for the link to be aware of the collection.
+    This allows you to create collection-based navigation on the product page.
+
+    Results of using 'within: collection':
+    - Instead of a URL with /products/product-handle
+      you would get /collections/collection-handle/products/product-handle
+
+    For more info on navigation within a collection
+      - http://docs.shopify.com/support/your-store/collections/how-to-navigate-within-a-collection
+
+  {% endcomment %}
+  <figure>
+    <div class="product-thumbnail">
+      <a href="{{ product.url | within: collection }}" {% if product.images.size > 1 and settings.variant_rollover %} class="view-alt product-image" data-bgset="{% include 'bgset', image: product.images[1] %}"{% else %} class="product-image"{% endif %}>
+        {%- assign image = product.featured_image -%}
+
+        <div class="card__image-wrapper" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%">
+        {% if image %}
+          {% assign loading = 'lazy' %}
+          {%- if forloop.index0 < 6 -%}
+            {% assign loading = 'eager' %}
+          {% endif %}
+
+          {{
+            image
+            | image_url: width: 1200
+            | image_tag:
+              widths: '400, 600, 800, 1200',
+              sizes: '(min-width: 780px) 400px, 200px',
+              loading: loading,
+              class: 'card__image'
+          }}
+        {% else %}
+          {{ 'image' | placeholder_svg_tag: 'card__image' }}
+        {% endif %}
+        </div>
+      </a>
+    </div>
+    <figcaption>
+      <header>
+        {%assign var_count = 0 %}
+{%for variants in product.variants%}
+{%assign var_count = var_count | plus:1 %}
+{%endfor%}
+        {% assign collection_h = 'yes' %}
+        <!-- Product template -->
+{% for collection in product.collections %}
+  {% if collection.handle == 'pod-devices' or collection.handle == 'pod-devices-1' or collection.handle == 'tanks-coils' or collection.handle == 'replacement-pods' or 
+    collection.handle == 'batteries' or collection.handle == 'devices-batteries' or collection.handle == 'topicals' or collection.handle == 'accessories-1'%}
+      {% assign collection_h = 'no' %}
+    {% endif %}
+{% endfor %}
+
+        {%if var_count == 1 and collection_h == 'yes'%}
+        {%assign var_count = var_count | append:' Flavor' %}
+        {%elsif var_count > 1 and collection_h == 'yes'%}
+        {%assign var_count = var_count | append:' Flavors' %}
+          {% elsif var_count == 1 and collection_h == 'no' %}
+              {% assign var_count = var_count | append: ' Option' %}
+          {% elsif var_count > 1 and collection_h == 'no' %}
+                {% assign var_count = var_count | append: ' Options' %}
+        {%endif%}
+        <div class="product-title">
+          <a href="{{ product.url | within: collection }}" class="title">{{ product.title }} {{ collection_h }}</a>
+          {%unless var_count == '1 Flavor'%}
+          <span class="vendor">{{ var_count }}</span>
+          {%endunless%}
+        <span class="price">
+          {% if on_sale %}
+          <span class="sale">{{ 'products.product.on_sale' | t }}</span>
+          {% endif %}
+          {% if sold_out %}
+          <span class="sold-out">{{ 'products.product.sold_out' | t }}</span>
+          <span class="original-price">
+          {% endif %}
+
+          {% if on_sale %}
+            {% if product.price_varies %}
+              <span class="from">{{ 'products.general.from' | t }}</span>
+              <span class="original-price">{{ product.compare_at_price | money }}</span>
+              {{ product.price | money }}
+            {% else %}
+              <span class="original-price">{{ product.compare_at_price | money }}</span>
+              {{ product.price | money }}
+            {% endif %}
+          {% else %}
+            {% if product.price_varies %}<span class="from">{{ 'products.general.from' | t }}</span>{% endif %}
+            {{ product.price | money }}
+          {% endif %}
+
+          {% if sold_out %}
+          </span>
+          {% endif %}
+        </span>
+      </header>
+      <div class="description rte">
+        {% assign word_limit = 40 %}
+        <p>{{ product.description | strip_html | truncatewords: word_limit }}</p>
+      </div>
+      {% if sold_out %}
+      <span class="label sold-out">{{ 'products.product.sold_out' | t }}</span>
+      {% else %}
+        {% if on_sale %}
+        <span class="label sale">{{ 'products.product.on_sale' | t }}</span>
+        {% endif %}
+      {% endif %}
+    </figcaption>
+  </figure>
+
+</div>

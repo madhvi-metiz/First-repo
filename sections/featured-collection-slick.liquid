@@ -1,0 +1,268 @@
+<style>
+  .read-more-hidden {
+    display: none;
+  }
+  .read-more {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 1s ease-out;
+  }
+
+  .more-btn {
+    margin-top: 10px;
+    display: none;
+    color: #024bad;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .block-collection-slick .box.product {
+      float: left;
+  }
+
+  .mainloader-content{
+    position:relative;
+  }
+
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 200px;
+    height: 200px;
+    animation: spin 2s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index:9999;
+    transform: translate(-50%, -50%);
+    display: none; / Hide the loader initially /
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+<script>
+  $(document).ready(function () {
+    var $slider = $('#block-collection-slick-{{ section.id }}');
+    var loader = document.getElementById('loader-section-{{ section.id }}');
+
+    var $sliderTest = $('#product-slider-{{ section.id }}');
+    var $images = $slider.find('img');
+    var totalImages = $images.length;
+    var loadedImages = 0;
+
+    $images.each(function () {
+      var img = new Image();
+      img.onload = function () {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          $sliderTest.show();
+          loader.style.display = 'none'; // Show the loader
+
+          $slider.flickity({
+            // Flickity options here
+            cellAlign: 'left',
+            contain: true,
+            pageDots: false,
+            wrapAround: true,
+          });
+        } else {
+          loader.style.display = 'block';
+          $sliderTest.hide();
+        }
+      };
+
+      img.src = $(this).attr('src');
+    });
+  });
+</script>
+
+<div
+  class="featured-collection three layout-{{ section.settings.product_count_range }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="featured-collection-section"
+>
+  <div class="wrapper">
+    {%- assign collection = collections[section.settings.collection] -%}
+    {%- assign product_limit = section.settings.product_count_range -%}
+
+    <div class="box header block">
+      <div class="image-table">
+        <div class="details">
+          {% if section.settings.title != blank %}
+            <div class="h4">{{ section.settings.title | escape }}</div>
+          {% endif %}
+          {% if section.settings['mobile-title'] != blank %}
+            <div class="h4" class="mobile-only">{{ section.settings['mobile-title'] | escape }}</div>
+          {% endif %}
+
+          {% if section.settings.text != blank %}
+            <p>
+              {{ section.settings.text | escape }}
+            </p>
+          {% endif %}
+
+          {% if section.settings['text-read-more'] != blank %}
+            <p id="read_more-{{ section.id }}" class="read-more read-more-hidden">
+              {{ section.settings['text-read-more'] | escape }}
+            </p>
+
+            <div id="morebtn-{{ section.id }}" class="more-btn">Read more</div>
+          {% endif %}
+
+          {% if section.settings.button_link != blank and section.settings.button_label != blank %}
+            <a href="{{ section.settings.button_link }}" class="aboutusbtn big-blue desktop-only">
+              {{- section.settings.button_label | escape -}}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="mainloader-content">
+      <div class="loader" id="loader-section-{{ section.id }}"></div>
+      <div id="product-slider-{{ section.id }}" style="display: none;">
+        <div id="block-collection-slick-{{ section.id }}" class="block-collection-slick {{ section.id }}-block">
+          {% for product in collection.products limit: product_limit %}
+            {% include 'product-grid-item' %}
+          {% else %}
+            {% for i in (1..product_limit) %}
+              {% include 'placeholder-product-grid-item' %}
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if section.settings.button_link != blank and section.settings.button_label != blank %}
+    <a href="{{ section.settings.button_link }}" class="aboutusbtn big-blue mobile-only">
+      {{- section.settings.button_label | escape -}}
+    </a>
+  {% endif %}
+</div>
+
+<script>
+  function isElementHidden(element) {
+    return element.is(':hidden');
+  }
+
+  $(document).ready(function () {
+    const readMore = $('#read_more-{{section.id }}');
+    if (readMore.length === 0) {
+      return;
+    }
+
+    const isHidden = isElementHidden(readMore);
+
+    if (isHidden) {
+      const moreBtn = $('#morebtn-{{section.id}}');
+      moreBtn.css('display', 'block');
+    }
+  });
+
+  $('#morebtn-{{section.id}}').on('click', function () {
+    const readMore = $('#read_more-{{section.id }}');
+    const moreBtn = $('#morebtn-{{section.id}}');
+
+    const isHidden = isElementHidden(readMore);
+
+    if (isHidden) {
+      moreBtn.text('Read less');
+      readMore.removeClass('read-more-hidden');
+    } else {
+      moreBtn.text('Read more');
+      readMore.addClass('read-more-hidden');
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Featured Coll Slick",
+  "class": "featured-collection-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured collection with text"
+    },
+    {
+      "type": "text",
+      "id": "mobile-title",
+      "label": "Mobile Heading",
+      "default": "Featured collection with text"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Use this text to provide customer with details about the collection"
+    },
+    {
+      "type": "textarea",
+      "id": "text-read-more",
+      "label": "Text (Read more)",
+      "default": "Use this text to provide additional collapsed information"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "id": "collection",
+      "type": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "product_count_range",
+      "label": "Number of products",
+      "min": 2,
+      "max": 12,
+      "step": 2,
+      "default": 6
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection Slick",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}
+<!--
+  <style>
+  /* .block-collection-slick {
+  	width: 100%;
+  	display: flex;
+  	justify-content: space-between;
+  	flex-wrap: wrap;
+
+  } */
+  #slider-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px; / Adjust height as needed /
+    font-size: 18px;
+    color: #333;
+  }
+
+  /* #product-slider {
+    display: none; / Hidden until fully loaded /
+  } */
+  </style>
+-->

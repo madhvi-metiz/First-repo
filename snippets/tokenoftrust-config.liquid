@@ -1,0 +1,66 @@
+{%comment%}
+*** Instructions ***
+
+To test:
+1. Close all incognito windows and open a FRESH incognito window.
+2. Add to the url as a query param: utm_content=totActive
+
+To activate permanently:
+1. Change "XtotActive" to "totActive"
+2. High priority notification to DevOps to set ecommerce = ‘enabled’ on the API keys.
+3. Delete this comment section
+{%endcomment%}
+
+{% unless totConfigIncluded %}
+{%- assign totConfigIncluded = true -%}
+
+{%- assign XtotActive = true -%}
+
+{%- if totActive -%}
+	<script>console.log("TOT: Pinned Active.");</script>
+{%- else -%}
+	{%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
+	{%- assign pageUrl = contentForQuerystring | split:'"pageurl":"' | last | split:'"' | first | split:'.myshopify.com' | last |
+	   replace:'\/','/' |
+	   replace:'%20',' ' |
+	   replace:'\u0026','&'
+	-%}
+	<!-- pageUrl {{ pageUrl }} -->
+	{%- if pageUrl contains 'utm_content=totActive' or pageUrl contains 'utm_content=orderRequiresTot' -%}
+		{%- assign totActive = true -%}
+		<script>console.log("TOT: Activated via utm_content.");</script>
+	{%- else -%}
+		{%- assign totActive = false -%}
+	{%- endif -%}
+{%- endif -%}
+
+
+{%comment%}
+***** TOT SETUP ******
+{%endcomment%}
+
+{%- if totActive -%}
+  <script>
+	console.log("TOT: Is Active.");
+
+  	/** TOT Settings **/
+	window.totOpts = window.totOpts || {};
+
+  {%- if checkout -%}
+    window.totOpts['checkout'] = {
+      email: '{{checkout.email}}',
+      shipping_address: {{checkout.shipping_address | json }}
+    };
+  {%- endif -%}
+
+window.orderRequiresTot = window.totActive = function () { return 1;}
+  </script>
+
+  {%- unless checkout -%}
+  	<script type="text/javascript" src="https://shopify.tokenoftrust.com/tot-shopify.js?shop={{shop.permanent_domain}}"></script>
+  {%- endunless -%}
+
+{%- else -%}
+	<script>console.log("TOT: Installed but inactive.");</script>
+{%- endif -%}
+{% endunless %}

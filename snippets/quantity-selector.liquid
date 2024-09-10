@@ -1,0 +1,56 @@
+<div class="selector-wrapper quantity quantity-{{ section.id }}">
+  <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
+  <div class="quantity-select quantity-select-{{ section.id }}">
+    <div class="button-wrapper">
+      <button class="adjust adjust-minus">-</button>
+    </div>
+    <div class="input-wrapper">
+      <input
+        type="text"
+        class="quantity"
+        value="1"
+        min="1"
+        {% if product.handle contains '10-pack' %}
+          max="3"
+        {% endif %}
+        pattern="[0-9]*"
+        name="quantity"
+        id="Quantity-{{ section.id }}"
+        data-Quantity
+      >
+    </div>
+    <div class="button-wrapper">
+      <button class="adjust adjust-plus">+</button>
+    </div>
+  </div>
+</div>
+
+{% if product.handle contains '10-pack' %}
+  <script>
+    $(document).ready(function () {
+      document.addEventListener(
+        'click',
+        function (e) {
+          var className = e.target.className;
+          if (className.indexOf('adjust') > -1) {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+            var existQty = parseInt($('.quantity-select').find('.quantity').val());
+            if (className === 'adjust adjust-plus' && existQty != 3) {
+              existQty = existQty + 1;
+            } else if (existQty === 3 && className === 'adjust adjust-plus') {
+              alert('Sorry, you cannot add more than three 10 packs to your cart.');
+            } else if (existQty != 1) {
+              existQty = existQty - 1;
+            }
+            $('.quantity-select').find('.quantity').val(existQty);
+          } else {
+            // let things happen
+          }
+        },
+        true
+      );
+    });
+  </script>
+{% endif %}

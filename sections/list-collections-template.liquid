@@ -1,0 +1,148 @@
+<style>
+  @media screen and (max-width: 768px) {
+    #shopify-section-list-collections-template .collection {
+      padding-top: 1.5em;
+    }
+  }
+</style>
+<section
+  class="collection simple-collection"
+  data-section-id="{{ section.id }}"
+  data-layout="{{ section.settings.layout }}"
+  data-section-type="list-collections-template"
+>
+  <div class="wrapper">
+    <header class="content-util">
+      {% include 'breadcrumb' %}
+      {% include 'social-icons' %}
+    </header>
+
+    <header class="collection-header">
+      <div class="container">
+        {% if section.settings.title != blank %}
+          <h1>{{ section.settings.title | escape }}</h1>
+        {% endif %}
+      </div>
+      {% if section.settings['description-text'] != blank %}
+        <div class="description">
+          <p>{{ section.settings['description-text'] }}</p>
+        </div>
+      {% endif %}
+    </header>
+
+    <div class="featured-grid" style="padding-top:0px; padding-left:0px; padding-right:0px; border-bottom:0px;">
+      <div class="wrapper">
+        <div class="row row-3">
+          {% for link in section.settings.main_linklist.links %}
+            {% if link.title == 'Shop By Brand' %}
+              {% assign brand_links = link.links %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+
+          {% for sub_link in brand_links %}
+            {%- assign sub_link_object = sub_link.object -%}
+
+            {% assign image = null %}
+            {%- if sub_link.type == 'collection_link' -%}
+              {% assign link_collection = sub_link_object %}
+              {% assign image = link_collection.featured_image %}
+            {% elsif sub_link.type == 'product_link' %}
+              {% assign product_collection = sub_link_object %}
+              {% assign image = product_collection.featured_image %}
+            {% elsif sub_link.title == 'Shop All' %}
+              {% comment %} We don't want to show the shop ALL collection on the collection list page {% endcomment %}
+              {% continue %}
+            {% endif %}
+
+            {% comment %} 20240611 - Dino doesn't want to show collections without images so they are hidden automatically {% endcomment %}
+            {% unless image %}
+              {% continue %}
+            {% endunless %}
+
+            <div class="box" style="margin-bottom:40px;">
+              {% assign sub_link_url = sub_link_object.url %}
+              {% comment %}Since some collections only contain 1 product, we must replace their link with a single product link {% endcomment %}
+              {% if sub_link.type == 'collection_link' %}
+                {% if sub_link_object.all_products_count == 1 %}
+                  {% for p in sub_link_object.products %}
+                    {% assign sub_link_url = p.url %}
+                  {% endfor %}
+                {% endif %}
+              {% endif %}
+
+              <a href="{{ sub_link_url}}">
+                <figure>
+                  <div class="image-table">
+                    <div class="image-cell">
+                      <div
+                        class="card__image-wrapper"
+                        style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%"
+                      >
+                        {% assign loading = 'lazy' %}
+                        {%- if forloop.index0 < 6 -%}
+                          {% assign loading = 'eager' %}
+                        {% endif %}
+
+                        {% if image %}
+                          {{
+                            image
+                            | image_url: width: 1200
+                            | image_tag:
+                              widths: '400, 600, 800, 1200',
+                              sizes: '(min-width: 780px) 400px, 200px',
+                              loading: loading,
+                              class: 'card__image'
+                          }}
+                        {% else %}
+                          {{ 'image' | placeholder_svg_tag: 'card__image' }}
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+              </a>
+              <figcaption class="below" style="margin-top:0px;">
+                <h3>
+                  <a href="{{ sub_link_object.url }}">{{ sub_link.title }}</a>
+                </h3>
+              </figcaption>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "List collection page",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "All collections"
+    },
+    {
+      "type": "link_list",
+      "id": "main_linklist",
+      "label": "Menu",
+      "default": "main-menu"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "label": "Collection",
+          "id": "collection",
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

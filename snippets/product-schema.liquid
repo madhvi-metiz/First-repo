@@ -1,0 +1,66 @@
+<script type="application/ld+json">
+[{
+    "@context": "https://schema.org/", 
+    "@type": "Product", 
+    "name": "{{ product.title }}",
+    "image": "{{ product.featured_image.src | img_url: '1024x1024' }}",
+    "brand": {
+      "@type": "Brand",
+      "name": "{% if product.vendor %}{{product.vendor}}{% else %} {{shop.name}} {% endif %}"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "url": "",
+      "priceCurrency": "{{ shop.currency }}",
+      "lowPrice": "{% if product.compare_at_price_min %}{{product.compare_at_price_min  | money_without_currency }}{% else %} {{ current_variant.price | money_without_currency }}{% endif %}",
+      "highPrice": "{% if product.compare_at_price_max %}{{product.compare_at_price_max  | money_without_currency }}{% else %} {{ current_variant.price | money_without_currency }}{% endif %}"
+    }
+   },
+  {
+      "@context": "https://schema.org/",
+      "@type": "FoodEstablishment",
+      "name": "{{ shop.name }}",
+      "location": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ shop.address.street }}",
+        "addressLocality": "{{ shop.address.province }}",
+        "addressRegion": "{{ shop.address.city }}",
+        "postalCode": "{{ shop.address.zip }}"
+      },
+      "makesOffer": {
+        "@type": "Offer",
+        "priceSpecification": {
+          "@type": "DeliveryChargeSpecification",
+          "eligibleTransactionVolume": {
+            "@type": "PriceSpecification",
+            "price": "{{ current_variant.price | money_without_currency }}",
+            "priceCurrency": "{{ shop.currency }}"
+          }
+        }
+      }
+    },
+    {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "{{ product.metafields.spr.reviews | split: 'ratingValue": "' | last | split: '"' | first | plus: 0 }}",
+      "reviewCount": "{{ product.metafields.spr.reviews | split: 'reviewCount": "' | last | split: '"' | first | plus: 0 }}"
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "author": "{% if product.metafields.reviews.author.value != blank  %}{{ product.metafields.reviews.author.value }}{% else %}Ellie{% endif %}",
+        "datePublished": "{% if product.metafields.reviews.datePublished.value != blank  %}{{ product.metafields.reviews.datePublished.value }}{% else %}{{ "now" | date: "%Y-%m-%d %H:%M" }}{% endif %}",
+        "reviewBody": "{% if product.metafields.reviews.reviewBody.value != blank  %}{{ product.metafields.reviews.reviewBody.value }}{% else %}The flavors are all amazing, even the flavors that I was hesitant to try. {% endif %}",
+        "reviewRating": {
+          "@type": "Rating",
+          "bestRating": "5",
+          "ratingValue": "{{ product.metafields.spr.reviews.value | split: 'ratingValue": "' | last | split: '"' | first | plus: 0 }}",
+          "worstRating": "1"
+        }
+      }
+    ]
+   }
+  ]
+</script>

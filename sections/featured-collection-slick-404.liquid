@@ -1,0 +1,56 @@
+<div
+  class="featured-collection three layout-{{ section.settings.product_count_range }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="featured-collection-section"
+>
+  <div class="wrapper">
+    {%- assign collection = collections[section.settings.collection] -%}
+    {%- assign product_limit = section.settings.product_count_range -%}
+
+    
+    <div class="block-collection-slick {{ section.id }}-block">
+      {% for product in collection.products limit: product_limit %}
+        {% include 'product-grid-item' %}
+      {% else %}
+        {% for i in (1..product_limit) %}
+          {% include 'placeholder-product-grid-item' %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if section.settings.button_link != blank and section.settings.button_label != blank %}
+    <a href="{{ section.settings.button_link }}" class="aboutusbtn big-blue mobile-only">
+      {{- section.settings.button_label | escape -}}
+    </a>
+  {% endif %}
+</div> 
+{% schema %}
+{
+  "name": "Featured Coll Slick",
+  "class": "featured-collection-section",
+  "settings": [
+    
+    {
+      "id": "collection",
+      "type": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "product_count_range",
+      "label": "Number of products",
+      "min": 2,
+      "max": 12,
+      "step": 2,
+      "default": 6
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection Slick",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}

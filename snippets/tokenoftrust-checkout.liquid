@@ -1,0 +1,17 @@
+{% unless totCheckoutIncluded %}
+{%- assign totCheckoutIncluded = true -%}
+{%- if totActive -%}
+<!-- (totActive) tokenoftrust-checkout -->
+<script src="https://shop.tokenoftrust.com/tot-checkout.js?shop={{shop.permanent_domain}}"></script>
+<script>
+console.log("TOT: Pre-checkout enabled.");
+var options = {
+
+paymentSubmitButtonLabel: 'Verify and Pay'
+};
+shopifyTot.checkout(options);
+</script>
+{%- else -%}
+<!-- (!totActive) tokenoftrust-checkout -->
+{%- endif -%}
+{%endunless%}

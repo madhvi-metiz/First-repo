@@ -1,0 +1,185 @@
+<div
+  class="featured-row section-standard {% unless section.settings.section_padding %}no-border{% endunless %}"
+  data-section-id="{{ section.id }}"
+  data-section-type="featured-row-section"
+>
+  <div class="contain-site-width {% unless section.settings.section_padding %}no-padding{% endunless %}">
+    <div class="wrapper">
+      <div class="feature-row">
+        {% capture image_grid_item %}
+          <div class="feature-row__item feature-row__image">
+            {%- assign image = section.settings.image -%}
+            {% if image != blank %}
+              <div class="card__image-wrapper bg" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 50}}%;background-image:url({{ image | img_url:'grande'}})">
+                <div class="inner-card-div">
+                  {% if section.settings.image_text %}
+                    <h3 class="card-heading">
+                      {{ section.settings.image_text }}
+                    </h3>
+                  {% endif %}
+
+                  {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+                    <a href="{{ section.settings.button_link }}" class="button outline card-image-button">
+                      {{ section.settings.button_label | escape }}
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
+
+            {%- assign image2 = section.settings.image2 -%}
+            {% if image2 != blank %}
+              <div class="card__image-wrapper bg two" style="padding-top:{{ 1 | divided_by: image2.aspect_ratio | times: 50}}%;background-image:url({{ image2 | img_url:'grande'}})">
+                <div class="inner-card-div">
+                  {% if section.settings.image2_text %}
+                    <h3 class="card-heading">
+                      {{ section.settings.image2_text }}
+                    </h3>
+                  {% endif %}
+
+                  {%  if section.settings.button_label2 != blank and section.settings.button_link2 != blank %}
+                    <a href="{{ section.settings.button_link2 }}" class="button outline card-image-button">
+                      {{ section.settings.button_label2 | escape }}
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
+          </div>
+        {% endcapture %}
+
+        {% if section.settings.layout == 'left' %}
+          {{ image_grid_item }}
+        {% endif %}
+
+        <div class="feature-row__item feature-row__text feature-row__text--{{ section.settings.layout }} feature-row__text--align__{{ section.settings.text_align }}">
+          {% if section.settings.title != blank %}
+            <h3>{{ section.settings.title }}</h3>
+          {% endif %}
+          {% if section.settings.text != blank %}
+            <div class="rte">
+              {{ section.settings.text }}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if section.settings.layout == 'right' %}
+          {{ image_grid_item }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Image with text Clickable",
+  "class": "featured-row-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "section_padding",
+      "label": "Show spacing around section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_text",
+      "label": "Image 1 Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "image2",
+      "label": "Image 2"
+    },
+    {
+      "type": "text",
+      "id": "image2_text",
+      "label": "Image 2 Text"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Image on left"
+        },
+        {
+          "value": "right",
+          "label": "Image on right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text align",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Image with text"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "button_label2",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link2",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with text Clickable",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

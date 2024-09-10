@@ -1,0 +1,294 @@
+{% assign option_collections = 'choose your flavor,flavor,flavors' | split: ',' %}
+
+{%- comment -%}
+  Check if the product is on sale and set a variable to be used below.
+{%- endcomment -%}
+{%- assign on_sale = false -%}
+{%- if product.compare_at_price > product.price -%}
+  {%- assign on_sale = true -%}
+{%- endif -%}
+
+{%- comment -%}
+  Check if the product is sold out and set a variable to be used below.
+{%- endcomment -%}
+{%- assign sold_out = true -%}
+{%- if product.available -%}
+  {%- assign sold_out = false -%}
+{%- endif -%}
+
+{% assign variant_count = product.variants | size %}
+<!-- Product template -->
+
+{% assign is_flavor = false %}
+{% assign option_lowercase = product.options[0] | downcase %}
+
+{% if option_collections contains option_lowercase %}
+  {% assign is_flavor = true %}
+{% endif %}
+
+{% assign collection_type = ' Options' %}
+{% if variant_count == 1 and is_flavor %}
+  {% assign collection_type = ' Flavor' %}
+{% elsif variant_count > 1 and is_flavor %}
+  {% assign collection_type = ' Flavors' %}
+{% elsif variant_count == 1 %}
+  {% assign collection_type = ' Option' %}
+{% elsif variant_count > 1 %}
+  {% assign collection_type = ' Options' %}
+{% endif %}
+
+{% assign variant_text = variant_count | append: collection_type %}
+{% assign view_type = 'View' | append: collection_type %}
+
+{% assign url = product.selected_or_first_available_variant.url %}
+{% assign variant_id = product.selected_or_first_available_variant.id %}
+{% assign avail = 0 %}
+
+{% if product.available %}
+  {% assign avail = 1 %}
+{% endif %}
+
+{% if product.has_only_default_variant %}
+  {% assign master_found = 0 %}
+  {% assign v = product.selected_or_first_available_variant %}
+  {% unless v.sku contains 'MASTER' %}
+    {% assign variant_master_sku = 'MASTER-' | append: v.sku %}
+    {% paginate collections.all.products by 1500 %}
+      {% for p in collections.all.products %}
+        {% if p.available %}
+          {% for var in p.variants %}
+            {% if var.sku contains 'MASTER' %}
+              {% if var.sku == variant_master_sku %}
+                {% assign variant_id = var.id %}
+                {% assign master_found = 1 %}
+                {% if var.available %}
+                  {% assign avail = 1 %}
+                {% else %}
+                  {% assign avail = 0 %}
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% endpaginate %}
+  {% endunless %}
+{% endif %}
+
+{% if avail == 1 %}
+  <div
+    class="box product {% if product.tags contains "DELTA8" %}d8-restricted{% endif %}"
+    data-sku="{{product.selected_or_first_available_variant.sku}}"
+  >
+    {%- comment -%}
+      Link to your product with the 'within: collection' filter for the link to be aware of the collection.
+      This allows you to create collection-based navigation on the product page.
+
+      Results of using 'within: collection':
+      - Instead of a URL with /products/product-handle
+        you would get /collections/collection-handle/products/product-handle
+
+      For more info on navigation within a collection
+        - http://docs.shopify.com/support/your-store/collections/how-to-navigate-within-a-collection
+    {%- endcomment -%}
+    {% capture img_id %}ProductGridImage-{{ section.id }}-{{ collection.id }}-{{ product.id }}{% endcapture %}
+    {% capture wrapper_id %}ProductGridImageWrapper-{{ section.id }}-{{ collection.id }}-{{ product.id }}{% endcapture %}
+    <figure class="product__figure">
+      <a
+        id="{{ wrapper_id }}"
+        href="
+          {% if product.selected_or_first_available_variant.available %}
+            {{product.url}}
+          {% else %}
+            /products/{{ product.handle }}
+          {% endif %}
+        "
+        class="product_card"
+        aria-label="{{ product.title }}"
+      >
+        {%- assign image = product.featured_image -%}
+
+        <div class="product_card__image-wrapper max-image-height-280">
+          {% comment %}
+            <script>
+              console.log({{ template.name |json }})
+            </script>
+          {% endcomment %}
+          {% if image %}
+            {% assign loading = 'lazy' %}
+            {%- if forloop.index0 < 6 and template.name == 'search' -%}
+              {% assign loading = 'eager' %}
+            {% elsif forloop.index0 < 4 and template.name == 'collection' %}
+              {% assign loading = 'eager' %}
+            {% endif %}
+
+            {{
+              image
+              | image_url: width: 1200
+              | image_tag:
+                widths: '400, 600, 800, 1200',
+                sizes: '(min-width: 780px) 400px, 200px',
+                loading: loading,
+                class: 'product_card__image max-image-height-280'
+            }}
+          {% else %}
+            {{ 'image' | placeholder_svg_tag: 'product_card__image max-image-height-280' }}
+          {% endif %}
+
+          <style media="screen">
+            {%- if settings.collections_product_ratio == 'false' or settings.collections_product_ratio == 'auto' -%}
+              {%- unless related_products_section -%}
+                #{{ wrapper_id }} .product_card__image-wrapper:before,
+              {%- endunless -%}
+            {%- endif -%}
+          </style>
+          {%- if settings.variant_rollover == true and product.images.size > 1 -%}
+            {%- assign image = product.images[1] -%}
+            {% if image %}
+              {{
+                image
+                | image_url: width: 1200
+                | image_tag:
+                  widths: '400, 600, 800, 1200',
+                  sizes: '(min-width: 780px) 400px, 200px',
+                  loading: 'lazy',
+                  class: 'product_card__image max-image-height-280'
+              }}
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'product_card__image max-image-height-280' }}
+            {% endif %}
+          {%- endif -%}
+
+          {% unless product.tags contains 'COMING_SOON' %}
+            {%- if sold_out -%}
+              <span class="label sold-out">{{ 'products.product.sold_out' | t }}</span>
+            {%- elsif on_sale -%}
+              <span class="label sale">{{ 'products.product.on_sale' | t }}</span>
+            {%- endif -%}
+          {% endunless %}
+        </div>
+      </a>
+      <figcaption class="product__figcaption">
+        <div class="meta-product-info">
+          <div class="product-title">
+            <a
+              href="
+                {% if product.selected_or_first_available_variant.available %}
+                  {{product.url}}
+                {% else %}
+                  /products/{{ product.handle }}
+                {% endif %}
+              "
+              class="title clamp_4"
+            >
+              {{- product.title -}}
+            </a>
+
+            <div
+              class="loox-rating"
+              data-id="{{ product.id }}"
+              data-rating="{{ product.metafields.loox.avg_rating }}"
+              data-raters="{{ product.metafields.loox.num_reviews }}"
+            ></div>
+          </div>
+
+          <div class="product-price-container">
+            <span class="price">
+              {% if on_sale %}
+                {% if product.price_varies %}
+                  {% assign min_variant_price = product.variants.first.price %}
+                  {% assign max_variant_price = product.variants.first.price %}
+
+                  {% for variant in product.variants %}
+                    {% if min_variant_price > variant.price %}
+                      {% assign min_variant_price = variant.price | money_min: min_variant_price %}
+                    {% endif %}
+                    {% if max_variant_price < variant.price %}
+                      {% assign max_variant_price = variant.price | money_max: max_variant_price %}
+                    {% endif %}
+                  {% endfor %}
+                  <span>{{ min_variant_price | money }} - {{ max_variant_price | money }}</span>
+                  {%- comment -%}
+                    <span class="from">{{ 'products.general.from' | t }}</span>
+                    <span class="original-price money">{{ product.compare_at_price | money }}</span>
+                    <span class="money">{{ product.price | money }}</span>
+                  {%- endcomment -%}
+                {% else %}
+                  <span class="original-price money">{{ product.compare_at_price | money }}</span>
+                  {% if page.handle != 'rangers' %}
+                    <span class="money">{{ product.price | money }}</span>
+                  {% else %}
+                    <span class="money">FREE</span>
+                  {% endif %}
+                {% endif %}
+              {% else %}
+                {% if product.price_varies -%}
+                  <span class="from">{{ 'products.general.from' | t }}</span>
+                {%- endif %}
+                {% if page.handle != 'rangers' %}
+                  <span class="money">{{ product.price | money }}</span>
+                {% else %}
+                  <span class="money"><span style="color:black;">Price: </span>FREE</span>
+                {% endif %}
+              {% endif %}
+            </span>
+
+            <span class="variation-count-container">
+              {% if settings.show_vendors %}
+                {% if variant_count > 1 %}
+                  <a
+                    href="/products/{{ product.handle }}"
+                    aria-label="{{ product.title }}"
+                  >
+                    <span class="vendor">{{ variant_text }}</span>
+                  </a>
+                {% endif %}
+              {% endif -%}
+            </span>
+          </div>
+          <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+        </div>
+
+        {% if variant_text != '1 Flavor' and variant_text != '1 Option' and avail == 1 %}
+          <div>
+            <a
+              href="
+                {% if product.selected_or_first_available_variant.available %}
+                  {{product.url}}
+                {% else %}
+                 /products/{{ product.handle }}
+                {% endif %}
+              "
+              class="a-button default-cart-button__button"
+              aria-label="{{ product.title }}"
+            >
+              {{ view_type }}
+            </a>
+          </div>
+
+        {% else %}
+          <button
+            data-variant-id="{{variant_id}}"
+            class="default-cart-button__button collection-ATC{%if avail == 1 %}{%else%} disabled{%endif%}"
+            {% if avail == 1 %}
+            {% else %}
+              disabled
+            {% endif %}
+          >
+            {% if avail == 1 %}
+              <span> Add to Cart </span>
+            {% elsif product.tags contains 'COMING_SOON' %}
+              <span> Coming Soon </span>
+            {% else %}
+              <span> Sold Out </span>
+            {% endif %}
+          </button>
+        {% endif %}
+      </figcaption>
+    </figure>
+  </div>
+
+  {%- if settings.collections_product_ratio == 'auto' and related_products_section != true -%}
+    {% include 'product-grid-item-auto-ratio' %}
+  {%- endif -%}
+{% endif %}

@@ -1,0 +1,304 @@
+#customer-logon-container {
+  display:none;
+}
+[for="checkout_id_delivery-shipping"]::after {
+/*     content: "Rapid dispatch directly to your door from our regional fulfillment centers";
+    margin-top: 5px;
+    background: #d3ebff;
+    display: block;
+    padding: 9px;
+  padding-left: 28px;
+    border-radius: 6px;
+  color:#8e8e8e; */
+}
+      [for="checkout_id_delivery-pickup"]::after {
+    content: "Local pickup available at our North Providence, Rhode Island location";
+    margin-top: 5px;
+    display: block;
+    padding: 9px;
+        padding-left: 28px;
+    border-radius: 6px;
+        color:#8e8e8e;
+}
+      [for="checkout_different_billing_address_true"]::after {
+    content: "NOTE: If billing and shipping names are different, delays in processing times will occur.";
+    margin-top: 5px;
+    display: block;
+    padding: 9px;
+        padding-left: 28px;
+    border-radius: 6px;
+        color:darkred;
+}
+
+  .crt-acc {
+    text-align:right;
+  }
+      .reorder_addtocart_btn, .reorder_checkout_btn { display:none; }
+
+         .main__content {
+            padding-bottom:1em;
+          }
+                    div[data-gateway-group="manual"] {
+            display:none !important;
+          }
+          .ssl {
+            max-width: 100px;
+    margin-top: 1em;
+    float: right;
+          }
+          .content-box__emphasis {
+            font-weight:900;
+          }
+      .section--shipping-method .radio__label__primary {
+       display:inline-block;
+       width:fit-content;
+      }
+      .close-info {
+       font-weight:bold;
+       position:absolute;
+       right:5px;
+       top:5px;
+      }
+      .section--shipping-method .radio__label__accessory {
+       display:inline;
+        float:right;
+      }
+      .info {
+       display: inline-block;
+    max-width: 13px;
+    vertical-align: middle;
+    margin-left: 0px;
+    margin-right:2px;
+      }
+      .info:hover {
+       filter: grayscale(1); 
+      }
+      @media screen and (min-width:769px) {
+             .info-container {
+       position:relative;
+       padding-left:5px;
+             }
+        .crt-acc {
+          text-align:right;
+        }
+              .info-container {
+       display:inline;
+                max-width:55%;
+      }
+        .close-info {
+        display:none;
+        }
+      }
+      .info-absolute {
+        display:none;
+position: absolute;
+    background-color: white;
+    z-index: 15;
+    border: 2px solid grey;
+    padding: 15px;
+    max-width: 450px;
+    left: 10px;
+      }
+    .svg-logo {
+      max-width:150px;
+      height:auto;
+    }
+polygon {
+      transform-origin: unset;
+    color: unset;
+    opacity: .99;
+}
+@media only screen and (max-width: 768px) {
+.svg-logo {
+  display:block;
+  margin-right:auto;
+  margin-left:auto;
+}
+p.layout-flex__item {
+  width: 100%;
+    align-self: end;
+    justify-self: end;
+    float: right;
+    text-align: right;
+}
+}
+
+/* css for the out of stock for pick up */
+#customer-form-overlay h2 {
+  font-weight:bold;
+  margin-bottom:1em;
+  font-size:1.75em;
+}
+#customer-form-overlay a {
+    color: #024bad;
+    text-decoration:underline;
+    display:block;
+    text-align:center;
+    cursor:pointer;
+}
+#customer-form-close {
+  position: absolute;
+  right: 2%;
+  top: 2%;
+  font-weight: bold;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+.oos-overlay, #customer-form-overlay {
+  width: 100%;
+  background: rgb(0,0,0,.5);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  min-height: 100%;
+  display:none;
+}
+.oos-popup, #customer-popup {
+  position: absolute;
+  min-width: 300px;
+  background-color: white;
+  max-width: 90%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+  text-align:center;
+}
+.oos-popup h2 {
+  font-size:1.5em;
+  font-weight:900;
+  margin-bottom:.5em;
+}
+.unavail-items {
+font-style:italic;
+font-size: .75em;  
+}
+.oos-flex {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  align-items: center;
+  max-width: 80%;
+  margin:1.5em auto;
+}
+.oos-popup h3 {
+  font-size:110%;
+}
+.oos-button {
+  background-color: #0c8eff;
+  padding: 10px;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  display: block;
+  width: 90%;
+  font-size:110%;
+  font-weight:bold;
+  text-align: center;
+  margin-right: auto;
+  color: white;
+  margin-left: auto;
+  cursor:pointer;
+}
+.oos-button:hover {
+  background-color:black;
+  color:white;
+}
+.oos-button.first {
+  margin-top:1em;
+}
+.selection-wrapper label {
+  font-size: 0.875em;
+  color: #747375;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: "DIN Next", sans-serif;
+  display:block;
+  text-align:left;
+}
+.selection-wrapper .input-row input, .selection-wrapper .input-row textarea {
+  width: -webkit-calc(100% - 8px);
+  width:    -moz-calc(100% - 8px);
+  width:         calc(100% - 8px);
+  margin: 0;
+  padding: 14px 0px 14px 8px;
+  border: 0px;
+  outline: 2px solid #adadae;
+  outline-offset: -2px;
+  font-family: "DIN Next", sans-serif;
+  font-size: 0.875em;
+  background-color: transparent;
+}
+input:selected {
+  background-color:rgb(232, 240, 254), rgba(70, 90, 126, 0.4);
+}
+.selection-wrapper .input-row {
+  margin-bottom: 10px;
+}
+.selection-wrapper .input-row input:focus, .selection-wrapper .input-row textarea:focus {
+  outline-color: #024bad;
+}
+.selection-wrapper button.button, .selection-wrapper input.button {
+  width: 100%;
+  /* padding: 8px 8px; */
+  background: #024bad;
+  color: white;
+  border: 0;
+  text-transform: uppercase;
+  font-weight: 600;
+  width: 100%;
+}
+.button.solid, p.buttons.solid > a {
+  /* padding: 4px 14px; */
+  background: #024bad;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-family: "DIN Next", sans-serif;
+  font-size: 0.875em;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+}
+.button {
+  display: block;
+  padding: 16px 32px;
+  border: 1px solid #000;
+  border-radius: 0;
+  background-color: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: padding 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+#RecoverPassword {
+  margin-bottom: 1em;
+  display: block;
+}
+.login_extra_links {
+  text-align: center;
+  margin-top: 1em;
+}
+.selection-wrapper input.cancel, .selection-wrapper a.cancel {
+  margin-top: 1em;
+  display: inline-block;
+  text-decoration: none;
+  font-style: italic;
+  text-align: center;
+  color: #9a9a9b;
+}
+#recover {
+  margin-bottom:1em;
+}
+#create-customer-form {
+  display:none;
+}

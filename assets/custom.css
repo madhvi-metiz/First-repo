@@ -1,0 +1,327 @@
+/*
+00. Library override(ex. bootstrap etc) --------------------
+01. Text and Typography ------------------------------------
+02. Common element(ul,ol,li,body,div etc.) -----------------
+03. Common class(padding, margin etc.) ---------------------
+04. Header styles ------------------------------------------
+05. Footer styles-------------------------------------------
+06. Common content------------------------------------------
+07. Pages and Posts-----------------------------------------
+08. Extra styles--------------------------------------------
+09. Media Query---------------------------------------------
+*/
+/* End Table of Contents */
+
+/* Root variables define here */
+
+/* Root variables define here */
+
+/* 00. Library override(ex. bootstrap etc) start*/
+/* 00. Library override(ex. bootstrap etc)   end*/
+/* 01. Text and Typography start */
+
+/* 01. Text and Typography end */
+/* 02. Common element(ul,ol,li,body,div etc.) start*/
+.input-group.date {
+  position: relative;
+}
+.input-group.date span {
+  position: absolute;
+  width: 27px;
+  height: 45px;
+  right: 7px;
+  top: 14px;
+  fill: #adadae;
+}
+/* 02. Common element(ul,ol,li,body,div etc.) end*/
+/*03. Common class(padding, margin etc.) start*/
+
+/*03. Common class(padding, margin etc.) end*/
+/*04. Header styles start*/
+ 
+body .intl-text.pickup2, body .intl-text.pickup{
+  text-align: left; 
+}
+
+body .pickup2 ul {
+  text-align: left;
+  margin-left: 30px;
+}
+
+.pickup2 ul li {
+  list-style-type: disc;
+}
+#shopify-section-header{
+  top: 43px !important;
+  z-index: 990 !important;
+  position: sticky !important;
+}
+#shopify-section-header-util{
+  top:unset!important;
+  z-index: unset !important;
+  position: static !important;
+}
+/*04. Header styles end*/
+/*05. Footer styles start*/
+.footer-klaviyo-form{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+/* .footer-klaviyo-form form{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+} */
+/*05. Footer styles end*/
+/*06. Common content start*/
+
+/*06. Common content end*/
+
+/*07. Pages and Posts satrt*/
+/*Homepage satrt*/
+.template-index .gallery-section{
+  background: #f4f4f4;
+}
+.template-index .gallery-section h4{
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  font-size: 49px;
+  font-weight: 700;
+  margin-bottom: 45px;  
+  line-height: 1.3; 
+}
+.template-index .gallery-section h3 {
+  text-align: left;
+}
+.template-index .gallery-section h3 a{
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  font-size: 16px;
+  font-weight: 700 !important; 
+  color: #024BAD !important;
+  background: none;
+  text-align: left;
+  display: flex!important;
+  width: auto;
+  line-height: 1.3;
+}
+.template-index .logo-list-section header h4{ 
+  font-size: 49px;
+  font-weight: 900;
+  line-height: 1.3;   
+}
+.template-index .logo-list-section .logo-bar{
+  align-items: unset;
+}
+.template-index .logo-list-section .logo-list {
+ background: transparent !important;
+}
+.template-index .logo-list-section .icon-heading-sub{ 
+  font-size: 20px;
+  font-weight: 900; 
+  color: #000;
+}  
+.template-index .logo-list-section .icon-heading-sub span{  
+  font-size: 16px;
+  font-weight: 700; 
+  display: block;
+  
+}  
+.template-index .logo-list-section  p{ 
+font-size: 14px;
+font-weight: 400; 
+}
+.template-index .logo-list-section  img{ 
+  max-width: 70px !important; 
+  min-width: 70px !important;
+}
+.template-index .logo-list-section .logo-bar__item{
+  margin-bottom: 0;
+}
+/*Homepage end	*/
+
+/*Login and Register Page */
+#create_customer .cancel,
+#RecoverPasswordForm .cancel,
+#CustomerLoginForm .cancel {
+  text-align: center;
+  font-weight: 700;
+  display: block;
+}
+
+#create_customer .errors li,
+#RecoverPasswordForm .errors li,
+#CustomerLoginForm .errors li {
+  border: 1px solid #ffccc7;
+  padding: 7px 10px;
+  text-align: left;
+  margin-bottom: 15px;
+  color: #747375;
+  font-weight: 600;
+  background: #fff2f0;
+  text-align: center;
+  font-size: 14px;
+}
+
+form .form-success p{
+  border: 1px solid #7fc288;
+  padding: 7px 10px;
+  text-align: left;
+  margin-bottom: 15px;
+  color: #747375;
+  font-weight: 600;
+  background: #deecda;
+  text-align: center;
+  font-size: 14px;
+}
+#create-account .ui-datepicker-title {
+  display: flex;
+  flex-direction: row-reverse;
+}
+/*404 page start */
+.custom-404 {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+.custom-404 .img-404 {
+  width: 500px;
+  max-width: 100%;
+}
+.custom-404 .block-collection-slick .box.product { 
+  height: auto;
+}
+.custom-404 h1 {
+  text-transform: uppercase; 
+  font-size: 49px;
+  font-weight: 900;
+  line-height: 1.3;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+}
+.custom-404 h4 {
+  text-transform: uppercase; 
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.3;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+}
+.custom-404 .back-to-home-btn {
+  text-transform: uppercase;
+  background-color: #024bad;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  padding: 15px 60px;
+  display: inline-block;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.custom-404 .back-to-home-btn:hover {
+  background-color: #024094;
+}
+.custom-404 .product_card__image {
+  /* height: 280px; */
+  left: 0;
+  position: relative;
+}
+.custom-404 .product_card__image-wrapper::before {
+display: none;
+}
+.custom-404 .featured-collection { 
+  padding: 0 0 60px 0;
+}
+.custom-404 .featured-collection.layout-6 .box.header.block { 
+  display: none;
+}
+
+/*404 page end */
+
+/*07. Pages and Posts end*/
+
+/* 08. Extra styles start*/
+/* 08. Extra styles end*/
+
+
+/* Styles for desktop and larger devices */
+ 
+/*09. Media Query start*/
+
+
+@media screen and (min-width: 1000px) {
+  
+}
+/*Max Tablet */
+@media screen and (max-width: 999px){
+  .custom-404 h1 {   
+    font-size:38px;    
+  }
+  .custom-404 h4 {     
+    font-size: 22px;    
+  }
+
+  .custom-404 .block-collection-slick .box.product {
+    width: 100%;
+  }
+/* .custom-404 .box.product figcaption, */
+  .custom-404 .product-price-container {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-between; */
+  }
+}
+/* Styles for tablets and larger devices */
+@media screen and (min-width: 800px) and (max-width: 999px) {
+  
+}
+/*Max Mobile */
+@media screen and (max-width: 799px){
+  
+}
+@media screen and (max-width: 769px){
+  #shopify-section-header-util{
+    top: 43px !important;
+    z-index: 990 !important;
+    position: sticky !important;
+  }
+ 
+}
+/* Styles for large mobile devices */
+@media screen and (max-width: 700px){
+  .template-index .gallery-section h4,
+  .template-index .logo-list-section header h4
+  { 
+   font-size: 38px;   
+  }
+  .template-index .gallery-section h3{
+    text-align: center;
+  }
+ 
+ 
+}
+
+@media screen and (min-width: 700px) and (max-width: 799px) {
+  
+}
+
+/* Styles for mobile devices */
+@media screen and (min-width: 600px) and (max-width: 699px) {
+  
+}
+
+
+/* Styles for small mobile devices */
+@media screen and (max-width: 599px) {
+  /* .template-index  .slide__item-content .header-flex {   
+    margin-bottom: 0;
+  } */
+}
+
+
+
+ 
+/*09. Media Query end*/

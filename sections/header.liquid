@@ -1,0 +1,160 @@
+<div data-section-id="{{ section.id }}" data-section-type="header-section">
+  <div class="site-header-wrapper desktop-only">
+    <header class="site-header {% if section.settings.minimal_padding == "minimal" %}minimal{% endif %} {% if section.settings.header_full_width %}full-width{% endif %}" data-scroll-lock="{{ section.settings.scroll_lock }}" role="banner">
+
+      <div class="wrapper">
+
+          <nav class="nav-bar" role="navigation">
+            {% include 'site-nav' %}
+          </nav>
+        </div>
+
+      </div>
+    </header>
+  </div>
+</div>
+
+<nav id="menu" class="panel" role="navigation">
+  <div class="search">
+    {% include 'search-bar' %}
+  </div>
+
+  {% include 'site-nav' %}
+
+  <div class="account">
+    {% if shop.customer_accounts_enabled %}
+      {% include 'accounts-nav' %}
+    {% endif %}
+  </div>
+</nav>
+
+<style>
+  {% if section.settings.top_bar_full_width %}
+  header.util .wrapper {
+    max-width: 100%;
+  }
+  /* adding disclaimer that this is for dekstop only */
+  @media screen and (min-width:769px) {
+  header.util .wrapper .left-wrapper,
+  header.util .wrapper .right-wrapper {
+    margin: 6px 20px;
+  } 
+}
+  {% endif %}
+  .site-logo.has-image {   max-width: {{ section.settings.logo_max_width }}px;
+  }
+
+</style>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "header",
+  "settings": [
+    {
+      "type": "radio",
+      "id": "header_layout",
+      "label": "Logo placement",
+      "options": [
+        { "value": "horizontal", "label": "Left aligned" },
+        { "value": "vertical", "label": "Centered" }
+      ],
+      "default": "vertical"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "min": 100,
+      "max": 1180,
+      "step": 20,
+      "unit": "px",
+      "label": "Logo maximum width",
+      "default": 280
+    },
+    {
+      "type": "link_list",
+      "id": "main_linklist",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "scroll_lock",
+      "label": "Lock while scrolling",
+      "options": [
+        { "value": "util", "label": "Top bar" },
+        { "value": "header", "label": "Header" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "util"
+    },
+    {
+      "type": "radio",
+      "id": "minimal_padding",
+      "label": "Header size",
+      "options": [
+        { "value": "minimal", "label": "Minimal" },
+        { "value": "normal", "label": "Normal" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "top_bar_full_width",
+      "label": "Expand top bar full width",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "header_full_width",
+      "label": "Expand header full width",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega Menu Image",
+      "settings": [
+        {
+          "type":"text",
+          "id":"mega_menu",
+          "label":"Mega Menu Reference"
+        },
+        {
+                "type": "checkbox",
+      "id": "mobile_mega",
+      "label": "Mobile?",
+      "default": false
+        },
+              {
+          "type":"text",
+          "id":"mobile_text",
+          "label":"Mobile Item Reference"
+        },  
+        {
+          "type": "image_picker",
+          "id": "mega_image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "mega_link",
+          "label": "Link",
+          "info": "Optional"
+        },
+                      {
+          "type":"text",
+          "id":"label_image",
+          "label":"Image Label"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,27 @@
+<div class="thumbnails" data-enable-group="{{ section.settings.enable_thumb_slider }}">
+  <ul id="ProductThumbs-{{ section.id }}" data-ProductThumbs>
+    {% for image in product.images %}
+      {%- assign image_width = image.width | append: 'x' -%}
+      {%- assign image_highresolution = image | img_url: image_width -%}
+      {%- assign active_image = current_variant.featured_image | default: product.featured_image -%}
+      <li>
+        <a
+          href="{{ image_highresolution }}"
+          class="product-single__thumbnail--{{ section.id }} {% if image == active_image %}active{% endif %}"
+          data-image-id="{{ image.id }}"
+          data-position="{{ forloop.index0 }}"
+        >
+          {% assign image_widths = '85,100,200,295,394,590,720,800' %}
+          {% include 'theme-rias' %}
+
+          {% assign loading = 'lazy' %}
+          {%- if forloop.index0 < 6 -%}
+            {% assign loading = 'eager' %}
+          {% endif %}
+
+          {{ image | image_url: width: 600 | image_tag: widths: '200, 400, 600', sizes: '200px', loading: loading }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

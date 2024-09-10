@@ -1,0 +1,52 @@
+<style>
+  .slider__arrow {
+    background-color: white;
+  }
+
+  .glide__bullets {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 0.5em;
+    border-radius: 100px;
+  }
+</style>
+
+{% if product.metafields.custom.video1.value.size > 0 %}
+  <div class="wrapper glide glide-wrapper">
+    <div data-glide-el="track" class="glide__track">
+      <ul class="glide__slides">
+        {% for video in product.metafields.custom.video1.value %}
+          <li class="glide__slide">{{ video }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% comment %} Only show bullets and controls if there are multiple videos {% endcomment %}
+    {% if product.metafields.custom.video1.value.size > 1 %}
+      <div class="glide__bullets__wrapper">
+        <div class="glide__bullets" data-glide-el="controls[nav]">
+          {% for video in product.metafields.custom.video1.value %}
+            <div class="glide__bullet" data-glide-dir="={{ forloop.index0 }}"></div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="glide__arrows" data-glide-el="controls">
+        <button class="glide__arrow glide__arrow--left slider__arrow" data-glide-dir="<" aria-label="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <path d="M0 12l10.975 11 2.848-2.828-6.176-6.176H24v-3.992H7.646l6.176-6.176L10.975 1 0 12z"></path>
+          </svg>
+        </button>
+
+        <button class="glide__arrow glide__arrow--right slider__arrow" data-glide-dir=">" aria-label="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path>
+          </svg>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    new Glide('.glide', { swipeThreshold: false, dragThreshold: false }).mount();
+  </script>
+{% endif %}

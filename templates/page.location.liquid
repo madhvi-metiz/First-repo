@@ -1,0 +1,119 @@
+<div class="page-container">
+  <h1 style="text-align:center;">{{ page.title }}</h1>
+  {% section 'slideshow' %}
+  <section class="page">
+    <div class="wrapper">
+      <div class="featured-row section-standard" data-section-type="featured-row-section">
+        <div class="contain-site-width">
+          <div class="wrapper">
+            <div class="feature-row">
+              <div class="feature-row__item feature-row__image">
+                <img
+                  class="featured-img"
+                  src="https://cdn.shopify.com/s/files/1/0743/6343/files/Primary-WH.png?v=1665070124"
+                >
+                <div id="top-flex" class="flex-images">
+                  <div class="flx-img-container">
+                    <a href="https://cdn.shopify.com/s/files/1/0743/6343/files/Primary-WH.png?v=1665070124">
+                      <img
+                        class="flx-img"
+                        src="https://cdn.shopify.com/s/files/1/0743/6343/files/Primary-WH.png?v=1665070124"
+                      >
+                    </a>
+                  </div>
+                  <div class="flx-img-container">
+                    <a href="https://cdn.shopify.com/s/files/1/0743/6343/files/Escobar-WH.png?v=1665070123">
+                      <img
+                        class="flx-img"
+                        src="https://cdn.shopify.com/s/files/1/0743/6343/files/Escobar-WH.png?v=1665070123"
+                      >
+                    </a>
+                  </div>
+                  <div class="flx-img-container">
+                    <a href="https://cdn.shopify.com/s/files/1/0743/6343/files/Boxes-WH.png?v=1665070122">
+                      <img
+                        class="flx-img"
+                        src="https://cdn.shopify.com/s/files/1/0743/6343/files/Boxes-WH.png?v=1665070122"
+                      >
+                    </a>
+                  </div>
+                  <div class="flx-img-container">
+                    <a href="https://cdn.shopify.com/s/files/1/0743/6343/files/Elfbar5000-WH.png?v=1665070123">
+                      <img
+                        class="flx-img"
+                        src="https://cdn.shopify.com/s/files/1/0743/6343/files/Elfbar5000-WH.png?v=1665070123"
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="feature-row__item feature-row__text feature-row__text--left feature-row__text--align__left">
+                <h3 class="blue-heading" style="text-align:center;">Retail Store</h3>
+                <p class="bigger-text">
+                  <a style="color: #3b3a3d;" href="https://g.page/white-horse-vapor-ri?share">Rhode Island</a>
+                </p>
+                <br>
+                <h3 class="blue-heading" style="text-align:center;">Shipping Nationally from</h3>
+                <p class="bigger-text" style="margin-bottom:0;">Texas</p>
+                <p class="bigger-text" style="margin-bottom:0;">Rhode Island</p>
+                <br>
+                <a class="aboutusbtn blocky" href="https://vapewh.com/collections/all-disposable-e-cigs">Shop Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="warehouse-two">
+        <h3 class="blue-heading" style="text-align:center;">Fulfillment</h3>
+        <p class="bigger-text" style="margin-bottom:0;max-width:800px;margin-left:auto;margin-right:auto;">
+          Our warehouse team works in a clean and functional environment that allows us to keep things sanitary and ship
+          your products to you as fast as we possibly can!
+        </p>
+        <div class="flexy-four">
+          <div class="flexy-four-item">
+            <img src="https://cdn.shopify.com/s/files/1/0743/6343/files/Warehouse-Person-1.png?v=1665071743">
+          </div>
+          <div class="flexy-four-item">
+            <img src="https://cdn.shopify.com/s/files/1/0743/6343/files/Warehouse-Person-2.png?v=1665071744">
+          </div>
+          <div class="flexy-four-item">
+            <img src="https://cdn.shopify.com/s/files/1/0743/6343/files/Warehouse-Person-3.png?v=1665071744">
+          </div>
+          <div class="flexy-four-item">
+            <img src="https://cdn.shopify.com/s/files/1/0743/6343/files/Warehouse-Person-4.png?v=1665071744">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#top-flex').flickity({
+      adaptiveHeight: true,
+      cellAlign: 'center',
+      contain: true,
+      imagesLoaded: true,
+      pageDots: false,
+      initialIndex: 2,
+      draggable: false,
+      prevNextButtons: false,
+    });
+    $('#bottom-flex').flickity({
+      adaptiveHeight: true,
+      cellAlign: 'center',
+      contain: true,
+      imagesLoaded: true,
+      pageDots: false,
+      initialIndex: 2,
+      draggable: false,
+      prevNextButtons: false,
+    });
+    $('.flx-img-container a').click(function (e) {
+      e.preventDefault();
+      var img = $(this).attr('href');
+      var parent = $(this).parent().parent().parent().parent().parent().parent().find('.featured-img').attr('src', img);
+    });
+  });
+</script>

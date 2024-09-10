@@ -1,0 +1,70 @@
+{
+  "sections": {
+    "collection-template": {
+      "type": "collection-template",
+      "blocks": {
+        "1561063000908": {
+          "type": "menu",
+          "settings": {
+            "linklist": "sidebar-menu-sep8"
+          }
+        },
+        "1396ce59-1d88-471a-a14e-8c05767c4c68": {
+          "type": "menu",
+          "settings": {
+            "linklist": "shop-by-brand"
+          }
+        },
+        "59b52336-1294-4354-bf3f-756b7b60cfb8": {
+          "type": "menu",
+          "settings": {
+            "linklist": "shop-by-flavor-1"
+          }
+        },
+        "2ac63395-dd51-4894-8346-0e26b908d554": {
+          "type": "menu",
+          "disabled": true,
+          "settings": {
+            "linklist": "shop-by-flavor-1"
+          }
+        },
+        "1561062986643": {
+          "type": "menu",
+          "settings": {
+            "linklist": "e-liquid-1"
+          }
+        },
+        "1561062992551": {
+          "type": "menu",
+          "settings": {
+            "linklist": "pod-hardware"
+          }
+        },
+        "e15e6c06-9083-46c2-9eae-bf72795b941c": {
+          "type": "menu",
+          "settings": {
+            "linklist": "4-20-products"
+          }
+        }
+      },
+      "block_order": [
+        "1561063000908",
+        "1396ce59-1d88-471a-a14e-8c05767c4c68",
+        "59b52336-1294-4354-bf3f-756b7b60cfb8",
+        "2ac63395-dd51-4894-8346-0e26b908d554",
+        "1561062986643",
+        "1561062992551",
+        "e15e6c06-9083-46c2-9eae-bf72795b941c"
+      ],
+      "settings": {
+        "products_per_page_range": 24,
+        "image_placement": "above-full",
+        "sort_enable": true,
+        "layout_enable": false
+      }
+    }
+  },
+  "order": [
+    "collection-template"
+  ]
+}

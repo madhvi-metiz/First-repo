@@ -1,0 +1,140 @@
+<div class="featured-text section-standard" data-section-id="{{ section.id }}" data-section-type="featured-text-section">
+  <div class="contain-full-width">
+    <div class="wrapper">
+      <div class="logo-content">
+         {% if section.settings.logo !=blank %}
+        <img src="{{ section.settings.logo | img_url:'master' }}">
+         {% endif %}
+      </div>
+      <div class="content align-{{ section.settings.alignment }} rte">
+        {% if section.settings.title != blank %}
+          <div class="h2">{{ section.settings.title | escape }}</div>
+        {% endif %}
+        {% if section.settings.text != blank %}
+          <div class="richtext">
+            {{ section.settings.text }}
+          </div>
+        {% endif %}
+      </div>
+
+      {% for block in section.blocks %}
+        <div class="content content-page rte">
+          {% case block.type %}
+            {% when 'page' %}
+              {% if block.settings.show_title %}
+                <div class="h2 align-{{ section.settings.alignment }}">{{ pages[block.settings.page].title }}</div>
+              {% endif %}
+              <div class="richtext">{{ pages[block.settings.page].content }}</div>
+            {% when 'richtext' %}
+              {% if block.settings.title != blank %}
+                <div class="h2 align-{{ section.settings.alignment }}">{{ block.settings.title | escape }}</div>
+              {% endif %}
+              <div class="richtext">{{ block.settings.text }}</div>
+            {% when 'button' %}
+            {% if block.settings.btn_text !=blank %}
+              <div class="shop_btn"><a href="{{ block.settings.btn_url }}" class="button">{{ block.settings.btn_text }}</a></div> 
+            {% endif %}  
+          {% endcase %}
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Rich text with logo",
+  "class": "featured-text-section",
+  "settings": [
+    {
+      "type":"image_picker",
+        "id":"logo",
+      "label":"Logo"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Rich text"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "center",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"}
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "page",
+      "name": "Page",
+      "settings": [
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Page content"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Show title",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "name": "Rich text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Rich text"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+        }
+      ]
+    },
+    {
+      "type":"button",
+      "name":"Button",
+      "settings":[
+        {
+          "type":"text",
+            "id":"btn_text",
+          "label":"Button Label"
+        },
+        {
+          "type":"url",
+          "id":"btn_url",
+          "label":"Button URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich text with logo",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

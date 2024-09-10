@@ -1,0 +1,134 @@
+<!-- /templates/page.contact.liquid -->
+{% comment %}
+  This page template is a requirement if you are submitting your theme to the Shopify Theme Store.
+  Be sure to select page.contact as the template from the admin page to have this template take effect.
+
+  For information on adding more fields, visit:
+    - http://docs.shopify.com/support/configuration/store-customization/adding-fields-to-the-liquid-contact-form
+{% endcomment %}
+<section class="page page-top">
+  <div class="wrapper">
+    <header class="content-util">
+      {% include 'breadcrumb' %}
+      {% include 'social-icons' %}
+    </header>
+    <header class="page-header">
+      <h1>{{ page.title }}</h1>
+      <p style="text-align:center;font-size:1em;">
+        Please pick your favorite item below, add it to cart and checkout! It is completely on the house this time so
+        enjoy!
+      </p>
+    </header>
+  </div>
+</section>
+
+<section class="page">
+  <div class="wrapper">
+    <div class="collection">
+      <div class="products products-grid">
+        {% for product in collections['dallas-margarita-festival'].products %}
+          {% include 'product-grid-item' %}
+        {% endfor %}
+      </div>
+    </div>
+    <a
+      class="aboutusbtn"
+      href="/collections/all-disposable-e-cigs"
+      style="
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        display: block;background-color:#0c8eff
+      "
+      >Shop All Disposables</a
+    >
+  </div>
+  <script>
+    $(window).on('load', function () {
+      {% comment %} setTimeout(function () {
+        var productTitleMaxHeight = 0;
+        $('.meta-product-info').each(function () {
+          var height = $(this).outerHeight();
+          if (height > productTitleMaxHeight) {
+            productTitleMaxHeight = height;
+          }
+        });
+        $('.meta-product-info').each(function () {
+          $(this).css('height', productTitleMaxHeight);
+        });
+      }, 250); {% endcomment %}
+      $('.collection-ATC')
+        .unbind()
+        .click(function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var link = $(this).parent().parent().find('a').attr('href');
+          var title = $(this).parent().find('.meta-product-info').find('.product-title').find('a').text();
+          var img = $(this).parent().parent().find('a').find('img').attr('src');
+          var variant = $(this).attr('data-variant-id');
+          data = {
+            id: variant,
+            quantity: 1,
+          };
+          var cartQty = 0;
+          $('.slider-quantity').each(function () {
+            var qty = parseInt($(this).attr('value'));
+            cartQty = cartQty + qty;
+          });
+
+          if (cartQty >= 1) {
+            alert(
+              'You already have one item in your cart and that is the maximum amount allowed for this promotion. If you would like to change your selection, please remove a vape from your cart and try to add this vape again.'
+            );
+          } else {
+            jQuery.ajax({
+              type: 'POST',
+              url: '/cart/add.js',
+              data: data,
+              dataType: 'json',
+              success: function () {
+                jQuery.getJSON('/cart.js', function (cart) {
+                  // now have access to Shopify cart object
+                  $('#CartCount').text(cart.item_count);
+                  var total = cart.total_price.toString();
+                  var newTotal =
+                    '$' + total.substring(0, total.length - 2) + '.' + total.substring(total.length - 2, total.length);
+                  $('#CartCost').text(newTotal);
+                  $('.inner-cart').load(location.href + ' .inner-cart');
+                  if ($('.inner-cart').css('display') === 'none') {
+                    $('.inner-cart').fadeIn('slow');
+                  }
+                  if ($('.slider-main').css('display') === 'none') {
+                    $('.slider-main').animate({
+                      width: 'toggle',
+                    });
+                    $('body').css('overflow-y', 'hidden');
+                    findScreen();
+                  }
+                });
+              },
+            });
+          }
+        });
+      function findScreen() {
+        var screenPos = $(document).scrollTop();
+        //    $('#sliderCart').removeAttr('style');
+        $('#sliderCart').css('top', screenPos + 'px');
+      }
+    });
+  </script>
+</section>
+<script>
+  var discountApplied = localStorage['discountApplied'] || 'defaultValue';
+  if (discountApplied === 'defaultValue') {
+    var current = window.location.href;
+    // replace current slashes with %2F
+    current = current.replace('https://vapewh.com', '');
+    current = current.replace('/', '%2F');
+    console.log(current);
+    var newLocation = '/discount/DALLAS?redirect=' + current;
+    //   alert(newLocation);
+    window.location.href = newLocation;
+    localStorage['discountApplied'] = 'yes'; // only strings
+  }
+</script>

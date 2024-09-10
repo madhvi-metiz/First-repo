@@ -1,0 +1,134 @@
+<style>
+  .box.product figcaption {
+    position: unset;
+  }
+</style>
+<section class="collection search-results" data-section-id="{{ section.id }}" data-section-type="search-template">
+  {% if section.settings.search_layout == 'grid' %}
+    {%- assign grid_results = true -%}
+    {%- assign results_count = 30 -%}
+  {% else %}
+    {%- assign grid_results = false -%}
+    {%- assign results_count = 30 -%}
+  {% endif %}
+
+  {% comment %}
+    Check to enforce respond.js
+  {% endcomment %}
+
+  {%- assign respond_js_secret_key = shop.domain | md5 -%}
+  {% unless search.terms == respond_js_secret_key %}
+    {% paginate search.results by results_count %}
+      <div
+        class="wrapper zsearch-wrapper"
+        id="searchy-grid"
+        data-search-count="{{ search.results.size }}"
+        data-results-count="{{ results_count }}"
+      >
+        <header class="content-util">
+          {% include 'breadcrumb' %}
+          {% comment %} {% include 'social-icons' %}{% endcomment %}
+        </header>
+
+        <div class="collection-container">
+          <header class="collection-header">
+            <div class="container">
+              {% if search.performed %}
+                {% if search.results.size == 0 %}
+                  <h1>{{ 'general.search.no_results_html' | t: terms: search.terms }}</h1>
+                {% else %}
+                  <h1>{{ 'general.search.results_for_html' | t: terms: search.terms }}</h1>
+                {% endif %}
+              {% else %}
+                <h1>{{ 'general.search.title' | t }}</h1>
+              {% endif %}
+            </div>
+          </header>
+
+          <div id="infinite-scroll-products-container" class="custom-products products-grid search-grid">
+            {% comment %} 9/25 This adds in any remaining products that are non-variants  {% endcomment %}
+            {% assign variation_breakpoint = 10 %}
+
+            {% for product in search.results %}
+              {% unless product.has_only_default_variant %}
+                {% if product.variants.size > variation_breakpoint and product.available %}
+                  {% include 'product-grid-item' %}
+                {% endif %}
+              {% endunless %}
+            {% endfor %}
+
+            {% for product in search.results %}
+              {% unless product.has_only_default_variant %}
+                {% if product.variants.size <= variation_breakpoint and product.available %}
+                  {% include 'product-grid-item' %}
+                {% endif %}
+              {% endunless %}
+            {% endfor %}
+
+            {% comment %} 9/25 Keep the non-variant products separate so variations always so first  {% endcomment %}
+            {% for product in search.results %}
+              {% unless product.sku contains 'MASTER' %}
+                {% if product.has_only_default_variant and product.available %}
+                  {% include 'product-grid-item' %}
+                {% endif %}
+              {% endunless %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      {%- if paginate.pages > 1 -%}
+        <div class="mt-6">
+          {% render 'pagination', paginate: paginate %}
+        </div>
+
+        {% comment %}
+          <footer id="infinite-scroll-pagination-container" class="collection-footer">
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}">Loading More</a>
+            {% endif %}
+          </footer>
+        {% endcomment %}
+      {%- endif -%}
+    {% endpaginate %}
+  {% endunless %}
+</section>
+
+{% comment %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var endlessScroll = new Ajaxinate({
+        container: '#infinite-scroll-products-container',
+        pagination: '#infinite-scroll-pagination-container',
+        callback: () => setCollectionAtcAction(),
+      });
+    });
+  </script>
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Search page",
+  "settings": [
+    {
+      "type": "radio",
+      "id": "search_layout",
+      "label": "Results layout",
+      "options": [
+        { "value": "grid", "label": "Grid - products only" },
+        { "value": "list", "label": "List" }
+      ],
+      "default": "list"
+    },
+    {
+      "type": "header",
+      "content": "Empty search"
+    },
+    {
+      "type": "collection",
+      "id": "extra_featured_products",
+      "label": "Empty search collection"
+    }
+  ]
+}
+{% endschema %}

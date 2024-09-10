@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="{{ locale }}" dir="{{ direction }}" class="{{ checkout_html_classes }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0"
+    >
+    <meta name="referrer" content="origin">
+    <div class="state-div" style="display:none;">{{ checkout.shipping_address.province_code }}</div>
+    <div class="customer-div" style="display:none;">
+      {% if customer and customer.orders_count > 0 %}
+        <p>Same Day Delivery</p>
+      {% else %}
+        <p>No Same Day Delivery</p>
+      {% endif %}
+      <p id="customer-logged-in">
+        {% if customer %}Logged{% else %}Not Logged{% endif %}
+      </p>
+    </div>
+    <title>{{ page_title }}</title>
+
+    {{ content_for_header }}
+
+    {{ checkout_stylesheets }}
+    {{ 'checkout.css' | asset_url | stylesheet_tag }}
+    {{ checkout_scripts }}
+
+    {{ 'jquery.min.js' | asset_url | script_tag }}
+    {{ 'checkout-order-tracking.js' | asset_url | script_tag }}
+    {{ 'checkout-login-text-update.js' | asset_url | script_tag }}
+
+    <script type="text/javascript">
+      window.customerTags = {{ customer.tags | json }};
+      window.approvedTag = {{ settings.approved_customer_tag | json }}
+    </script>
+
+    {% assign agechecker = false %}
+
+    {% for item in checkout.line_items %}
+      {% assign agecheck = true %}
+      {% if item.title contains 'Gift Card' %}
+        {% assign agecheck = false %}
+      {% endif %}
+      {% if agecheck == true %}
+        {% assign agechecker = true %}
+      {% endif %}
+    {% endfor %}
+
+    {% if agechecker %}
+      <style>
+        .ac-stripe, #ac-footer, #ac-header, .ac-fa-check {
+            display: none !important;
+        }
+        #agechecker-modal {
+            background: linear-gradient(90deg, #0c67c2ec 0%, #064788ec 100%) !important;
+        }
+        #agechecker-modal #agechecker {
+            box-shadow: none !important;
+            background-color: transparent !important;
+        }
+        .ac-button {
+            background: white !important;
+            border-radius: 500px !important;
+            min-width: 0 !important;
+            max-width: 200px !important;
+            padding: 8px 12px !important;
+        }
+        .ac-button span, i {
+            color: #0c68c2 !important;
+            text-transform: uppercase !important;
+        }
+        .ac-p {
+            margin-bottom: 20px !important;
+        }
+        #ac-continue-button {
+            margin-top: 40px !important;
+        }
+        #agechecker-modal #ac-intro-title, #agechecker-modal .ac-p, #agechecker-modal #agechecker .ac-input .ac-label, #agechecker-modal #agechecker .ac-step .ac-p>*, #agechecker-modal #agechecker .ac-step .ac-p, .ac-hint, .ac-hint strong, .ac-hint span, #agechecker .ac-input .ac-label, #agechecker .ac-step .ac-p, .ac-h3 {
+            color: white !important;
+        }
+        .ac-help {
+            color: #c9c9c9 !important;
+        }
+        #ac-success-text {
+            margin-bottom: 0px !important;
+            color: white !important;
+            font-size: 1.6em !important;
+            font-weight: 900 !important;
+        }
+        #ac-close-button {
+            max-width: 225px !important;
+            margin-top: 40px !important;
+        }
+        .ac-h3 {
+            font-weight: 900 !important;
+            font-size: 36px !important;
+            margin: 25px 0 !important;
+        }
+        .ac-fa-chevron-right {
+            display: none !important;
+        }
+        /* Enter your date of birth */
+        #ac-dob .ac-p {
+            font-weight: 900 !important;
+            font-size: 1.6em !important;
+            margin-bottom: 15px !important
+        }
+        #agechecker #ac-accuracy, #ac-next-button {
+            margin-top: 2em !important;
+        }
+        /* Note: Your date of birth must be accurate... */
+        #agechecker #ac-accuracy {
+            font-weight: 900 !important;
+        }
+        #ac-next-button {
+            max-width: 150px !important;
+        }
+        #ac-next-button span {
+            font-weight: 900 !important;
+        }
+        /* DOB Inputs */
+        #ac-dob-controls {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 1em !important;
+            flex-wrap: wrap;
+        }
+        #ac-dob .ac-input {
+            display: flex !important;
+            justify-content: center !important;
+        }
+        .ac-input-parent {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 5px;
+            align-items: center;
+        }
+        .ac-input-parent .ac-label {
+            min-width: 0px !important;
+            text-align: center !important;
+            margin-right: 0px !important;
+            margin-top: 0.4em !important;
+            font-size: 0.8em !important;
+        }
+        /* Verified Screen */
+        #ac-success-text, #ac-step8 > div.ac-hint {
+            display: none !important;
+        }
+        #ac-close-button > span {
+            text-transform: none !important;
+        }
+        #agechecker #ac-inner-container.center {
+            padding: 25% 32px;
+        }
+        @media only screen and (max-width: 700px) {
+          #agechecker #ac-inner-container.center {
+              padding: 50% 32px;
+          }
+        }
+      </style>
+      <noscript><meta http-equiv="refresh" content="0;url=https://agechecker.net/noscript"></noscript>
+      {% unless checkout.shipping_method.title == 'WH Retail' %}
+        <script>
+          (function (w, d) {
+            let designSet = false;
+            var config = {
+              autoload: false,
+              onready: function () {
+                let ac = AgeCheckerAPI.createInstance({
+                  key: 'B4HWCVolp0X03rYwmWuevE0iuNTTu9AI',
+                  element: 'div[data-step=payment_method] form .step__footer button',
+                  favor_page: true,
+                  data: {
+                    first_name: '{{checkout.shipping_address.first_name}}',
+                    last_name: '{{checkout.shipping_address.last_name}}',
+                    address: '{{checkout.shipping_address.address1}}',
+                    zip: '{{checkout.shipping_address.zip}}',
+                    country: '{{checkout.shipping_address.country_code}}',
+                    state: '{{checkout.shipping_address.province_code}}',
+                    city: '{{checkout.shipping_address.city}}',
+                  },
+                  close_all: true,
+                  show_close: true,
+                  onshow: function () {
+                    if(designSet) return;
+                    designSet = true;
+
+                    let skipStepZero = setInterval(function() {
+                        if(document.querySelector("#ac-step0").style.display.indexOf("block") != -1) {
+                            clearInterval(skipStepZero);
+                            document.querySelector("#ac-continue-button").click();
+                        }
+                    }, 10);
+
+                    document.getElementById('ac-hide-button').setAttribute('style', 'visibility: hidden !important');
+
+                    const innerContainer = document.querySelector("#ac-inner-container");
+                    const closeButton = document.querySelector("#ac-close-button");
+                    const continueButton = document.querySelector("#ac-continue-button");
+                    const introTitle = document.querySelector("#ac-intro-title");
+                    const dobText = document.querySelector("#ac-dob .ac-p");
+                    const dobControls = document.querySelector("#ac-dob-controls");
+                    const dobMonth = document.querySelector("#ac-dob-month");
+                    const dobDay = document.querySelector("#ac-dob-day");
+                    const dobYear = document.querySelector("#ac-dob-year");
+                    const verifiedText = document.querySelector("#ac-step8 > div.ac-h3");
+
+                    // Create and insert the logo
+                    if(!document.querySelector("#agechecker_custom_logo")) {
+                      var logo = document.createElement("div");
+                      logo.innerHTML = "<img id='agechecker_custom_logo' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAABTCAYAAABu1uk4AAAMiUlEQVR4nO2d65HbOBaFj7f2fyuD5kbQmgiaE4G1EZiOwJoIho5g2xGYjmDkCAYdwaozYEewUgTcHyAKFISLB0k9fb4qlrpB8BIkgUPg4sEPXdeBEEJy+MelE0AIuT0oHISQbCgchJBsKByEkGwoHISQbCgchJBsKByEkGwoHISQbP554fOXAJYAFv3fhJA4CkALYNtvZ+fDmUeOFgBW/fZ8zhMTcsf8BLDpt905Tngu4aj6zRWLd1jVbPuNECJT9NsSupb+4Oz/CeAFulZyMk4tHBWAGsDjIOwVVh3bU56ckF+AAroGXwF4GoS/Q5e95hQnPZVwlNCqZy5k3//fgGJByKkoAKyhRcTURF77sFl9IXMLxwJa5b70/xvBeMGZ2l6EECygxWINKyBfocvmLMwpHEvoGoWpZfyATjgFg5DLUEC/tD/2/79BN2vaqYbnEo4VtGg8QNcyVjixc4YQkoxbPktMbLrMMQCsAvAXdKLeoFVOzWCXEDIPG+gWwRt0OVXQ5XY0U4WjAvC9//sHdOLYNCHk+mihaxqv0OLxHRPEY0pTpcKhaIxOBCHkrDQAPvV//4YRzZaxwrGEru48gKJByC2ygXaa7qHLc5tz8BjhWEAr1CN0tafMNUAIuTgL6Jf/E7Tvo0SGm2GMj6OBFo13aG8tIeT22EGX3z20eNQ5B+cKxwq2T7gCHaGE3DItrJvhCzJaDznCsYAeTALoUWgq41hCyHWygZ4YB9jyHSVHONawTZTkExBCrp4KtslSpRyQKhxm7Dug20JsohByP+xgKwN1ygGpvSo1gD+haxtFfrrIjBTwP4MWcpeaWWUt55hSCFeRdGwRfrH40rLDhVayIgfsoIdYfEZsOn7XdSlb22mqxPjcTrdVnZ8mcEwrHPMSOEbC7K+F/WUk/cpzjIocw+08m3mm21jclKbKCtq3sY+qEDkHSghfCuEFDhdSGlJmhr8K4eQ+MM2VJ8j5CUCaj8OM1WgmJIjMRwvdZHR58oQB4S62J/ibMFKm2QRskdtnB9vDUoUi5ggHM831oITwMjEstl8SDum85H4w5bwMRYp9HmEJO4dfTUxQAX+tpUVY3aTzlkLYGjrdpnr+2tswq5D57DVO2l5wXHi2ve2i/y1h3/Lvvd0mkF4Xs9r7EodLLG4HtlrhWAU7SWmImUM0pIykY4njl4JPOEzarpEFDu+nefZmMezcFcAr2E93uM8mZb1c5Qlr+q3s7RvbwzQ2QlqG1/XWn1uKP5UN9ORVUxv137OIE2TdO0s2Mzlf2s5PIcRfCfEbJ96i8zvdhmz7eD5qx57Pluq6btl13S5ynpDDEb2NbcRGzJZ0He59KRLOoTz2fbh5oBbilUKaY/d2bJ5adfFn0vVxVhFbZSfnUZeXTj8Hnx0fdSffM0Pb6fxhnl1Knjbx59xM/hTvV6ypYt48c71pGiFcmvMihQ/fkGayTuw7LU+YVmsqYGcEh/gC+TpNjUDyR/hsbeHvvnwT7If+9+Het1KIpxJsnZsKdhGpGA993Cpg62/IjmSXL9D3xOcj8rGGHtIQ4rG3uYR+7ql5ukhMQyqq/xXzT0w4CsfQVBohXBKI0hO2x6Fw1EgviKnxfDwiLYMCuhmxdsIKpAmPizQBSQlxh5SJ5xjGuxX/xgp2PZgcvuP4vpQjbT0hvbmQ+twfAPw3M35qGlIxFYVSipDi4wDmGynaQr8p3Qz+jOP21LCtOmQoGgXsiurXRg39QHeD/6XM8A59b6Q3zBfo61aDMAX/tZeDeKVn/6vnPMNjfMJh2uEpVMJ5DUWinRixaQ97yPe7xmEamwnp+Ah9zVNsTOUZ+r62M9mL24m0dQxztp/WnZ/KifcixCsT4nSdbk+aNmisvVg75w7FfemsT6botF9BwlyT5JPYdYdt1EUnX1PjpFGyuQ7s33X+AWRD/4XP/+KeG128vZ5Dro9D8n2ZtJrn47tWwzIhjrmXxv8h+abcAVMS287m30Unl4Ux8d3yM2UrBna9cS4hHMNEDXEzp+8htQlxuu7wgacIQqpwSM5KSTzMNUmZ0z1vSBDca48Vcl/h2nT++78b2PThy5S1EHcMymM/tEn3W0qn8mwm7kaw5ctDi052xBZd+B7uOr8zVRKD3Pi+vDRlM3j3X+Jr9S30IJOPTvjQz1HA749wuw19cUKzd18w7WPXtRC+hr97tHB+XVaQ/ThuNdvXbFM4vgemqeGzq2AHkA3tPUCez2KOuyYKIbzxhNURW1LXsy8P7fpz+JqIBeJdtL4mfwPgPzPEPytzfB5hDL7BZA+wmV1yljYJttvM86byBtnXI/VyGKQC+QQtZO6W6hhTgk1AFg7puBKyf6NNTM8lCd3/ED5BDvlzpDwU68GSbEp5Kjf+Wbkm4QCsYJSefW+47ACkKQ+smCsRDkoIX+G4JjIcwOU7bgl/5pfOIfE7gA+B7VTzXS5doFK7Ze+CSzRVAP2Qf+C4er+Crlq6zRgg3WsdeoAp4xokQk2cBcJdvVv4r+nrhPQAtqbjnrvyxFXC34YS/sJ3K1MNxjZBfc3CIhC/FMLVyPNfI1ERTBWOAvNXVzc4Fo5HHI9/GMZ3cdvqgC5EJfwPUrKdyhr+tm8lxN85vy4bTK9FKRwLh0+k1ODvFsf37hGyH+XakO5nieP0muHaLqrffAOtHgVbQPxZ3wPmfonNv1hTxVQrizlS47CBVnsXX+E24/NdVMB26YTV8Dswc6hx7H9ZQ3ZWqUF6fLzgWN0bAJ1nayLniOHGSzku5Nc5NRXsvJDK2Sfdz8aJu+zD/vRs5r5LtjY4FJwF7Ar/LjnjXG4Bc2/EZx8TDnPglCp+CMlJ6iL1kjRC+AP08OEtbE9CbLhvCmbYcjuwG/Jwm/S18LftnwH8r49XQ568NrTlogLnN/gmqKVk9BTbp6CBHsn5sd++4/D6pZfOYx+3hR0w58tP77B5rxFsmRGcCvZZ5z6bW8WUdyVFiAmHyVynEo4mMZ70VlAIO9tMr0Xq/INUHhPsfsOhYoeaSZ+ghU1qp/+E/BBjPToQjpXs5caZmwX8BfQTDt+EoZGjj9CCI/VODZ9FzFasp+sNmd8kuQHK/reVIsSEQzmG5kbBvyjNkJ8IV5cr+N8YPlLjTT3Wl5m20Gs55vKG+MrTasT+LeLXFLN7CorEfTW0gz2XHzh+EY21tcd9fv7UvMCUFCFVOB5x3uZKzv4WWthiArTHNAFMLfihz+k1vY1UETKf2Iz5GdTI/aHjXhPOewq28NegXnHcvKqga3apfEN4dmyOrVfYWaz3hPHhBcfvpIzjMEuJSYOyptIE9qWuc7qFfohf4S+UpgBOfcgN9DgFX8Z+B/BHn45QgWv6ON8gi91PaIEpI7YMKrAvtABP6LjQvlOzhs136P+uA3F/h64x+J79vt/3G+K9amsA/wrYMmkxz6aN2LtFTDlXoUgpn0eooB1Ot/RphALTlgRQOPY3uB/YXsDWwlqMz0RDOzvc3xtsCkX/22YeMzwu59iQrV/l2eyg/Tn/RqC2nyIcC+ib/wCt7GqW5F03CnHhIOTeqJBYSUhpquxgmwv1+DQRQq6cuv9tYhFT56qY7qpn8K1LyD1SwX4/KdQ9DSBdOFrY7qp6RKIIIddN3f++IMEhnzM7toZWo2dMn/NBCLkeamTUNoA84Whx+EXrIuNYQsh1soSdjrFG4tid3PU4augxDKdYWZkQcl7MxD1A9xo2YkyHlO5YlyXs5KEfuM8ht0v4v2XyK/Tjk1+HBnoO0B66BZE8UniMcAC2vxfQo+iaMUYIIRfjBXbt1OzxWWOXDmxgV6/6jvusdRByr1SwovEZIwZ1TllztIbtoqV4EHIbvMC2Fr5hZGth6mLFFQ7FY1QiCCEnxzhCTU3jGyYMq5hjlfMKttnyCaf5CC4hZDymQ8MskPQZE8dizfV5hBp2nYln6N4HDhIj5PLUsAta76Edoc1Uo2N7VSTM4rBm1e1X2IQTQs5HicPFlV+hWwftHMbn/iCTu6DOM/SiwQqnWwiIEGKpoMvb37DDyP/AzAsPzV3jGFLg+JMEZnXpBhxMRchcLKEFY4XDBbS/InHSWi6nFA5DAe3vqHC4UvQ77Adxtpi+WhMhvwJmVHPZ/13isFyZiWonEQzDOYRjSAX7hfbUDysTQsLsYT9eFVvcexbOLRxDStgPHRf9L8WEkDBm8ekW9oNjZ2/2X1I4CCE3yty9KoSQXwAKByEkGwoHISQbCgchJBsKByEkGwoHISQbCgchJBsKByEkGwoHISQbCgchJBsKByEkm/8DJG0K8sfuByEAAAAASUVORK5CYII=' style='width: 150px;'>";
+                      innerContainer.insertBefore(logo, innerContainer.firstChild);
+                    }
+
+                    setInterval(function() {
+                        if(introTitle.innerHTML !== "Action Required") {
+                            introTitle.innerHTML = "Action Required!";
+                        }
+                    }, 50);
+
+                    // Change the text of the close and continue button
+                    closeButton.children[0].innerHTML = "Submit Order HERE";
+                    continueButton.children[0].innerHTML = "Get my vapes!";
+
+                    // Change the text of the verified screen heading
+                    verifiedText.innerHTML = "You've been Successfully Verified!"
+
+                    // Change the text of enter your date of birth (Same thing without ':' at the end)
+                    dobText.innerHTML = "Enter your date of birth";
+
+                    // Remove any span elements inside of dobControls (The slashes)
+                    dobControls.querySelectorAll("span").forEach(span => span.remove());
+
+                    // Remove placeholder text from DOB inputs
+                    dobMonth.placeholder = "";
+                    dobDay.placeholder = "";
+                    dobYear.placeholder = "";
+
+                    // Individually wrap the DOB inputs in a flex column container with labels on the bottom
+                    dobMonth.outerHTML = "<div class='ac-input-parent'><label for='ac-dob-month' class='ac-label'>Month</label>" + dobMonth.outerHTML + "</div>";
+                    dobDay.outerHTML = "<div class='ac-input-parent'><label for='ac-dob-day' class='ac-label'>Day</label>" + dobDay.outerHTML + "</div>";
+                    dobYear.outerHTML = "<div class='ac-input-parent'><label for='ac-dob-year' class='ac-label'>Year</label>" + dobYear.outerHTML + "</div>";
+
+                    let findStepOne = setInterval(function() {
+                        if(document.querySelector("#ac-step8").style.display.indexOf("block") != -1) {
+                            document.getElementById("agechecker_custom_logo").remove();
+                            document.getElementById("ac-inner-container").classList += " center";
+                            clearInterval(findStepOne);
+                        }
+                    }, 10);
+                  },
+                  onstatuschanged: function (v) {
+                    if (v.status) {
+                      if (v.status == 'accepted' || v.status == 'photo_id') {
+                        var input = document.createElement('input');
+                        input.setAttribute('type', 'text');
+                        input.setAttribute('name', 'checkout[attributes][age-checker-uuid-tag]');
+                        input.setAttribute('value', v.uuid);
+                        input.setAttribute('hidden', 'true');
+                        document.querySelector('form[data-payment-form]').appendChild(input);
+                      }
+                      if (v.status == 'photo_id') {
+                        document.getElementById('ac-hide-button').click();
+                        ac.unbind();
+                        setTimeout(function() {
+                            document.querySelector('div[data-step=payment_method] form .step__footer button').click();
+                        }, 50);
+                      }
+                    }
+                  },
+                });
+              },
+            };
+
+            w.AgeCheckerConfig = config;
+            if (config.path && (w.location.pathname + w.location.search).indexOf(config.path)) return;
+            var h = d.getElementsByTagName('head')[0];
+            var a = d.createElement('script');
+            a.src = 'https://cdn.agechecker.net/static/popup/v1/popup.js';
+            a.crossOrigin = 'anonymous';
+            a.onerror = function (a) {
+              w.location.href = 'https://agechecker.net/loaderror';
+            };
+            h.insertBefore(a, h.firstChild);
+          })(window, document);
+        </script>
+      {% endunless %}
+    {% endif %}
+    {{ 'checkout.js' | asset_url | script_tag }}
+    {{ 'checkout-button-text.js' | asset_url | script_tag }}
+  </head>
+  <body>
+    {{ skip_to_content_link }}
+    <div class="oos-overlay">
+      <div class="oos-popup">
+        <div class="oos-guts">
+          <h2><b>Sorry, these items are not available for pick up!</b></h2>
+          <p class="unavail-items">Unfortunately these items are not available at our North Providence location</p>
+          <div class="oos-items"></div>
+          <h3>What would you like to do?</h3>
+          <a class="oos-button first" id="ship-it">Deliver my order to me</a>
+          <a class="oos-button" id="remove-and-shop">Remove and continue to shop</a>
+          <a class="oos-button" id="remove-and-continue">Remove and continue to checkout</a>
+        </div>
+      </div>
+    </div>
+    <!-- we must have a customer login and registration form in case they want to sign up during checkout process -->
+    <div id="customer-form-overlay">
+      <div id="customer-popup">
+        <p id="customer-form-close">X</p>
+        <svg
+          class="svg-logo"
+          xmlns:v="https://vecta.io/nano"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          version="1.1"
+          id="Layer_1"
+          x="0px"
+          y="0px"
+          viewBox="0 0 1226.9 701.5"
+          style="enable-background:new 0 0 1226.9 701.5;/* width: 250px; */"
+          xml:space="preserve"
+        >
+          <style type="text/css">	.zst0{fill:#00AEEF !important;}	.zst1{enable-background:new;}</style><g>	<path d="M148.7,187.4c-2.9,0.8-5.6-0.4-6.7-3.3c-1-2.7-1.5-5.8-1.3-8.8c0.6-8.1,4.6-14.8,9.6-21.1c4.2-5.2,9.6-9,14.6-13.1   c9-7.1,14.2-16.3,14-28c0-3.5-0.8-6.9-1.3-10.2c-0.4,3.8,0,7.5-0.4,11.1c-1,7.3-5.4,12.7-11.1,16.9l-17.1,11.7L131,154.6   c-8.1,6.3-14.2,14-16.1,24.4c-1.9,9.6,2.1,16.5,11.1,18.4c12.3,2.7,22.9-1.5,31.9-9.6c2.3-2.1,3.8-4.8,4.4-7.9c0.2-1,0-1.7-1.3-2.3   c-3.1-1-4.6-3.1-4.2-6.5c0.4-2.9,1-6.1,2.3-8.6l10.2-17.1c0.4-0.8,1-1.5,1.5-2.3l-17.7,16.5c-5.8,5.2-8.1,11.9-6.7,19.6   C147,182.2,148.1,184.7,148.7,187.4 M181.5,479.5c0,0.2,0,0.4,0,0.4c0.2,0,0.2,0.2,0.4,0.2l5.2-0.4c20-1.7,39.8-1,59.5,3.1   c22.7,4.8,42.4,14.8,58,32.1c5.8,6.7,11.3,13.6,14,22.1c1,3.3,1.7,7.1,1.7,10.4c0,5-3.8,7.3-8.6,5.6c-2.1-0.8-4.4-1.9-5.8-3.3   c-3.3-3.1-6.5-6.5-9.6-9.8c-8.1-9-15.9-17.9-24-26.7c-6.1-6.5-13.1-11.9-21.3-16.1c-1-0.6-2.3-1-3.5-1.5c9,5,16.7,11.7,23.6,19.2   c7.9,8.6,15.2,17.7,22.9,26.5l24.6,28.6c2.5,2.7,5.6,4.8,8.8,6.7c4.8,2.7,8.6,1.5,11.1-3.8c2.7-5.4,2.9-11.1,1.9-16.7   c-1.7-9.6-6.3-17.7-12.1-25.5c-10-13.1-22.5-23.4-36.3-32.1c-28.2-17.9-59-25.2-92.2-22.3C193.6,477.4,187.5,478.6,181.5,479.5    M87,395.6c5.8-0.4,11.3-1.9,16.3-4.2c4.4-1.9,6.1-4.4,5.4-9.2c-0.8-6.7-3.8-12.5-8.1-17.3c-0.8-0.8-1.9-1.7-2.9-2.3   c-1.7-1-3.3-0.8-5,0.4c-2.3,1.9-5,3.5-7.5,5.2c-3.1,2.3-6.5,4.2-9.6,6.5c-7.1,5.6-10.2,12.9-9.4,21.7c0.4,4.4,1.5,9,2.5,13.1   c1.5,5.6,4,10.6,7.3,15.6c0-0.8-0.4-1.5-0.4-2.1c-2.3-7.9-4.2-15.9-2.7-24.2c1.3-7.7,4.6-14.2,11.9-17.7c2.7-1.3,5.6-1.9,8.6-1.3   c3.1,0.8,4.6,3.8,3.1,6.5c-0.6,1.5-1.7,2.7-2.9,4C91.6,392.5,89.3,393.7,87,395.6 M141.8,270.6l0.2,0.2l10.8-20.9   c0.8-1.5,0.8-2.7,0.2-4.2c-0.6-1-0.8-2.5-1-3.8c-0.4-2.7,0.8-3.5,3.1-2.5c0.6,0.4,1.3,0.6,2.1,0.6c3.5,0.6,6.7-2.5,5.8-5.8   c-0.6,0.4-1,0.8-1.5,1.3c-2.1,1.5-3.3,1.5-4.8-0.6c-1.9-2.5-1.3-5,2.1-7.3c5.2-3.5,11.1-5.6,17.3-6.5c3.5-0.4,4.6,0.8,3.1,4   c-1.3,2.9-2.7,6.1-4.8,8.6c-3.8,4.8-7.7,9.4-11.7,14.2c0.2-0.4,0.8-0.6,1.3-1c9.6-7.9,16.9-17.7,22.1-29c1.3-2.7,0.4-3.8-2.5-2.7   c-9,2.9-18.2,5.4-26.7,9c-10,4.2-12.1,10.2-8.8,20.7c0.6,2.1,0.8,4.4,0.4,6.5c-1,4.6-2.9,9.2-4.4,13.8   C143.5,266.9,142.7,268.8,141.8,270.6 M165.4,408.1h-0.2c-0.4,0.8-0.8,1.5-0.8,2.3c-1.5,6.1-2.9,12.3-3.8,18.6   c-0.8,5.2-3.1,9.2-7.7,11.7c-0.4,0.2-0.8,0.4-1,0.6c-7.1,2.5-13.6,6.3-20,10c-4,2.3-8.1,3.8-12.1-1.5c-0.2,1.7,0,2.9-0.4,4   c-0.4,1.7,0.4,2.3,1.9,2.5c3.3,0.8,6.5,0.2,9.4-1c3.8-1.7,7.3-3.3,11.1-4.8c4.8-1.7,9.6-3.1,14.4-4.2c4-0.8,4.6-0.8,5.4-5   c0.2-0.8,0.4-1.7,0.4-2.5l2.3-21.5C164.2,414.4,164.8,411.3,165.4,408.1 M190,148.8c-0.2,0-0.4,0-0.8,0c-1.3,7.3-2.9,14.6-4,22.1   c-0.6,3.5-0.4,7.1,0,10.6c0.4,3.1,2.5,4,5.4,2.5c3.8-1.9,6.3-5.2,9.4-8.3c-5.4,0.4-8.3-1.5-9.6-6.5c-0.8-4-1-8.1-1.3-12.3   C189.4,154.2,189.8,151.3,190,148.8"/>	<path d="M385.3,643.9l-13.8-2.5c-18.2-4.4-34.2-12.7-49.4-23.2C300,603,281.4,584,264.9,562.7c-13.6-17.7-28.6-34.4-46.5-48   c-13.1-10-27.1-18.2-43.2-22.3c-8.3-2.3-16.9-3.1-25.5-2.1c0-0.2,0-0.4,0-0.6c4.2-0.6,8.1-1.5,12.3-1.7c17.1-1,32.8,4.2,47.8,11.9   c18.6,9.8,34.6,22.9,49,38c14.8,15.2,30.3,30,47.6,42.8c12.3,9,25.2,17.1,39.8,21.7c7.1,2.3,14.2,3.8,21.7,2.5   c9.6-1.7,15.4-8.6,15.9-18.2c0.2-6.9-1.3-13.4-4.2-19.6c-6.1-13.6-15-25.2-25.2-36.1c-24-25.5-52.2-44.6-85.5-55.1   c-30.5-9.6-61.1-9.6-91.6,0.4c-0.8,0.2-1.5,0.4-2.3,0.6l2.1-1.5c-9.4,3.1-18.6,6.9-27.1,12.3c-8.6,5.4-15.2,12.7-22.3,20   c0.4-0.6,0.8-1.3,1.3-1.9c10.6-15.4,24.6-27.1,40.5-36.5c6.7-4,13.8-7.1,20.9-10.8c1-0.6,2.1-1.5,2.9-2.3l25.2-27.1   c10.4-10.8,19.4-22.7,24-37.1c3.3-10.4,4.6-21.1,1.9-31.9c-0.6-2.5-1.9-4.8-3.1-6.9c-1.5-2.5-3.1-2.9-5.8-1.5   c-3.1,1.7-6.5,3.3-9.4,5.4L180,391.6c-0.6,0.4-1,0.8-1.9,0.8c0.2-0.4,0.6-0.6,0.8-0.8c25.9-23.2,51.7-46.1,79.5-67.2   c7.5-5.8,14.8-11.7,20-19.8c12.1-19,15.4-39.2,10-61.1c-1.9-7.7-6.5-13.6-13.6-17.3c-10.8-5.8-22.5-9.8-34.2-13.4   c-4.6-1.5-9.2-2.5-14-3.5l11.7,6.5c-4.4-0.4-8.6-0.8-12.7-1c-6.3-0.2-12.5,0.2-18.6,2.1c-1,0.4-1.9,0.6-2.9,1   c-7.7,3.1-10.2,8.1-6.5,15.9c2.3,4.8,5.4,9,8.6,13.4c2.3,2.9,5,5.4,7.5,8.3c3.1,3.8,7.3,4.8,11.7,3.3c5-1.7,9.6-4,15-6.1   c-0.8,0.6-1.5,0.8-1.9,1.3c-9.2,7.5-17.9,15.6-27.5,22.5c-12.1,9-22.9,18.8-32.8,30l-37.1,43.8c-0.4,0.6-0.8,1-1.5,1.5   c0.2-0.4,0.4-0.8,0.8-1.3c14.8-21.5,30.5-42.6,48.2-62c3.1-3.3,6.5-6.5,9.4-10c2.5-2.7,4.8-5.6,6.7-9c2.9-5.2,1.7-9.8-3.3-12.9   c-3.8-2.3-7.7-4-11.7-5.6c-3.1-1.5-6.7-2.5-9.8-4c-4-1.9-4.8-4-2.9-7.9c1.7-3.3,3.8-6.7,5.6-9.8c2.3-3.5,4.4-7.1,6.5-10.6   c0.8-1.7,2.1-3.8,0.4-5.2c-1.3-1-3.5-1.5-5.2-1.3c-10,1.5-20,4.2-29,9c-3.1,1.7-6.3,4-8.8,6.5c-4,4-5,8.8-2.7,14   c0.2,0.2,0.2,0.6,0.4,1.3c-6.1-5.4-7.9-16.9,2.9-21.7c10.8-4.6,21.9-8.3,33.4-10.4c14.2-2.5,22.9-11.1,29.6-22.9   c0.8-1.7,1.9-3.1,2.7-4.8l1,6.5c0.8,6.3,4,10.8,10.4,13.4c11.3,4.2,22.3,8.3,33.4,12.9c8.8,3.5,17.3,7.7,26.1,11.9   c7.5,3.8,11.3,10.4,11.5,18.6c0,6.5-0.8,12.7-0.8,19.2c0,5,0.2,10,0.6,15c0,1.5,0.8,2.7,1.5,4c3.8,7.3,9.2,9.2,16.3,5   c3.5-2.1,6.9-4.6,10.4-7.1c5.8-4.2,11.7-8.3,18.6-11.3c15.6-6.3,30-3.1,43.4,6.1c11.3,7.7,17.5,19,20.9,31.9   c1,4.2,1.7,8.6,2.3,12.9c-1.5-6.1-2.9-12.3-6.1-17.7c-2.5-4.4-5.2-8.8-8.8-12.1c-9.8-9.8-21.7-11.1-34.6-6.3   c-7.7,2.9-14,8.1-19.8,13.8c-12.5,11.9-23.4,25.2-33.8,38.8l-50.5,65.7c-7.3,9.4-15.4,18.2-23.4,26.9c-4.2,4.6-9,8.3-14.4,11.5   c-5,3.1-9.8,6.5-14.4,10c0.4,0,0.8,0,1-0.2c27.5-11.1,55.7-19.4,84.3-27.1c24.6-6.7,48.2-15.6,70.3-28.4   c21.5-12.5,40.9-27.7,55.7-48c9.4-12.7,16.3-26.5,19-42.1c3.8-21.5-1.7-40.5-15.2-57.2c-11.3-13.8-25.7-23.6-41.3-31.1   c-6.5-3.1-12.9-5.6-19.4-8.8c6.1,2.1,12.1,4,17.9,6.3c17.9,7.3,34,17.3,46.7,32.1c12.9,14.8,19.8,32.3,21.3,51.9   c1.3,16.3-1.3,31.9-5.8,47.6c-0.2,0.6-0.4,1.5-0.6,2.1c0.4,0,0.6,0,0.8,0c23.8-15.9,40.5-36.7,47.4-64.7   c5.8-23.6,3.3-46.5-5.4-68.8c-10.4-26.5-28.2-47.6-50.5-64.7C404.5,132.9,377,121,347.3,114c-9-2.1-18.4-3.5-27.3-5.2   c-0.2,0-0.4-0.2-0.4-0.6l11.1,1.5c23.8,3.8,46.9,10,69.1,19.8c28.4,12.5,53.6,29.4,74.5,52.8c19.2,21.7,32.8,46.3,38,75.1   c6.7,36.7-1.5,70.1-23.6,100.1c-15.6,21.3-36.3,36.9-59.5,49.2c-23.8,12.5-48.8,20.9-74.9,26.1c-22.5,4.6-45.3,8.3-68,12.1   c-26.5,4.4-53.2,8.3-79.1,15.9c-6.1,1.7-11.9,4-17.9,6.1c-0.8,0.2-1.5,0.6-1.9,1.3l14.6-4.6c19-5.8,38.4-9.8,58-12.3   c20.2-2.7,40.5-4.8,60.7-6.7c16.5-1.5,33-2.5,49.7-3.8l60.9-4.6c12.5-1,24.8-2.3,37.1-4.4c25.9-4.8,49-15.6,68.4-33.8   c19.4-18.2,30.9-40.3,33.8-66.8c2.3-20.4-1.3-40.3-8.1-59.5c-8.1-22.3-20.7-42.4-35.3-60.9c-11.5-14.6-24-28-37.6-40.5   c-0.6-0.6-1.3-1.3-1.7-2.1c0.2,0.2,0.6,0.2,0.8,0.4c23.2,21.1,44.4,43.8,61.8,70.1c12.9,19.6,23.2,40.7,29,63.6   c5.8,24,6.5,48-1.9,71.8c-10,28.8-29.2,49.7-56.3,63.2c-15.9,7.9-33,12.3-50.3,15.4c-23.8,4.2-47.6,4-71.4,2.7   c-29.4-1.5-58.8-3.5-88.5-2.3c-11.3,0.4-22.5,1.3-33.8,2.1c20.9,1.3,40.7,7.9,61.1,10.8c16.7,2.3,33.2,5,49.9,6.7   c21.3,2.1,42.6,3.5,63.8,4.6c25,1.3,49.4-1.5,73-10.6c37.3-14.8,60.3-42.6,70.7-81.2c1.5-5.2,2.3-10.4,3.5-16.3l-0.8,11.5   c-1.7,15.4-4.4,30.7-9.4,45.3s-11.9,28.2-22.3,39.8c-13.6,15-30.7,23.8-50.1,28c-17.3,3.8-34.8,3.8-52.2,2.1   c-28.4-2.7-55.7-9.6-83-16.7c-18.2-4.6-36.1-9.6-54.5-13.4c-27.5-5.6-55.3-7.3-83.5-5c-1.7,0-3.3,0.4-5,0.4c0,0,0,0-0.2,0.2   c0.6,0,1,0.2,1.5,0.2c27.5,0.4,53.4,7.5,78,19.4c30,14.4,60.7,27.5,92.6,37.8c17.7,5.6,35.7,10.4,54.2,12.9   c17.7,2.5,35.3,3.1,52.8-1c24.6-5.8,41.5-21.3,51.7-44c2.7-5.8,4.6-12.1,6.9-18.2c0.2-0.6,0.4-1.3,1-1.9c-0.8,2.9-1.5,5.8-2.3,9   c-5.8,20-15,38.2-29.8,53.2c-14.6,14.6-32.1,22.9-52.4,25.7c-20,2.5-39.4-0.6-58.6-6.3c-23.4-6.9-45.3-17.5-66.3-29.8l-9.6-5.6   c0,0,0,0-0.4,0c0.8,0.6,1.3,1.3,1.9,1.7c18.2,15.6,35.1,32.3,49,51.9c7.5,10.6,14.2,21.9,17.3,34.8c1.5,6.5,2.1,13.1,0.4,19.6   c-2.9,12.1-11.1,18.6-22.7,21.3c-2.3,0.6-4.8,0.8-7.1,1.3L385.3,643.9L385.3,643.9L385.3,643.9z M49,381.6c1-3.5,3.3-5.8,6.1-8.1   l28-24.8c5.4-5,9-11.1,11.5-18.2l26.5-72c2.7-7.1,3.5-14.2,1.5-21.7c-2.3-7.5-0.2-13.4,4.8-19c7.5-7.9,16.1-14.4,24.8-20.7   l16.9-11.5c0.8-0.6,1.7-1.7,2.1-2.7c5.8-23.4,11.7-46.7,20.7-69.1l17.7-42.1c1.9-4.6,3.1-9.4,4.8-14.2c0.8,1.3,1.9,2.3,2.3,3.8   c3.3,8.3,6.9,16.7,9.8,25.2c4.6,13.4,8.1,26.9,9.8,40.9c1,7.9,1.5,15.6-0.2,23.6c-0.2,0.8-0.4,1.7-0.8,2.5c0,0.2-0.2,0.6-0.8,0.8   l-0.6-9.8c-1.3-15.6-3.3-31.1-8.8-45.9c-1.9-5.2-5-10.2-7.5-15.4c-0.4-0.8-1-1.3-1.7-2.1c-0.4,0.4-0.6,0.6-0.8,0.8   c-10.8,17.3-20.9,34.8-28.4,54.2c-3.5,9-5,18.6-5.8,28.2l-2.7,25.7c0,0.6-1,1.5-1.9,1.9c-8.8,2.9-16.9,6.9-24.6,12.1   c-5.6,4-10.6,8.3-14.6,14.2c-3.1,4.6-5,9.6-5.2,15.2c-0.2,14-3.8,27.3-10.6,39.4c-10.2,18.6-16.9,38.6-22.7,58.8   c-1.9,6.7-4.6,12.9-8.6,18.6c-3.3,4.6-7.5,8.1-12.1,11.1c-4.6,2.7-9,5.6-13.4,8.8c-8.6,6.5-11.5,15-8.1,25.2   c3.8,11.5,8.8,22.3,15.2,32.5c1,1.7,2.7,3.3,4.4,4.8c2.3,1.9,5,2.3,7.5,0.8c10.6-6.3,21.7-12.1,30.9-20.4   c6.3-5.6,11.1-12.3,14.2-20.2c1.3-3.1,2.9-6.3,5.2-8.8c4.4-5.6,10.4-5.8,15.2-0.6c2.9,3.1,5,6.9,7.1,10.6c1.5,2.5,2.3,5.4,3.1,8.1   c1.5,3.5,0.4,6.7-2.3,9c-2.3,1.9-5,3.8-7.5,5.2c-7.5,4.6-14.6,9.4-20.4,16.1c-2.5,2.9-4.8,5.8-7.3,8.8c0.4-0.8,0.8-1.5,1-2.1   c3.1-5.4,7.3-10,11.9-14.4c3.3-3.3,6.7-6.7,10-10.2c1.3-1.3,2.1-2.7,2.9-4.2c2.3-3.8,1.3-7.1-2.7-9.2c-5.6-3.1-13.6-1.9-18.6,2.7   c-0.6,0.4-1,1-1.5,1.5c-6.3,9-15,15.4-24,21.5c-5.2,3.8-10.8,7.1-16.3,10.4c-4.8,2.9-10.2,2.3-14-2.1c-2.1-2.5-3.8-5.2-5-8.1   c-4.8-10.6-9.2-21.5-13.6-32.1c-1.3-2.9-1.9-5.8-2.9-8.8L49,381.6L49,381.6L49,381.6z"/>	<path class="zst0" d="M761.3,521l-44.6,82.8h-15.9L656.1,521h15.2l37.1,69.1l37.1-69.1C745.8,521,761.3,521,761.3,521z M850.1,603.6   h-15l-9.6-18.6h-55.7l-9.6,18.6h-15l43.8-82.8h17.3L850.1,603.6L850.1,603.6z M818.9,572.7l-21.1-40.1l-21.3,40.1H818.9z    M927.5,521c8.6,0,15.2,2.3,20,7.1c5,4.6,7.5,11.1,7.5,18.8c0,8.1-2.5,14.6-7.7,18.8c-5.2,4.4-12.7,6.5-22.5,6.5h-49.2v31.5h-13.8   v-82.8h65.7V521z M925.3,559.8c10.6,0,15.9-4.4,15.9-12.7c0-9.2-5.6-13.8-16.9-13.8h-48.6v26.5   C875.6,559.8,925.3,559.8,925.3,559.8z M1069.2,562.1c0,13.6-5.6,24.6-16.7,33c-9.8,7.3-21.9,11.1-36.3,11.1   c-14.6,0-26.7-3.8-36.5-11.1c-11.1-8.3-16.7-19.4-16.7-32.8c0-13.4,5.6-24.2,16.9-32.8c9.8-7.5,22.1-11.3,36.3-11.3   c14.4,0,26.5,3.8,36.3,11.3C1063.6,538.1,1069.2,549,1069.2,562.1z M1054.8,562.1c0-9.6-4.2-17.5-12.3-23.6   c-7.1-5.2-15.9-7.7-26.5-7.7c-11.5,0-20.9,2.9-28.2,9c-7.3,6.1-10.8,13.4-10.8,22.5c0,9.4,3.5,16.9,10.6,22.7   c7.1,5.8,16.5,8.6,28.4,8.6c11.7,0,21.1-2.9,28.2-8.8C1051.3,579,1054.8,571.5,1054.8,562.1z M1177.7,603.6h-15.9l-22.3-31.5h-41.7   v31.5H1084v-82.8h65.3c8.8,0,15.4,2.3,20.4,7.1c5,4.6,7.5,11.1,7.5,19c0,7.1-2.1,12.7-6.1,16.9c-3.8,4-9,6.5-15.4,7.5L1177.7,603.6   L1177.7,603.6z M1147,559.8c10.6,0,15.9-4.4,15.9-12.7c0-9.2-5.6-13.8-17.1-13.8h-48.2v26.5C1097.6,559.8,1147,559.8,1147,559.8z"/>	<g>		<g class="zst1">			<g>				<g>					<path d="M814.5,169.6l-51.3,141l-38.7-99.7l-39.8,99.7l-49.4-141h18.6l31.7,92.6l39.1-97.4l38.9,97.4l31.2-92.6H814.5z"/>				</g>			</g>		</g>		<g class="zst1">			<g>				<g>					<path d="M814.5,169.6l-51.3,141l-38.7-99.7l-39.8,99.7l-49.4-141h18.6l31.7,92.6l39.1-97.4l38.9,97.4l31.2-92.6H814.5z"/>					<path d="M684.7,312l-50.1-142.9h19.7l0.1,0.3l31.3,91.3l39-97.4l38.8,97.3l30.8-91.6h20.8l-0.2,0.7L763.2,312l-38.7-99.8       L684.7,312z M724.5,209.5l38.7,99.6l50.6-139.1h-18.6l-31.5,93.5L724.7,166l-39.1,97.5l-32.1-93.5h-17.5l48.7,139.1       L724.5,209.5z"/>				</g>			</g>		</g>	</g>	<g>		<g class="zst1">			<g>				<g>					<path d="M852.3,226.8h61.8v-57.3h17.7v134.8h-17.7v-61.2h-61.8v61.2h-17.7V169.6h17.7V226.8z"/>				</g>			</g>		</g>		<g class="zst1">			<g>				<g>					<path d="M852.3,226.8h61.8v-57.3h17.7v134.8h-17.7v-61.2h-61.8v61.2h-17.7V169.6h17.7V226.8z"/>					<path d="M932.3,304.9h-18.7v-61.2h-60.8v61.2h-18.7V169.1h18.7v57.3h60.8v-57.3h18.7V304.9z M914.6,303.9h16.7V170.1h-16.7       v57.3h-62.8v-57.3h-16.7v133.8h16.7v-61.2h62.8V303.9z"/>				</g>			</g>		</g>	</g>	<g>		<g class="zst1">			<g>				<g>					<path d="M1078.3,185.5h-34.9v118.9h-17.7V185.5h-34.9v-16h87.5V185.5z"/>				</g>			</g>		</g>		<g class="zst1">			<g>				<g>					<path d="M1078.3,185.5h-34.9v118.9h-17.7V185.5h-34.9v-16h87.5V185.5z"/>					<path d="M1043.8,304.9h-18.7V186h-34.9v-17h88.5v17h-34.9V304.9z M1026.2,303.9h16.7V185h34.9v-15h-86.5v15h34.9V303.9z"/>				</g>			</g>		</g>	</g>	<g>		<g class="zst1">			<g>				<g>					<path d="M980.4,304.4h-17.7V169.6h17.7V304.4z"/>				</g>			</g>		</g>		<g class="zst1">			<g>				<g>					<path d="M980.4,304.4h-17.7V169.6h17.7V304.4z"/>					<path d="M980.9,304.9h-18.7V169.1h18.7V304.9z M963.2,303.9h16.7V170.1h-16.7V303.9z"/>				</g>			</g>		</g>	</g>	<g>		<g class="zst1">			<g>				<g>					<path d="M679.1,398.7h56.3v-52.2h16.1v122.8h-16.1v-55.8h-56.3v55.8H663V346.5h16.1V398.7z"/>				</g>			</g>		</g>		<g class="zst1">			<g>				<g>					<path d="M679.1,398.7h56.3v-52.2h16.1v122.8h-16.1v-55.8h-56.3v55.8H663V346.5h16.1V398.7z"/>					<path d="M752,469.9h-17.1v-55.8h-55.3v55.8h-17.1V346h17.1v52.2h55.3V346H752V469.9z M735.9,468.9H751V347h-15.1v52.2h-57.3       V347h-15.1v121.8h15.1v-55.8h57.3V468.9z"/>				</g>			</g>		</g>	</g>	<g>		<g class="zst1">			<g>				<g>					<path d="M954.5,346.5c21.7,0,40.5,13.5,40.5,36.3c0,22.2-14.7,33.7-35.6,35.8l45,50.8h-18.3l-44-48.8h-3.9v48.8h-16.1V346.5       H954.5z M956,405.7c13,0,23.4-8.2,23.4-22.1c0-13.2-8.4-22.2-23.4-22.2h-17.8v44.3H956z"/>				</g>			</g>		</g>		<g class="zst1">			<g>				<g>					<path d="M954.5,346.5c21.7,0,40.5,13.5,40.5,36.3c0,22.2-14.7,33.7-35.6,35.8l45,50.8h-18.3l-44-48.8h-3.9v48.8h-16.1V346.5       H954.5z M956,405.7c13,0,23.4-8.2,23.4-22.1c0-13.2-8.4-22.2-23.4-22.2h-17.8v44.3H956z"/>					<path d="M1005.6,469.9h-19.6l-0.1-0.2L942,421.1h-3.2v48.8h-17.1V346h32.8c20.4,0,41,12.6,41,36.8c0,20.5-12.8,33.6-35.1,36.2       L1005.6,469.9z M986.4,468.9h17l-44.9-50.7l1-0.1c22.3-2.2,35.1-15,35.1-35.3c0-23.5-20.1-35.8-40-35.8h-31.8v121.8h15.1v-48.8       h4.7l0.1,0.2L986.4,468.9z M956,406.2h-18.3v-45.3H956c14.8,0,23.9,8.7,23.9,22.7C980,396.9,970.1,406.2,956,406.2z        M938.7,405.2H956c13.5,0,22.9-8.9,22.9-21.6c0-13.4-8.8-21.7-22.9-21.7h-17.3V405.2z"/>				</g>			</g>		</g>	</g>	<g>		<g>			<path d="M1165.2,187.2h-53.6v32.1h52.2v19h-52.2v44.9h53.6v18.8h-73.9V168h73.9V187.2z"/>			<path d="M1165.7,302.4h-74.9V167.5h74.9v20.2h-53.6v31.1h52.2v20h-52.2v43.9h53.6V302.4z M1091.8,301.4h72.9v-17.8h-53.6v-45.9     h52.2v-18h-52.2v-33.1h53.6v-18.2h-72.9V301.4z"/>		</g>	</g>	<g>		<g>			<polygon points="1178.1,363.9 1128.3,363.9 1128.3,393.9 1176.7,393.9 1176.7,411.7 1128.3,411.7 1128.3,453.2 1178.1,453.2      1178.1,470.9 1109.5,470.9 1109.5,346.4 1178.1,346.4    "/>		</g>	</g>	<g>		<g>			<path d="M1087.2,364.9l-15,9c-2.7-4.8-5.4-8.1-7.9-9.6c-2.7-1.7-6.1-2.5-10.2-2.5c-5.2,0-9.6,1.5-12.7,4.4     c-3.3,2.7-5.2,6.7-5,10.8c0,6.1,4.4,10.6,13.4,14.4l12.3,5c9.8,4,17.1,9,21.7,14.8c4.8,5.8,7.1,12.9,7.1,21.3     c0,11.3-3.8,20.7-11.3,28c-7.5,7.3-16.9,11.1-28.2,11.1c-10.6,0-19.4-3.1-26.3-9.4c-6.9-6.5-11.1-15.2-12.7-26.7l18.8-4.2     c0.8,7.1,2.3,12.1,4.4,14.8c3.8,5.2,9.4,7.9,16.7,7.9c5.6,0,10.6-1.9,14.4-5.8c3.8-4,5.6-8.8,5.6-14.6c0-2.3-0.4-4.4-1-6.5     s-1.7-4-3.1-5.4c-1.5-1.7-3.1-3.3-5.4-4.8c-2.5-1.7-5.2-2.9-7.9-4.2l-11.9-4.8c-16.7-7.1-25.2-17.5-25.2-31.1     c0-9.2,3.5-16.9,10.6-23.2c7.1-6.3,15.9-9.4,26.3-9.4C1068.2,344.5,1079.2,351.4,1087.2,364.9"/>		</g>	</g>	<g>		<g class="zst1">			<g>				<g>					<path d="M835.3,344.1c35.2,0,63.8,28.4,63.8,63.6c0,35.2-28.6,63.8-64,63.8c-35.2,0-63.8-28.6-63.8-63.8       c0-35.2,28.6-63.6,63.8-63.6H835.3z M835.3,360c-14.7,0-27.7,6.8-36.4,17.5c-6.8,8.2-10.9,18.8-10.9,30.3       c0,10.8,3.6,20.7,9.6,28.6c8.6,11.5,22.2,19,37.6,19c15.6,0,29.3-7.5,37.8-19c6-7.9,9.6-17.8,9.6-28.6       c0-11.5-4.1-22.1-10.9-30.3C862.9,366.9,849.9,360,835.3,360z"/>				</g>			</g>		</g>		<g class="zst1">			<g>				<g>					<path d="M835.3,344.1c35.2,0,63.8,28.4,63.8,63.6c0,35.2-28.6,63.8-64,63.8c-35.2,0-63.8-28.6-63.8-63.8       c0-35.2,28.6-63.6,63.8-63.6H835.3z M835.3,360c-14.7,0-27.7,6.8-36.4,17.5c-6.8,8.2-10.9,18.8-10.9,30.3       c0,10.8,3.6,20.7,9.6,28.6c8.6,11.5,22.2,19,37.6,19c15.6,0,29.3-7.5,37.8-19c6-7.9,9.6-17.8,9.6-28.6       c0-11.5-4.1-22.1-10.9-30.3C862.9,366.9,849.9,360,835.3,360z"/>					<path d="M835.1,472.1c-35.5,0-64.3-28.9-64.3-64.3c0-35.4,28.9-64.1,64.3-64.1h0.2c35.5,0,64.3,28.8,64.3,64.1       C899.6,443.2,870.7,472.1,835.1,472.1z M835.1,344.6c-34.9,0-63.3,28.3-63.3,63.1c0,34.9,28.4,63.3,63.3,63.3       c35,0,63.5-28.4,63.5-63.3c0-34.8-28.4-63.1-63.3-63.1H835.1z M835.1,455.8c-14.9,0-29.1-7.2-38-19.2       c-6.3-8.3-9.7-18.3-9.7-28.9c0-11.2,3.9-22,11.1-30.6c9.2-11.2,22.6-17.6,36.8-17.6c14.1,0,27.4,6.4,36.7,17.6       c7.1,8.6,11.1,19.4,11.1,30.6c0,10.6-3.3,20.5-9.7,28.9C864.2,448.8,850.3,455.8,835.1,455.8z M835.3,360.5       c-13.9,0-27,6.3-36.1,17.3c-7,8.4-10.8,19-10.8,30c0,10.3,3.3,20.1,9.5,28.3c8.8,11.8,22.7,18.8,37.2,18.8       c14.9,0,28.5-6.8,37.4-18.8c6.2-8.2,9.5-17.9,9.5-28.3c0-10.9-3.8-21.6-10.8-30C862.2,366.8,849.1,360.5,835.3,360.5z"/>				</g>			</g>		</g>	</g></g>
+        </svg>
+        <div id="CustomerLoginForm">
+          <h2>Account Login</h2>
+          {% form 'customer_login', return_to: '/checkout' %}
+            <div class="selection-wrapper">
+              {% comment %}
+                If a user has successfully requested a new password, the form.posted_successfully? variable
+                is set to true within the 'recover_customer_password' form only. Within that form you'll see
+                the variable 'resetPassword' set to true, which is used to initialize StyleHatch.resetPasswordSuccess().
+              {% endcomment %}
+              <div class="note form-success" id="ResetSuccess" style="display:none;">
+                <p>{{ 'customer.recover_password.success' | t }}</p>
+              </div>
+
+              {{ form.errors | default_errors }}
+
+              <div class="input-row">
+                <label for="CustomerEmail" class="hidden-label">{{ 'customer.login.email' | t }}</label>
+                <input
+                  type="email"
+                  name="customer[email]"
+                  id="CustomerEmail"
+                  class="input-full{% if form.errors contains 'email' %} error{% endif %}"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  autofocus
+                >
+              </div>
+
+              {% if form.password_needed %}
+                <div class="input-row">
+                  <label for="CustomerPassword" class="hidden-label">{{ 'customer.login.password' | t }}</label>
+                  <input
+                    type="password"
+                    value=""
+                    name="customer[password]"
+                    id="CustomerPassword"
+                    class="input-full{% if form.errors contains 'password' %} error{% endif %}"
+                  >
+                </div>
+              {% endif %}
+
+              <div class="submit">
+                <input type="submit" class="button solid" value="{{ 'customer.login.sign_in' | t }}">
+              </div>
+
+              <div class="login_extra_links">
+                <a id="recover" href="#recover" id="RecoverPassword">{{ 'customer.login.forgot_password' | t }}</a>
+                Don't have an account? {{ 'layout.customer.create_account' | t | customer_register_link }}
+              </div>
+            </div>
+          {% endform %}
+        </div>
+
+        <div id="RecoverPasswordForm" style="display: none;">
+          {% form 'recover_customer_password', return_to: '/checkout' %}
+            <div class="selection-wrapper">
+              <h2>{{ 'customer.recover_password.title' | t }}</h2>
+              <p>{{ 'customer.recover_password.subtext' | t }}</p>
+
+              {{ form.errors | default_errors }}
+
+              {% comment %}
+                Assign variable to be used after StyleHatch.init() is run in theme.liquid
+              {% endcomment %}
+              {% if form.posted_successfully? %}
+                {% assign resetPassword = true %}
+              {% endif %}
+              <div class="input-row">
+                <label for="RecoverEmail" class="hidden-label">{{ 'customer.recover_password.email' | t }}</label>
+                <input type="email" value="" name="email" id="RecoverEmail" autocorrect="off" autocapitalize="off">
+              </div>
+
+              <div class="submit">
+                <input type="submit" class="button solid" value="{{ 'customer.recover_password.submit' | t }}">
+                <a id="HideRecoverPasswordLink" class="cancel">{{ 'customer.recover_password.cancel' | t }}</a>
+              </div>
+            </div>
+          {% endform %}
+        </div>
+        <div id="create-customer-form">
+          {% form 'create_customer', return_to: '/checkout' %}
+            <div class="selection-wrapper">
+              {{ form.errors | default_errors }}
+            </div>
+
+            <div class="selection-wrapper">
+              <div class="input-row">
+                <label for="FirstName" class="hidden-label">{{ 'customer.register.first_name' | t }}</label>
+                <input
+                  type="text"
+                  name="customer[first_name]"
+                  id="FirstName"
+                  class="input-full"
+                  {% if form.first_name %}
+                    value="{{ form.first_name }}"
+                  {% endif %}
+                  autocapitalize="words"
+                  autofocus
+                >
+              </div>
+
+              <div class="input-row">
+                <label for="LastName" class="hidden-label">{{ 'customer.register.last_name' | t }}</label>
+                <input
+                  type="text"
+                  name="customer[last_name]"
+                  id="LastName"
+                  class="input-full"
+                  {% if form.last_name %}
+                    value="{{ form.last_name }}"
+                  {% endif %}
+                  autocapitalize="words"
+                >
+              </div>
+
+              <div class="input-row">
+                <label for="Birthday" class="hidden-label">Birthday MM/DD/YYYY</label>
+                <input
+                  type="text"
+                  name="customer[note][Birthday]"
+                  id="Birthday"
+                  class="input-full"
+                  autocapitalize="words"
+                  required
+                >
+              </div>
+
+              <div class="input-row">
+                <label for="Email" class="hidden-label">{{ 'customer.register.email' | t }}</label>
+                <input
+                  type="email"
+                  name="customer[email]"
+                  id="Email"
+                  class="input-full{% if form.errors contains 'email' %} error{% endif %}"
+                  {% if form.email %}
+                    value="{{ form.email }}"
+                  {% endif %}
+                  autocorrect="off"
+                  autocapitalize="off"
+                >
+              </div>
+
+              <div class="input-row">
+                <label for="CreatePassword" class="hidden-label">{{ 'customer.register.password' | t }}</label>
+                <input
+                  type="password"
+                  name="customer[password]"
+                  id="CreatePassword"
+                  class="input-full{% if form.errors contains 'password' %} error{% endif %}"
+                >
+              </div>
+
+              <p class="submit">
+                <input type="submit" value="{{ 'customer.register.submit' | t }}" class="button solid">
+              </p>
+            </div>
+          {% endform %}
+        </div>
+      </div>
+    </div>
+    <!-- end of customer login form -->
+    <header class="banner" data-header role="banner">
+      <div class="wrap">
+        <a class="logo logo--left" href="https://vapewh.com/"
+          ><img
+            width="150px"
+            alt="vapeWH"
+            src="https://cdn.shopify.com/s/files/1/0743/6343/files/vapeWH_text_logo.svg?v=1719696491"
+        ></a>
+        <!-- {{ content_for_logo }} -->
+      </div>
+    </header>
+
+    {{ order_summary_toggle }}
+    <div class="content" data-content>
+      <div class="wrap">
+        <div class="main">
+          <header class="main__header" role="banner">
+            <a class="logo logo--left" href="https://vapewh.com/"
+              ><img
+                width="150px"
+                alt="vapeWH"
+                src="https://cdn.shopify.com/s/files/1/0743/6343/files/vapeWH_text_logo.svg?v=1719696491"
+            ></a>
+            <!-- {{ content_for_logo }} -->
+            {{ breadcrumb }}
+            {{ alternative_payment_methods }}
+          </header>
+          <main class="main__content" role="main">
+            {{ content_for_layout }}
+          </main>
+          <footer class="main__footer" role="contentinfo">
+            {{ content_for_footer }}
+          </footer>
+        </div>
+        <aside class="sidebar" role="complementary">
+          <div class="sidebar__header">
+            <a class="logo logo--left" href="https://vapewh.com/"
+              ><img
+                width="150px"
+                alt="vapeWH"
+                src="https://cdn.shopify.com/s/files/1/0743/6343/files/vapeWH_text_logo.svg?v=1719696491"
+            ></a>
+            <!-- {{ content_for_logo }} -->
+          </div>
+          <div class="sidebar__content">
+            {{ content_for_order_summary }}
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    {{ tracking_code }}
+  </body>
+</html>

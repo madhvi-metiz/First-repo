@@ -1,0 +1,110 @@
+<style>
+.white-returns {
+background-color:white;
+}
+body:not(.template-index) main.main-content {
+margin-top:0;}
+.return-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align:center;
+}
+h1 {
+text-transform:uppercase;
+font-weight:normal;}
+h1:not(.site-logo) {
+font-weight:normal;}
+h2 {
+text-transform:uppercase;
+line-height:normal;}
+.grey-section-returns {
+    text-align:center;
+    max-width:800px;
+    padding-top:2em;
+    padding-bottom:2em;
+    margin-left:auto;
+    margin-right:auto;
+}
+.grey-section-returns p {
+margin-bottom:0;
+}
+@media screen and (max-width:768px) {
+.return-flex {
+    flex-direction: column-reverse;
+    max-width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 1em;
+}
+.grey-section-returns {
+max-width:85%;
+margin-left:auto;
+margin-right:auto;
+}
+}
+@media screen and (min-width:769px) {
+  .return-item {
+width:50%;}
+.return-item p {
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;}
+.return-flex {
+max-width:90%;
+margin-left:auto;
+margin-right:auto;}
+h1 {
+    font-size:2.5em;
+}
+.logo-bar {
+    align-items: start;
+}
+h2 {
+font-size:2.5em;}
+}
+.step-button {
+font-size:18px;
+max-width:unset;
+}
+.logo-bar {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    justify-content: center;
+    -webkit-flex-wrap: wrap;
+    -moz-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    align-items: center;
+}
+@media screen and (min-width: 769px) {
+.logo-list-logo-steps .logo-bar__item {
+    width: 24% !important;
+}
+}
+</style>
+<section id="returns-page">
+    <div class="white-returns">
+<div class="return-flex">
+<div class="return-item">
+<h1>Disposable Vape<br>Reward Program</h1>
+<p>Save your finished vapes and send them back to us with free shipping. Give us 20 or more empty disposables at a time and receive a vapeWH gift card towards your next vape purchase.</p>
+<a href="/pages/disposable-reward-form" class="default-cart-button__button return-cta"><span>DISPOSE OF YOUR VAPES HERE</span></a>
+</div>
+<div class="return-item"><img src=https://cdn.shopify.com/s/files/1/0743/6343/files/Shop_All_Brands_Banner_png.png?v=1684855220">
+    </div>
+</div>
+</div>
+<div class="grey-section-returns">
+<h2>GIVE 20 GET a vapeWH Gift Card!</h2>
+<p>Being a responsible business means taking care of the products that you ship out. Our rewards program offers you a $10 vapeWH gift card for every increment of 20 empty disposables. It helps to keep junk out of the landfill and keep a nice full vape in your pocket.
+</p>
+</div>
+{%section 'logo-steps'%}
+</section>

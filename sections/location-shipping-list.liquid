@@ -1,0 +1,233 @@
+<div
+  class="gallery section-standard base-font-16 {% unless section.settings.section_padding %}no-border{% endunless %}"
+  data-section-id="{{ section.id }}"
+  data-section-type="location-shipping-states"
+>
+  <div class="{% if section.settings.full_width %}contain-full-width{% else %}contain-site-width{% endif %} {% unless section.settings.section_padding %}no-padding{% endunless %}">
+    <div class="wrapper">
+      {% if section.settings.title != blank %}
+        <header>
+          <h2 class="flex-util homepage-heading flex-heading">
+            <div id="shopify-section-legend-{{ section.id }}"></div>
+            {{ section.settings.title | escape }}
+          </h2>
+        </header>
+      {% endif %}
+
+      <div class="shopify-section-grid-{{ section.id }}">
+        {% for block in section.blocks limit: section.blocks.size %}
+          <div
+            class="medium-down--one-whole {% if section.settings.section_padding == false and section.settings.gutter == false and forloop.index >= last_row_start %}no-bottom-margin{% endif %}"
+            {{ block.shopify_attributes }}
+          >
+            <span class="text-center">{{ block.settings.title }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .flex-heading {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content:center;
+    gap: 10px;
+  }
+
+  #shopify-section-legend-{{ section.id }} {
+    width:  30px;
+    height: 30px;
+    background: {{ section.settings.legend_color }};
+  }
+
+  #shopify-section-{{ section.id }} .box figcaption h4 {
+    color: {{ section.settings.color_overlay_text }};
+  }
+  {% assign overlay_alpha = section.settings.color_overlay_alpha_range | times: 0.01 %}
+  #shopify-section-{{ section.id }} .box a figure:after,
+  #shopify-section-{{ section.id }} .box div.hover-wrapper figure:after {
+    background-color: {{ section.settings.color_overlay | hex_to_rgba: overlay_alpha }};
+  }
+  #shopify-section-{{ section.id }} .box a:hover figure:after,
+  #shopify-section-{{ section.id }} .box div.hover-wrapper:hover figure:after {
+    background-color: {{ section.settings.color_overlay_hover | hex_to_rgba: overlay_alpha }};
+  }
+
+  .shopify-section-grid-{{ section.id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 15%);
+    justify-content: center;
+    justify-items: center;
+  }
+
+  @media screen and (max-width: 500px) {
+    .shopify-section-grid-{{ section.id }} {
+      grid-template-columns: repeat(auto-fit, 50%);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Location Shipping States",
+  "class": "location-shipping-states",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Image Gallery"
+    },
+
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Expand full width",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "section_padding",
+      "label": "Show spacing around section",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "gutter",
+      "label": "Show spacing around images",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "images_per_row_range",
+      "label": "Targetted images per row",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "radio",
+      "id": "text_placement",
+      "label": "Text placement",
+      "default": "below",
+      "options": [
+        {
+          "value": "below",
+          "label": "Below image"
+        },
+        {
+          "value": "over",
+          "label": "Over image"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "color_overlay",
+      "label": "Overlay",
+      "default": "#4f4f4f"
+    },
+    {
+      "type": "color",
+      "id": "color_overlay_hover",
+      "label": "Overlay hover",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "color_overlay_text",
+      "label": "Overlay text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "legend_color",
+      "label": "Legend color",
+      "default": "#284B7E"
+    },
+    {
+      "type": "range",
+      "id": "color_overlay_alpha_range",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Image overlay opacity",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "zoom",
+      "label": "Enable rollover zoom",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_chevron",
+      "label": "Show chevron for image links",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "State",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "State",
+          "default": "Image title",
+          "info": "Required"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Location Shipping States",
+      "settings": {
+        "title": "Shipping To",
+        "full_width": false,
+        "section_padding": true,
+        "gutter": true,
+        "text_placement": "below"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "settings": {
+            "title": "State Name"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "title": "State Name"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "title": "State Name"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "title": "State Name"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "title": "State Name"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,86 @@
+<div
+  id="section-{{ section.id }}"
+  class="button-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="button-section"
+>
+  {% if section.settings.button_link != blank and section.settings.button_label != blank %}
+    <div class="flex-util flex-justify-center">
+      <a href="{{ section.settings.button_link }}" class="button header-button">
+        {{- section.settings.button_label | escape -}}
+      </a>
+    </div>
+  {% endif %}
+
+  <style media="screen">
+    #section-{{ section.id }}{
+      padding-bottom:40px;
+    }
+    #section-{{ section.id }} a {
+      color: {{ section.settings.color_accent }};
+      border: 0px;
+    }
+    #section-{{ section.id }} a:hover,
+    #section-{{ section.id }} a:focus {
+      color: {{ section.settings.color_text }};
+    }
+    #section-{{ section.id }} a.button {
+      color: {{ section.settings.button_text_color }};
+      background-color: {{ section.settings.button_background_color }};
+    }
+    #section-{{ section.id }} a.button:hover,
+    #section-{{ section.id }} a.button:focus {
+      color: {{ section.settings.button_text_color }};
+      background-color: {{ section.settings.button_background_color }};
+    }
+  </style>
+</div>
+
+{% schema %}
+{
+  "name": "Button",
+  "class": "button-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Accent",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button Background",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Button",
+      "category": "Button"
+    }
+  ]
+}
+{% endschema %}

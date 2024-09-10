@@ -1,0 +1,348 @@
+<style>
+  body:not(.template-index) main.main-content {
+    margin-top: 0;
+  }
+</style>
+{% assign desk_desc = collection.description | truncate: 300 %}
+{% assign desc_size = collection.description | size %}
+{% assign collectionFlavor = 'no' %}
+{% if collection.title contains 'Flavor' %}
+  {% assign collectionFlavor = 'yes' %}
+{% endif %}
+
+{% if section.blocks.size > 0 %}
+  {%- assign enable_sidebar = true -%}
+{% else %}
+  {%- assign enable_sidebar = false -%}
+{% endif %}
+
+{%- assign products_per_page = section.settings.products_per_page_range -%}
+{% if section.settings.image_placement != 'default' and section.settings.image_placement != 'hidden' %}
+  {% comment %}  and collection.image  {% endcomment %}
+
+  <div class="hero-content header {{ section.settings.image_placement }} {% if collection.metafields.custom.collection_banner_hide_mobile %} desktop-only-util {% endif %}">
+    {%- assign image = collection.metafields.custom.collection_banner | image_url -%}
+    <div
+      class="collection-image"
+      {% if section.settings.image_placement == 'above' %}
+        style="max-width:{{ image.width }}px;"
+      {% endif %}
+    >
+      <div class="card__image-wrapper" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%">
+        {% if image %}
+          {{
+            image
+            | image_url: width: 2400
+            | image_tag: widths: '400, 800, 1200, 2400', sizes: '100vw', class: 'card__image', loading: 'eager'
+          }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% paginate collection.products by products_per_page %}
+  <section class="collection" data-section-id="{{ section.id }}" data-section-type="collection-template">
+    <div class="wrapper">
+      <header class="content-util">
+        {% include 'breadcrumb' %}
+        {% comment %}
+          {% include 'social-icons' %}
+        {% endcomment %}
+      </header>
+
+      <div class="grid {% unless enable_sidebar %}full-width{% endunless %}">
+        <div class="collection-container">
+          <header class="collection-header">
+            <div class="container">
+              <h1>{{ collection.title }}</h1>
+              <div class="sorter-cont">
+                {% include 'collection-sorting' %}
+
+                {% if enable_sidebar %}
+                  <div class="mobile-aside-container">
+                    <a href="#" class="button simple">CATEGORIES</a>
+                  </div>
+                {% endif %}
+              </div>
+              <aside class="aside-bar mobile-only">
+                {% include 'collection-sidebar' %}
+              </aside>
+            </div>
+            {% if section.settings.image_placement == 'default' and collection.image %}
+              <div class="collection-image">
+                {%- assign image = collection.image -%}
+                <div
+                  class="card__image-wrapper"
+                  style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%"
+                >
+                  {% if image %}
+                    {{
+                      image
+                      | image_url: width: 1200
+                      | image_tag:
+                        widths: '400, 600, 800, 1200',
+                        sizes: '(min-width: 780px) 400px, 200px',
+                        class: 'card__image',
+                        loading: 'eager'
+                    }}
+                  {% else %}
+
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          </header>
+
+          <div
+            id="infinite-scroll-products-container"
+            class="products products-grid {% unless enable_sidebar %}full-width{% endunless %}"
+          >
+            {% comment %}
+              Loop through our products in the current collection.
+              See the snippet 'product-grid-item' for the layout.
+            {% endcomment %}
+            {% for product in collection.products %}
+              {% if product.available %}
+                {% include 'product-grid-item' %}
+              {% elsif product.tags contains 'COMING_SOON' %}
+                {% include 'product-grid-item' %}
+              {% endif %}
+            {% else %}
+              {% if collection.handle == 'all'
+                and collection.all_vendors.size == 0
+                and collection.all_types.size == 0
+              %}
+                {% for i in (1..products_per_page) %}
+                  {% include 'placeholder-product-grid-item' %}
+                {% endfor %}
+              {% else %}
+                {% comment %}
+                  If collection exists but is empty, display message
+                {% endcomment %}
+                <p>{{ 'collections.general.no_matches' | t }}</p>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% if paginate.pages > 1 %}
+            <footer class="collection-footer">
+              {% include 'pagination' %}
+            </footer>
+
+            {% comment %}
+              <footer id="infinite-scroll-pagination-container" class="collection-footer">
+                {% if paginate.next %}
+                  <a href="{{ paginate.next.url }}">Loading More</a>
+                {% endif %}
+              </footer>
+            {% endcomment %}
+          {% endif %}
+
+          {% if collection.description != blank %}
+            <div class="description mt-15">
+              {{ collection.description }}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if enable_sidebar %}
+          <div class="aside-container">
+            <aside>
+              {% include 'collection-sidebar' %}
+            </aside>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+{% endpaginate %}
+
+{% comment %} <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var endlessScroll = new Ajaxinate({
+      container: '#infinite-scroll-products-container',
+      pagination: '#infinite-scroll-pagination-container',
+      callback: () => setCollectionAtcAction(),
+    });
+  });
+</script> {% endcomment %}
+
+{% schema %}
+{
+  "name": "Collection pages",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page_range",
+      "label": "Number of products on each page",
+      "min": 12,
+      "max": 48,
+      "step": 3,
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "image_placement",
+      "label": "Collection image placement",
+      "options": [
+        { "value": "default", "label": "After collection title" },
+        { "value": "above", "label": "After navigation" },
+        { "value": "above-full", "label": "After navigation full width" },
+        { "value": "hidden", "label": "Hidden" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "sort_enable",
+      "label": "Enable sorting",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "layout_enable",
+      "label": "Enable grid and list views",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Sidebar menu",
+      "settings": [
+        {
+          "type": "link_list",
+          "id": "linklist",
+          "label": "Menu",
+          "default": "main-menu"
+        }
+      ]
+    },
+    {
+      "type": "tags",
+      "name": "Sidebar tags",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Shop by"
+        },
+        {
+          "type": "radio",
+          "id": "tag_style",
+          "label": "Show tags as",
+          "options": [
+            { "value": "buttons", "label": "Buttons" },
+            { "value": "menu", "label": "Menu" }
+          ],
+          "default": "buttons"
+        },
+        {
+          "type": "checkbox",
+          "id": "tag_grouping",
+          "label": "Enable tag grouping",
+          "default": false,
+          "info": "[Learn how to set up tag groups](http://help.stylehatch.com/article/289-collections)"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+<script>
+  $(document).ready(function () {
+    $('body').on('click', '.click-more', function (e) {
+      e.preventDefault();
+      var initial = $('.initial-coll-desc').html();
+      initial = initial.replace('...', '');
+      $('.initial-coll-desc').html(initial);
+      $('.click-more').hide();
+      $('.remaining-coll-desc').css('display', 'inline');
+      $('.click-less').show();
+    });
+    $('body').on('click', '.click-less', function (e) {
+      e.preventDefault();
+      $('.click-more').show();
+      $('.remaining-coll-desc').hide();
+      $('.remaining-coll-desc').removeAttr('style');
+      var initial_two = $('.initial-coll-desc').html();
+      var index = initial_two.indexOf('<span');
+      var ellipse = '...';
+      var newHTML = initial_two.substring(0, index);
+      newHTML = newHTML + ellipse;
+      var newerHTML = newHTML + initial_two.substring(index, initial_two.length);
+      $('.initial-coll-desc').html(newerHTML);
+      $('.click-less').hide();
+      $('.click-less').removeAttr('style');
+    });
+  });
+</script>
+{% if collectionFlavor == 'yes' %}
+  <script>
+        {% comment %} $(window).on('load', function () {
+          setTimeout(function () {
+            var productTitleMaxHeight = 0;
+            $('.meta-product-info').each(function () {
+              var height = $(this).outerHeight();
+              if (height > productTitleMaxHeight) {
+                productTitleMaxHeight = height;
+              }
+            });
+            $('.meta-product-info').each(function () {
+              $(this).css('height', productTitleMaxHeight);
+            });
+          }, 250); {% endcomment %}
+          /*
+      $('.collection-ATC').unbind().click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var link = $(this).parent().parent().find('a').attr('href');
+        var title = $(this).parent().find('.meta-product-info').find('.product-title').find('a').text();
+        var img = $(this).parent().parent().find('a').find('img').attr('src');
+        var variant = $(this).attr('data-variant-id');
+          data = {
+          "id": variant,
+          "quantity": 1
+        }
+            jQuery.ajax({
+          type: 'POST',
+          url: '/cart/add.js',
+          data: data,
+          dataType: 'json',
+          success: function() {
+            jQuery.getJSON('/cart.js', function(cart) {
+       // now have access to Shopify cart object
+       $('#CartCount').text(cart.item_count);
+                        var total = cart.total_price.toString();
+              var newTotal = '$' + total.substring(0,total.length - 2) + '.' + total.substring(total.length - 2, total.length);
+       $('#CartCost').text(newTotal);
+                  $(".inner-cart").load(location.href + " .inner-cart");
+                  if ($('.inner-cart').css('display') === 'none') {
+                   $('.inner-cart').fadeIn('slow');
+                  }
+                  if($('.slider-main').css('display') === 'none' ) {
+                   $(".slider-main").animate({
+                    width: "toggle"
+                });
+                    $('body').css('overflow-y','hidden');
+            findScreen();
+
+    }
+          });
+        }
+      });
+      }); */
+          function findScreen() {
+            $('html').css('overflow-y', 'hidden');
+            var screenPos = $(document).scrollTop();
+            //    $('#sliderCart').removeAttr('style');
+            // $("#sliderCart").css("top", screenPos + "px");
+            $('.grey-parent').fadeIn('slow');
+            $('.grey-parent').css('top', screenPos + 'px');
+            $('.grey-parent').css('overflow', 'hidden');
+          }
+        });
+  </script>
+{% endif %}

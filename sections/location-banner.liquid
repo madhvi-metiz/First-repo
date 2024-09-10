@@ -1,0 +1,62 @@
+<section id="{{ section.id }}" class="image-content">
+  <div class="imagedata contain-site-width align-{{ section.settings.alignment }}">
+    {% if section.settings.image !=blank %}
+  <picture>
+  <source media="(min-width:320px) and (max-width:649px)" srcset="{{ section.settings.mobile_image | img_url:"master" }}">
+  <img src="{{ section.settings.image | img_url:"master" }}" alt="{{ section.settings.image }}" >
+</picture>
+    {% endif %}  
+  </div>
+</section>
+
+<style>
+#{{ section.id }}.image-content{
+  background:{{section.settings.bg_color}};
+  display: block;
+  position: relative;
+}
+.image-content .imagedata img{
+  width:100%;
+}
+</style>
+
+{% schema %}
+{
+  "name": "location banner",
+  "class": "hero-video-section",
+  "settings": [
+     {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "center",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"}
+      ]
+    },
+    {
+      "type":"color",
+        "id":"bg_color",
+      "label":"Background Color"
+    },
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "Desktop Image"
+    },
+    {
+      "type":"image_picker",
+        "id":"mobile_image",
+      "label":"Mobile Image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "location banner",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

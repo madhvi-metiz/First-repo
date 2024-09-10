@@ -1,0 +1,182 @@
+<div
+  class="logo-list logo-list-{{ section.id }} section-standard base-font-16"
+  data-section-id="{{ section.id }}"
+  data-section-type="logo-list-section"
+  style="background:linear-gradient(130deg, rgba(93,188,230,1) 9%, rgba(2,75,173,1) 50%);"
+>
+  <div class="contain-site-width">
+    <div class="wrapper">
+      {% if section.settings.title != blank %}
+        <header>
+          <h2 class="homepage-heading">{{ section.settings.title | escape }}</h2>
+        </header>
+      {% endif %}
+
+      <div class="logo-bar">
+        {% for block in section.blocks %}
+          <div id="block-{{ block.id }}" class="logo-bar__item" {{ block.shopify_attributes }}>
+            {% if block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="logo-bar__link">
+            {% endif %}
+            {% assign image = block.settings.image %}
+            {% if image != blank %}
+              {{
+                image
+                | image_url: width: 1200
+                | image_tag: widths: '400, 600, 800, 1200', sizes: '(min-width: 780px) 400px, 200px', loading: 'lazy'
+              }}
+
+            {% else %}
+              {{ 'logo' | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
+
+            {% if block.settings.link != blank %}
+              </a>
+            {% endif %}
+            {% if block.settings['icon-heading'] %}
+              <h3 class="icon-heading-sub">{{ block.settings['icon-heading'] }}</h3>
+            {% endif %}
+            {% if block.settings['icon-text'] %}
+              <p>{{ block.settings['icon-text'] }}</p>
+            {% endif %}
+          </div>
+          <style media="screen">
+            #block-{{ block.id }} img {
+              max-width: {{ section.settings.logo_width }}px;
+              min-width: {{ section.settings.logo_width }}px;
+            }
+          </style>
+        {% endfor %}
+        {% if section.settings.step_button_text != blank %}
+          <a class="step-button" href="{{ section.settings.step_button_link }}">
+            {{- section.settings.step_button_text -}}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media screen and (min-width: 769px) {
+  .logo-list-{{ section.id }} .logo-bar__item {
+    width: 22%;
+  }
+  }
+    @media screen and (max-width: 768px) {
+  .logo-list-{{ section.id }} .logo-bar__item {
+    width: 100%;
+  }
+  }
+  .logo-list-{{ section.id }} .logo-bar__item {
+    margin: {{ section.settings.logo_margins }}px;
+  }
+  .logo-list-{{ section.id }} header h4 {
+    color:{{section.settings.text-color}};
+    font-size:2.5em;
+  }
+  .logo-list-{{ section.id }} p {
+    color:{{section.settings.text-color}};
+    font-size:1.15em;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Logo Steps",
+  "class": "logo-list-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Logo list"
+    },
+    {
+      "type": "color",
+      "id": "text-color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "bg-color",
+      "label": "Background Color",
+      "default": "#0C8EFF"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 100,
+      "max": 250,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 160
+    },
+    {
+      "type": "range",
+      "id": "logo_margins",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Column spacing",
+      "default": 16
+    },
+    {
+      "type": "text",
+      "id": "step_button_text",
+      "label": "Step Button Text"
+    },
+    {
+      "type": "url",
+      "id": "step_button_link",
+      "label": "Step Button Link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo_image",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "icon-heading",
+          "label": "Icon Heading"
+        },
+        {
+          "type": "text",
+          "id": "icon-text",
+          "label": "Icon Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo Steps",
+      "category": "Image",
+      "blocks": [
+        {
+          "type": "logo_image"
+        },
+        {
+          "type": "logo_image"
+        },
+        {
+          "type": "logo_image"
+        },
+        {
+          "type": "logo_image"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
